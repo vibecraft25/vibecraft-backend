@@ -19,6 +19,8 @@ source .venv/bin/activate
 pip install uv
 uv init
 uv add fastmcp
+# (Optional)
+uv add mcp anthropic
 
 # Remove boilerplate files
 # On Windows:

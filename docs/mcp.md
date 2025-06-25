@@ -30,6 +30,7 @@ source .venv/bin/activate
 
 # Install required packages
 uv add "mcp[cli]"
+# (Optional)
 uv add mcp anthropic python-dotenv
 
 # Remove boilerplate files
