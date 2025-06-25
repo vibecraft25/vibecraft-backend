@@ -68,6 +68,6 @@ project-root/
 │   ├── coder_generator_client/  # 웹 코드 생성 (LLM 활용)
 │   └── deploy_client/           # Vercel 기반 웹 배포
 │
-├── shared/                      # 공통 유틸, 설정, 모델 정의
+├── utils/                      # 공통 유틸, 설정, 모델 정의
 └── README.md
 ```
