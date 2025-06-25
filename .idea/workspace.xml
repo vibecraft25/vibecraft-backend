@@ -1,16 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250625] update docs">
+    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250625] update samples">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/servers/server_sample_v1.py" beforeDir="false" afterPath="$PROJECT_DIR$/servers/server_sample_v1.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/servers/server_sample_v2.py" beforeDir="false" afterPath="$PROJECT_DIR$/servers/server_sample_v2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clients/code_generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/clients/code_generator_client.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clients/deploy.py" beforeDir="false" afterPath="$PROJECT_DIR$/clients/deploy_client.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/fastmcp.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/fastmcp.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/mcp.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/mcp.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/servers/data_collector.py" beforeDir="false" afterPath="$PROJECT_DIR$/servers/data_upload_server.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/servers/topic.py" beforeDir="false" afterPath="$PROJECT_DIR$/servers/topic_server.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -34,6 +48,10 @@
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
     "junie.onboarding.icon.badge.shown": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "vue.rearranger.settings.migration": "true"
   }
@@ -53,7 +71,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1750838986187</updated>
-      <workItem from="1750838989753" duration="247000" />
+      <workItem from="1750838989753" duration="1756000" />
     </task>
     <task id="LOCAL-00001" summary="[250625] Add samples">
       <option name="closed" value="true" />
@@ -71,7 +89,15 @@
       <option name="project" value="LOCAL" />
       <updated>1750839140968</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="[250625] update samples">
+      <option name="closed" value="true" />
+      <created>1750839273581</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1750839273581</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -80,6 +106,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="[250625] Add samples" />
     <MESSAGE value="[250625] update docs" />
-    <option name="LAST_COMMIT_MESSAGE" value="[250625] update docs" />
+    <MESSAGE value="[250625] update samples" />
+    <option name="LAST_COMMIT_MESSAGE" value="[250625] update samples" />
   </component>
 </project>

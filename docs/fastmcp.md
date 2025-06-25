@@ -43,5 +43,3 @@ fastmcp install server_sample_v2.py
 
 - fastmcp install topic.py
 - fastmcp install data_collector.py
-- fastmcp install code_generator.py
-- fastmcp install deploy.py

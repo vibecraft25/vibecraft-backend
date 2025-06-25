@@ -17,7 +17,7 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
-from servers.topic import user_topic_store
+from servers.topic_server import user_topic_store
 
 # MCP 인스턴스 생성
 mcp = FastMCP()

@@ -55,7 +55,5 @@ or
 mcp install server_sample_v1.py # with Claude Desktop
 ```
 
-- mcp install topic.py
-- mcp install data_collector.py
-- mcp install code_generator.py
-- mcp install deploy.py
+- mcp install topic_server.py
+- mcp install data_upload_server.py
