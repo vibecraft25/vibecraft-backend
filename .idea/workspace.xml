@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250625] Add samples">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/fastmcp.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/fastmcp.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/mcp.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/mcp.md" afterDir="false" />
+    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250625] update docs">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/servers/server_sample_v1.py" beforeDir="false" afterPath="$PROJECT_DIR$/servers/server_sample_v1.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/servers/server_sample_v2.py" beforeDir="false" afterPath="$PROJECT_DIR$/servers/server_sample_v2.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,7 +53,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1750838986187</updated>
-      <workItem from="1750838989753" duration="136000" />
+      <workItem from="1750838989753" duration="247000" />
     </task>
     <task id="LOCAL-00001" summary="[250625] Add samples">
       <option name="closed" value="true" />
@@ -62,7 +63,15 @@
       <option name="project" value="LOCAL" />
       <updated>1750839045264</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="[250625] update docs">
+      <option name="closed" value="true" />
+      <created>1750839140968</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1750839140968</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -70,6 +79,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="[250625] Add samples" />
-    <option name="LAST_COMMIT_MESSAGE" value="[250625] Add samples" />
+    <MESSAGE value="[250625] update docs" />
+    <option name="LAST_COMMIT_MESSAGE" value="[250625] update docs" />
   </component>
 </project>

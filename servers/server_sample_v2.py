@@ -3,7 +3,7 @@ from fastmcp import FastMCP
 
 
 # Create an MCP servers
-mcp = FastMCP("name=vibecraft")
+mcp = FastMCP("name=vibecraft_v2")
 
 
 # Add an additional tool
