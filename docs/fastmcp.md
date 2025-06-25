@@ -1,6 +1,6 @@
 # fastmcp (fastmcp >= 2.0.0)
-## https://gofastmcp.com/getting-started/welcome
-## https://github.com/jlowin/fastmcp
+### https://gofastmcp.com/getting-started/welcome
+### https://github.com/jlowin/fastmcp
 
 ## Set Environment
 ```bash
