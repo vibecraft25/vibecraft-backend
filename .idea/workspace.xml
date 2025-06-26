@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250626] update&#10;- add author&#10;- update mcp server&#10;- update readme&#10;- add sample web_search_client.py">
+    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250626] update&#10;- apply @mcp.resource">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/servers/data_upload_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/servers/data_upload_server.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/servers/topic_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/servers/topic_server.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -128,7 +126,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1750838986187</updated>
-      <workItem from="1750838989753" duration="11136000" />
+      <workItem from="1750838989753" duration="11703000" />
     </task>
     <task id="LOCAL-00001" summary="[250625] Add samples">
       <option name="closed" value="true" />
@@ -186,7 +184,15 @@
       <option name="project" value="LOCAL" />
       <updated>1750922746274</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="[250626] update&#10;- apply @mcp.resource">
+      <option name="closed" value="true" />
+      <created>1750926518331</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1750926518331</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -199,7 +205,8 @@
     <MESSAGE value="[250625] update readme" />
     <MESSAGE value="[250626] update samples" />
     <MESSAGE value="[250626] update&#10;- add author&#10;- update mcp server&#10;- update readme&#10;- add sample web_search_client.py" />
-    <option name="LAST_COMMIT_MESSAGE" value="[250626] update&#10;- add author&#10;- update mcp server&#10;- update readme&#10;- add sample web_search_client.py" />
+    <MESSAGE value="[250626] update&#10;- apply @mcp.resource" />
+    <option name="LAST_COMMIT_MESSAGE" value="[250626] update&#10;- apply @mcp.resource" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/vibecraft$topic_server.coverage" NAME="topic_server Coverage Results" MODIFIED="1750914323325" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/servers" />
