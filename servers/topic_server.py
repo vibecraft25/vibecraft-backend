@@ -70,24 +70,9 @@ def set_topic(data: TopicInput):
     }
 
 # 2. Get Topic
-@mcp.tool(
-    name="get_topic",
-    description="Retrieve the currently stored topic and its description.",
-    tags={"topic", "주제", "get"}
-)
+@mcp.resource("topic://current")
 def get_topic():
-    """Returns the currently stored topic."""
-    if not user_topic_store["topic"]:
-        return {
-            "status": "empty",
-            "message": "No topic has been set yet."
-        }
-
-    return {
-        "status": "success",
-        "topic": user_topic_store["topic"],
-        "description": user_topic_store["description"]
-    }
+    return user_topic_store
 
 # 3. Reset Topic
 @mcp.tool(
@@ -129,13 +114,8 @@ def get_topic_task_hint():
     }
 
 # 5. Get MCP Server Info
-@mcp.tool(
-    name="get_mcp_info",
-    description="Retrieve server metadata including tool list and current topic.",
-    tags={"mcp", "info"}
-)
+@mcp.resource("mcp://info")
 async def get_mcp_info():
-    """Returns metadata about the MCP server instance."""
     tools = await mcp.get_tools()
     return {
         "mcp_name": mcp.name,

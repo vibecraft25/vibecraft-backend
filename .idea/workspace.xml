@@ -4,20 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250626] update samples">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250626] update&#10;- add author&#10;- update mcp server&#10;- update readme&#10;- add sample web_search_client.py">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clients/samples/client_sample_v1.py" beforeDir="false" afterPath="$PROJECT_DIR$/clients/samples/client_sample_v1.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clients/samples/client_sample_v2.py" beforeDir="false" afterPath="$PROJECT_DIR$/clients/samples/client_sample_v2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clients/web_search_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/clients/web_search_client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/fastmcp.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/fastmcp.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/mcp.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/mcp.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/servers/data_upload_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/servers/data_upload_server.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/servers/samples/server_sample_v1.py" beforeDir="false" afterPath="$PROJECT_DIR$/servers/samples/server_sample_v1.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/servers/samples/server_sample_v2.py" beforeDir="false" afterPath="$PROJECT_DIR$/servers/samples/server_sample_v2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/servers/topic_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/servers/topic_server.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/uv.lock" beforeDir="false" afterPath="$PROJECT_DIR$/uv.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,7 +128,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1750838986187</updated>
-      <workItem from="1750838989753" duration="9272000" />
+      <workItem from="1750838989753" duration="11136000" />
     </task>
     <task id="LOCAL-00001" summary="[250625] Add samples">
       <option name="closed" value="true" />
@@ -188,7 +178,15 @@
       <option name="project" value="LOCAL" />
       <updated>1750913697648</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="[250626] update&#10;- add author&#10;- update mcp server&#10;- update readme&#10;- add sample web_search_client.py">
+      <option name="closed" value="true" />
+      <created>1750922746274</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1750922746274</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -200,7 +198,8 @@
     <MESSAGE value="[250625] update samples" />
     <MESSAGE value="[250625] update readme" />
     <MESSAGE value="[250626] update samples" />
-    <option name="LAST_COMMIT_MESSAGE" value="[250626] update samples" />
+    <MESSAGE value="[250626] update&#10;- add author&#10;- update mcp server&#10;- update readme&#10;- add sample web_search_client.py" />
+    <option name="LAST_COMMIT_MESSAGE" value="[250626] update&#10;- add author&#10;- update mcp server&#10;- update readme&#10;- add sample web_search_client.py" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/vibecraft$topic_server.coverage" NAME="topic_server Coverage Results" MODIFIED="1750914323325" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/servers" />

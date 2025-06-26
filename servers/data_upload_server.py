@@ -186,11 +186,7 @@ def reset_all_files():
         return {"status": "error", "message": str(e)}
 
 # 8. List uploaded files
-@mcp.tool(
-    name="list_uploaded_files",
-    description="List all files in data store.",
-    tags={"list", "file"}
-)
+@mcp.resource("files://uploaded")
 def list_uploaded_files():
     try:
         files = sorted(os.listdir(DATA_DIR))
