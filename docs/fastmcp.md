@@ -34,11 +34,11 @@ rm main.py
 - sse(Server-Sent Events): 웹서버를 실행하고 나서 호출하는 방식
 - Streamable HTTP: 일반 HTTP 요청/응답을 사용하지만, response body를 chunk 단위로 스트리밍
 ```bash
-fastmcp run server_sample_v2.py
+fastmcp run servers/samples/server_sample_v2.py
 or
-fastmcp dev server_sample_v2.py
+fastmcp dev servers/samples/server_sample_v2.py
 or
-fastmcp install server_sample_v2.py
+fastmcp install servers/samples/server_sample_v2.py
 ```
 
 - fastmcp install topic.py

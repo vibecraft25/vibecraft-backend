@@ -4,8 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250625] update samples">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250625] update readme">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clients/client_sample_v1.py" beforeDir="false" afterPath="$PROJECT_DIR$/clients/samples/client_sample_v1.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clients/client_sample_v2.py" beforeDir="false" afterPath="$PROJECT_DIR$/clients/samples/client_sample_v2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/fastmcp.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/fastmcp.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/mcp.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/mcp.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/servers/server_sample_v1.py" beforeDir="false" afterPath="$PROJECT_DIR$/servers/samples/server_sample_v1.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/servers/server_sample_v2.py" beforeDir="false" afterPath="$PROJECT_DIR$/servers/samples/server_sample_v2.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,6 +55,12 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Administrator\Desktop\Aircok\vibecraft\servers\samples" />
+      <recent name="C:\Users\Administrator\Desktop\Aircok\vibecraft\clients\samples" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -64,7 +76,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1750838986187</updated>
-      <workItem from="1750838989753" duration="1786000" />
+      <workItem from="1750838989753" duration="1907000" />
     </task>
     <task id="LOCAL-00001" summary="[250625] Add samples">
       <option name="closed" value="true" />
@@ -98,7 +110,15 @@
       <option name="project" value="LOCAL" />
       <updated>1750840783873</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="[250625] update readme">
+      <option name="closed" value="true" />
+      <created>1750840805270</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1750840805270</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -108,6 +128,7 @@
     <MESSAGE value="[250625] Add samples" />
     <MESSAGE value="[250625] update docs" />
     <MESSAGE value="[250625] update samples" />
-    <option name="LAST_COMMIT_MESSAGE" value="[250625] update samples" />
+    <MESSAGE value="[250625] update readme" />
+    <option name="LAST_COMMIT_MESSAGE" value="[250625] update readme" />
   </component>
 </project>

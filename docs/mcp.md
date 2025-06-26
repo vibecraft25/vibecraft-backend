@@ -48,11 +48,11 @@ touch client.py
 - sse(Server-Sent Events): 웹서버를 실행하고 나서 호출하는 방식
 - Streamable HTTP: 일반 HTTP 요청/응답을 사용하지만, response body를 chunk 단위로 스트리밍
 ```bash
-mcp run server_sample_v1.py
+mcp run servers/samples/server_sample_v1.py
 or
-mcp dev server_sample_v1.py
+mcp dev servers/samples/server_sample_v1.py
 or
-mcp install server_sample_v1.py # with Claude Desktop
+mcp install servers/samples/server_sample_v1.py # with Claude Desktop
 ```
 
 - mcp install topic_server.py
