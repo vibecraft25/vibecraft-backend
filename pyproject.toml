@@ -8,5 +8,6 @@ dependencies = [
     "anthropic>=0.55.0",
     "fastmcp>=2.9.0",
     "mcp[cli]>=1.9.4",
+    "pandas>=2.3.0",
     "python-dotenv>=1.1.1",
 ]

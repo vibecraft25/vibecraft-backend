@@ -41,5 +41,8 @@ or
 fastmcp install servers/samples/server_sample_v2.py
 ```
 
-- fastmcp install topic.py
-- fastmcp install data_collector.py
+- Install Custom Servers to Claude
+```bash
+fastmcp install servers/topic_server.py
+fastmcp install servers/data_upload_server.py --with pandas
+```

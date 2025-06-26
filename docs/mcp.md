@@ -55,5 +55,8 @@ or
 mcp install servers/samples/server_sample_v1.py # with Claude Desktop
 ```
 
-- mcp install topic_server.py
-- mcp install data_upload_server.py
+- Install Custom Servers to Claude
+```bash
+mcp install servers/topic_server.py
+mcp install servers/data_upload_server.py --with pandas
+```
