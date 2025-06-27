@@ -32,6 +32,7 @@ source .venv/bin/activate
 uv add "mcp[cli]"
 # (Optional)
 uv add mcp anthropic python-dotenv
+touch .env
 
 # Remove boilerplate files
 # On Windows:

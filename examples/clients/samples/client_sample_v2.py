@@ -1,6 +1,7 @@
 """ fastmcp (fastmcp >= 2.0.0) """
 __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
+# Third-party imports
 import anthropic
 from rich import print
 

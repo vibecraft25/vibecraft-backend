@@ -1,6 +1,7 @@
 """ Sample """
 __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
+# Third-party imports
 from fastmcp import FastMCP
 
 

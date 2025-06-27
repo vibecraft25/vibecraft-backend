@@ -1,73 +1,137 @@
 # VibeCraft
 
-1. 사용자가 주제를 입력하면, 해당 주제는 topic_server를 통해 처리되며, Claude Code MCP와 연동되어 주제에 대한 요약 및 목적 정의가 수행.  
-이를 통해 이후 데이터 수집 및 분석에 필요한 기반 정보를 구성
-2. 주제가 설정된 후, 사용자가 관련 데이터를 직접 업로드하는 경우에는 data_upload_server에서 해당 데이터를 수신하고 CSV 또는 SQLite 형태로 변환하여 저장.  
-만약 사용자가 데이터를 제공하지 않으면, web_search_client가 주제에 적합한 데이터를 자동으로 웹에서 수집하고, 이를 동일한 형식으로 정제하여 저장합니다.
-3. 수집 또는 업로드된 데이터가 확보되면, coder_generator_client가 이를 활용하여 적절한 시각화와 콘텐츠 구성을 갖춘 웹 페이지 코드를 자동으로 생성.  
-이 과정 역시 Claude 기반 코드 생성 MCP와 통합되어 수행.
-4. 생성된 웹 페이지 코드는 deploy_client를 통해 Vercel MCP에 전달되어 자동으로 배포.  
-배포가 완료되면 최종 URL이 생성되어 사용자가 웹 페이지를 직접 확인할 수 있도록 제공.
-
-```python
-# 1. 주제 설정
-topic = topic_server.generate_topic(prompt)
-# → Claude Code MCP로 주제 요약 및 목적 정의
-
-# 2. 데이터 수집 또는 업로드
-if user.uploads_data():
-    data = data_upload_server.process(user.uploaded_file)
-else:
-    data = web_search_client.collect_and_format(topic)
-
-# 3. 웹 코드 생성
-web_code = coder_generator_client.generate(data)
-
-# 4. 웹 페이지 배포
-deploy_url = deploy_client.deploy(web_code)
-
-# 결과 제공
-return deploy_url
-```
-
-## 개요
-
-VibeCraft 사용자가 제시한 주제를 기반으로 데이터를 수집/업로드하고, 해당 데이터를 분석하여 자동으로 웹 페이지를 생성하고 배포하는 End-to-End 시스템입니다.
-
-## 🔁 전체 프로세스 흐름
-
-1. **주제 설정 (Topic Server)**
-   - 사용자가 입력한 prompt를 기반으로 Claude MCP를 통해 주제를 설정합니다.
-   - `topic_server`는 설정된 주제를 관리하고 다음 단계로 전달합니다.
-
-2. **데이터 수집/업로드 (Data Upload Server + Web Search Client)**
-   - 사용자가 직접 데이터를 업로드하면 `data_upload_server`가 이를 CSV 또는 SQLite 형식으로 저장합니다.
-   - 업로드된 데이터가 없을 경우, `web_search_client`가 주제 기반 데이터를 웹에서 수집하고 자동으로 정제 및 저장합니다.
-
-3. **웹 페이지 코드 생성 (Coder Generator Client)**
-   - 수집된 데이터를 기반으로 `coder_generator_client`는 적절한 시각화, 구조, UI를 포함한 웹 페이지 코드를 자동 생성합니다.
-   - Claude Code MCP 또는 사내 코드 LLM과 통합되어 코드 품질을 보장합니다.
-
-4. **웹 페이지 배포 (Deploy Client)**
-   - 생성된 웹 페이지는 `deploy_client`를 통해 Vercel 플랫폼에 자동 배포됩니다.
-   - 배포 완료 후 사용자는 배포된 웹 주소(URL)를 통해 결과를 확인할 수 있습니다.
+**VibeCraft** is an automated pipeline for generating data-driven web pages based on user-defined topics. It integrates large language models (LLMs) like **Claude**, **OpenAI GPT**, and **Gemini** with the **MCP (Modular Control Pipeline)** ecosystem to streamline the entire workflow—from topic selection to web page code generation.
 
 ---
 
-## 📁 디렉토리 구조
+## 🚀 Overview
+
+This project consists of four main stages:
+
+1. **Topic Definition**
+   - Receives a user prompt and uses an AI model (Claude/GPT/Gemini) to generate and formalize a topic.
+   - The topic is passed to downstream modules via MCP tools.
+
+2. **Data Collection or Upload**
+   - If the user provides data, it is saved as CSV or SQLite format.
+   - If no data is uploaded, the system automatically searches and scrapes topic-relevant data from the web, cleans it, and stores it locally.
+
+3. **Code Generation**
+   - Uses the collected data to generate a complete web page with visualization, layout structure, and UI components.
+
+4. **Auto Deployment (WIP)**
+   - The generated web page is automatically deployed to the **Vercel** platform using the `deploy_client`.
+   - Once deployment is complete, the user receives the URL to access the published web page.
+---
+
+## 🧰 MCP & Environment Setup
+
+This project is built on the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction), which enables modular communication between clients and tools via structured protocols.
+
+### 🔌 MCP Components
+
+- **MCP Server**: Provides specific functionality (e.g., file I/O, HTTP calls, database operations) via tools.  
+- **MCP Client**: Interacts with MCP servers by sending requests and receiving structured responses.
+
+### 🛠 Environment Setup
+#### 1. Clone the repository
+```bash
+git clone https://github.com/vibecraft25/vibecraft-mcp.git
+cd vibecraft-mcp
+```
+#### 2. Install [`uv`](https://github.com/astral-sh/uv) (Python project manager)
+```bash
+# Windows
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+# MacOS/Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+#### 3. Create and activate the virtual environment
+```bash
+uv venv
+# Windows
+.venv\Scripts\activate
+# MacOS/Linux
+source .venv/bin/activate
+```
+#### 4. Install dependencies
+```bash
+uv pip sync  # Installs from pyproject.toml and uv.lock
+```
+#### 5. Install required npm packages
+```bash
+# Download and install Node.js from the official website:
+#👉 https://nodejs.org
+npm -v
+npm install -g @aakarsh-sasi/memory-bank-mcp
+```
+#### 6. Add .env for your API keys
+```bash
+touch .env
+```
+### .env File Format
+⚠️Do not share or commit your .env file. It contains sensitive credentials.⚠️
+```text
+OPENAI_API_KEY=...
+ANTHROPIC_API_KEY=...
+GOOGLE_API_KEY=...
+```
+
+## 🧠 Engine Architecture
+
+Each engine implements a common interface via `BaseEngine`:
+
+- `ClaudeEngine` – Uses Anthropic Claude - [version].
+- `OpenAIEngine` – Uses OpenAI GPT - [version].
+- `GeminiEngine` – Uses Google Gemini - [version].
+
+Each engine supports:
+- Multi-turn conversation
+- Dynamic tool invocation via MCP
+- Text and function response handling
+
+---
+
+## ⚙️ How It Works
+
+1. Choose a model: `claude`, `gpt`, or `gemini`
+2. Enter a prompt to define the topic
+3. The pipeline will:
+   - Connect to each server (topic, data, code)
+   - Call relevant MCP tools
+   - Proceed through 3 stages unless "redo" or "go back" flags are detected
+
+### Example
+
+```bash
+$ python main.py
+✅ Choose a model: claude / gemini / gpt (default: claude)
+🎤 Enter a topic prompt:
+```
 
 ```plaintext
-project-root/
+.
+├── engine/
+│   ├── base.py               # Abstract base engine
+│   ├── claude_engine.py      # Claude model integration
+│   ├── openai_engine.py      # OpenAI GPT integration
+│   └── gemini_engine.py      # Gemini model integration
 │
-├── servers/
-│   ├── topic_server/            # 주제 설정용 서버
-│   └── data_upload_server/      # 사용자 데이터 업로드 처리
+├── client/
+│   └── vibe_craft_client.py  # Main pipeline client using MCP stdio
 │
-├── clients/
-│   ├── web_search_client/       # 웹 수집 및 DB 변환 처리
-│   ├── coder_generator_client/  # 웹 코드 생성 (LLM 활용)
-│   └── deploy_client/           # Vercel 기반 웹 배포
+├── utils/
+│   ├── flags.py              # Redo/Go-back flag parser
+│   └── tools.py              # MCP tool spec extractor
 │
-├── utils/                      # 공통 유틸, 설정, 모델 정의
+├── main.py                   # Entry point for running the pipeline
+├── .env                      # Environment variables (optional)
 └── README.md
 ```
+
+## ✅ Features
+- 🔧 Pluggable model engines (Claude, GPT, Gemini)
+- 🧠 Intelligent prompt-to-topic generation
+- 🌐 Web scraping fallback for missing user data
+- 💻 Code generation with charting and visualization
+- 🔁 Stage navigation via redo / go back keywords

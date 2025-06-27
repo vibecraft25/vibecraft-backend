@@ -1,17 +1,18 @@
 """ mcp (fastmcp < 2.0.0) """
 __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
+# Standard imports
 import asyncio
 from typing import Optional
 from contextlib import AsyncExitStack
 
+# Third-party imports
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
-
 from anthropic import Anthropic
 from dotenv import load_dotenv
 
-load_dotenv()  # load environment variables from .env
+load_dotenv()
 
 
 class MCPClient:
@@ -142,13 +143,14 @@ class MCPClient:
 
 
 async def main():
-    if len(sys.argv) < 2:
-        print("Usage: python client.py <path_to_server_script>")
-        sys.exit(1)
+    # if len(sys.argv) < 2:
+    #     print("Usage: python client.py <path_to_server_script>")
+    #     sys.exit(1)
 
     client = MCPClient()
     try:
-        await client.connect_to_server(sys.argv[1])
+        await client.connect_to_server(r"C:\Users\Administrator\Desktop\Aircok\vibecraft\servers\samples\server_sample_v1.py")
+        # await client.connect_to_server(sys.argv[1])
         await client.chat_loop()
     finally:
         await client.cleanup()
@@ -157,3 +159,5 @@ async def main():
 if __name__ == "__main__":
     import sys
     asyncio.run(main())
+
+# uv run .\clients\samples\client_sample_v1.py .\servers\samples\server_sample_v1.py
