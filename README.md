@@ -56,7 +56,8 @@ source .venv/bin/activate
 ```
 #### 4. Install dependencies
 ```bash
-uv pip sync  # Installs from pyproject.toml and uv.lock
+# Installs from pyproject.toml
+uv pip install -e .  
 ```
 #### 5. Install required npm packages
 ```bash

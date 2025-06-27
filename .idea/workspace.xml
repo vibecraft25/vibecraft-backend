@@ -4,14 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250626] INIT PROJECT">
+    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250627] remove files">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/vibe_craft_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/client/vibe_craft_client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/engine/claude_engine.py" beforeDir="false" afterPath="$PROJECT_DIR$/engine/claude_engine.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/engine/gemini_engine.py" beforeDir="false" afterPath="$PROJECT_DIR$/engine/gemini_engine.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/engine/openai_engine.py" beforeDir="false" afterPath="$PROJECT_DIR$/engine/openai_engine.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/flags.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,9 +22,6 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="GithubDefaultAccount">
-    <option name="defaultAccountId" value="c5bfb03c-cc4b-4d4a-b471-ff51d3124777" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -212,6 +204,8 @@
       <option name="presentableId" value="Default" />
       <updated>1750838986187</updated>
       <workItem from="1750838989753" duration="35425000" />
+      <workItem from="1751019639142" duration="145000" />
+      <workItem from="1751019821504" duration="160000" />
     </task>
     <task id="LOCAL-00001" summary="[250625] Add samples">
       <option name="closed" value="true" />
@@ -301,7 +295,15 @@
       <option name="project" value="LOCAL" />
       <updated>1751003955933</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="[250627] remove files">
+      <option name="closed" value="true" />
+      <created>1751019713916</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1751019713916</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -328,7 +330,8 @@
     <MESSAGE value="[250626] update&#10;- apply @mcp.resource" />
     <MESSAGE value="[250626] add Dispatcher" />
     <MESSAGE value="[250626] INIT PROJECT" />
-    <option name="LAST_COMMIT_MESSAGE" value="[250626] INIT PROJECT" />
+    <MESSAGE value="[250627] remove files" />
+    <option name="LAST_COMMIT_MESSAGE" value="[250627] remove files" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -337,21 +340,6 @@
           <url>file://$PROJECT_DIR$/backup/clients/samples/client_sample_v1.py</url>
           <line>69</line>
           <option name="timeStamp" value="7" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/vibe_craft_sample.py</url>
-          <line>123</line>
-          <option name="timeStamp" value="10" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/vibe_craft_sample.py</url>
-          <line>64</line>
-          <option name="timeStamp" value="12" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/vibe_craft_sample.py</url>
-          <line>57</line>
-          <option name="timeStamp" value="13" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
