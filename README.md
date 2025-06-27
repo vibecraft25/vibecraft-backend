@@ -120,8 +120,10 @@ $ python main.py
 ├── client/
 │   └── vibe_craft_client.py  # Main pipeline client using MCP stdio
 │
+├── schemas/
+│   └── pipeline_schemas.py   # Pipeline schemas
+│
 ├── utils/
-│   ├── flags.py              # Redo/Go-back flag parser
 │   └── tools.py              # MCP tool spec extractor
 │
 ├── main.py                   # Entry point for running the pipeline
