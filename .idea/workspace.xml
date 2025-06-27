@@ -4,32 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250626] add Dispatcher">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clients/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/clients/code_generator_client.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/clients/deploy_client.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/clients/samples/client_sample_v1.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/clients/samples/client_sample_v2.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/clients/web_search_client.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/mcp.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/mcp.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/data_upload_schemas.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/topic_schemas.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/servers/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/servers/data_upload_server.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/servers/dispatcher.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/servers/samples/server_sample_v1.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/servers/samples/server_sample_v2.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/servers/topic_server.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/web_collector.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/uv.lock" beforeDir="false" afterPath="$PROJECT_DIR$/uv.lock" afterDir="false" />
-    </list>
+    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250626] INIT PROJECT" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -228,7 +203,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1750838986187</updated>
-      <workItem from="1750838989753" duration="26807000" />
+      <workItem from="1750838989753" duration="26904000" />
     </task>
     <task id="LOCAL-00001" summary="[250625] Add samples">
       <option name="closed" value="true" />
@@ -302,7 +277,15 @@
       <option name="project" value="LOCAL" />
       <updated>1750926803769</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="[250626] INIT PROJECT">
+      <option name="closed" value="true" />
+      <created>1751003943161</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1751003943161</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -328,7 +311,8 @@
     <MESSAGE value="[250626] update&#10;- add author&#10;- update mcp server&#10;- update readme&#10;- add sample web_search_client.py" />
     <MESSAGE value="[250626] update&#10;- apply @mcp.resource" />
     <MESSAGE value="[250626] add Dispatcher" />
-    <option name="LAST_COMMIT_MESSAGE" value="[250626] add Dispatcher" />
+    <MESSAGE value="[250626] INIT PROJECT" />
+    <option name="LAST_COMMIT_MESSAGE" value="[250626] INIT PROJECT" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
