@@ -56,8 +56,10 @@ source .venv/bin/activate
 ```
 #### 4. Install dependencies
 ```bash
-# Installs from pyproject.toml
-uv pip install -e .  
+uv add mcp[cli]
+uv add anthropic
+uv add google-genai
+uv add openai
 ```
 #### 5. Install required npm packages
 ```bash
