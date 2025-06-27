@@ -33,7 +33,7 @@ class OpenAIEngine(BaseEngine):
             for tool in mcp_tools
         ]
 
-    async def generate_without_tools(self, prompt: str) -> str:
+    async def generate(self, prompt: str) -> str:
         messages = self._build_user_prompt(prompt)
         response = self.model.chat.completions.create(
             model=self.model_name,

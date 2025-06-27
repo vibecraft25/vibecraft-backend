@@ -41,7 +41,7 @@ class GeminiEngine(BaseEngine):
             return types.GenerateContentConfig(tools=self._wrap_mcp_tools(tools))
         return types.GenerateContentConfig()
 
-    async def generate_without_tools(self, prompt: str) -> str:
+    async def generate(self, prompt: str) -> str:
         config = self._build_config()
         response = self.model.models.generate_content(
             model=self.model_name,

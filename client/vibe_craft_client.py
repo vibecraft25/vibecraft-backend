@@ -2,19 +2,20 @@ __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
 # Standard imports
 from contextlib import AsyncExitStack
-from typing import Optional, Tuple
+from typing import Optional
 
 # Third-party imports
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
 # Custom imports
+from engine.base import BaseEngine
 from schemas.pipeline_schemas import TopicStepResult
 from utils.tools import extract_tool_specs
 
 
 class VibeCraftClient:
-    def __init__(self, engine):
+    def __init__(self, engine: BaseEngine):
         self.engine = engine
         self.session: Optional[ClientSession] = None
         self.exit_stack = AsyncExitStack()
@@ -48,7 +49,7 @@ class VibeCraftClient:
                 tools=tool_specs,
                 session=self.session
             )
-        return await self.engine.generate_without_tools(prompt=prompt)
+        return await self.engine.generate(prompt=prompt)
 
     async def step_topic_selection(self, topic_prompt: str) -> TopicStepResult:
         print("\n🚦 Step 1: 주제 설정")

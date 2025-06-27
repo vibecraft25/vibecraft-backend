@@ -21,14 +21,14 @@ class ClaudeEngine(BaseEngine):
         """Claude 전용 사용자 프롬프트 생성"""
         return [{"role": "user", "content": prompt}]
 
-    def _parse_response(self, content) -> List[str]:
+    def _parse_response(self, content: List[dict]) -> List[str]:
         results = []
         for item in content:
             if item.type == "text":
                 results.append(item.text)
         return results
 
-    async def generate_without_tools(self, prompt: str) -> str:
+    async def generate(self, prompt: str) -> str:
         messages = self._build_user_prompt(prompt)
         response = self.model.messages.create(
             model=self.model_name,
