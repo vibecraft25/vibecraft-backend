@@ -88,9 +88,9 @@ GOOGLE_API_KEY=...
 
 Each engine implements a common interface via `BaseEngine`:
 
-- `ClaudeEngine` – Uses Anthropic Claude - [version].
-- `OpenAIEngine` – Uses OpenAI GPT - [version].
-- `GeminiEngine` – Uses Google Gemini - [version].
+- `ClaudeEngine` – Uses Anthropic Claude - [claude-3-5-sonnet-20241022].
+- `OpenAIEngine` – Uses OpenAI GPT - [gpt-4.1].
+- `GeminiEngine` – Uses Google Gemini - [gemini-2.5-flash].
 
 Each engine supports:
 - Multi-turn conversation
@@ -131,6 +131,9 @@ $ python main.py
 │   └── pipeline_schemas.py   # Pipeline schemas
 │
 ├── utils/
+│   ├── data_loader_utils.py  # Data load and File utils
+│   ├── menus.py              # User menu options
+│   ├── prompts.py            # LLM prompts
 │   └── tools.py              # MCP tool spec extractor
 │
 ├── main.py                   # Entry point for running the pipeline
