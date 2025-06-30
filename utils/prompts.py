@@ -66,31 +66,23 @@ def recommend_removal_column_prompt(df: pd.DataFrame) -> str:
     return prompt
 
 
-def df_to_sqlite_with_col_filter_prompt(save_path: str, df: pd.DataFrame, to_drop: List[str]) -> str:
+def df_to_sqlite_with_col_filter_prompt(df: pd.DataFrame, to_drop: List[str]) -> str:
     """
     DataFrame을 CSV 형식으로 직렬화하고, SQLite 테이블화 요청 프롬프트로 변환
     """
     available_columns = list(df.columns)
     to_drop = ", ".join(to_drop)
 
-    csv_buffer = StringIO()
-    df.to_csv(csv_buffer, index=False)
-    csv_text = csv_buffer.getvalue()
-
     prompt = (
-        f"다음은 사용자가 제공한 CSV 형식의 데이터입니다.\n"
-        f"```\n{csv_text}\n```\n\n"
-        f"요청 사항:\n"
-        f"1. 테이블 이름은 내용에 어울리게 적절히 설정해 주세요.\n"
-        f"2. 모든 컬럼은 자동으로 데이터 타입을 추론하여 생성하세요.\n"
-        f"3. 단, 다음 사용자가 삭제하고자 입력한 컬럼명을 기준으로 불필요한 컬럼을 삭제하고 DB를 생성하세요.\n"
-        f"   - 입력한 컬럼명이 일부만 입력되었거나 축약되었더라도, 실제 컬럼 중 의미상 가장 가까운 컬럼을 삭제 대상으로 간주하세요.\n\n"
-        f"[삭제 희망 컬럼 입력]\n"
-        f"{', '.join(to_drop)}\n\n"
-        f"[현재 실제 컬럼 목록]\n"
-        f"{available_columns}\n\n"
-        f"이후 남은 컬럼들만으로 SQLite 데이터베이스를 생성해 주세요.\n"
-        f"저장 경로는 사용자가 지정한 위치를 사용하고, 파일명은 자동으로 결정해도 좋습니다.\n"
-        f"저장 경로{save_path}"
+        f"다음 지시를 정확히 수행하라.\n\n"
+        f"1. 주어진 컬럼명을 데이터베이스 컬럼 명명 규칙에 맞게 영문 축약어로 변경하라.\n"
+        f"단, 모든 DB에서 사용되는 예약어는 컬럼명으로 사용 불가하다.\n"
+        f"2. 변경된 컬럼명은 첫 줄에 한 줄로 이전 이름과 새로운 이름의 매핑을 dictionary 형태로 반환하라. 줄바꿈 없이 반환하라.\n"
+        f"3. 삭제 대상 컬럼은 입력된 단어가 불완전하거나 축약되었더라도 의미를 유추하여 판단하고 제거하라.\n"
+        # TODO: WIP
+        # f"4. 나머지 컬럼들을 구조적으로 분석하여 적절하게 테이블을 분리하고, 각 테이블에 포함될 컬럼들을 dictionary 형태로 반환하라.\n\n"
+        f"삭제 대상 키워드: {to_drop}\n"
+        f"현재 컬럼 목록: {available_columns}\n\n"
+        f"가장 첫 줄에 이전 이름과 변경된 이름의 매핑을 dictionary 형식으로 한 줄로 반환하라. 줄바꿈 없이 반환하라.\n"
     )
     return prompt

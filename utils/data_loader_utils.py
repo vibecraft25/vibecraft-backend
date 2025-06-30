@@ -3,8 +3,10 @@ __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 # Standard imports
 import os
 from io import StringIO
+from datetime import datetime
 from typing import List, Optional
 import sqlite3
+import ast
 
 # Third-party imports
 import pandas as pd
@@ -62,3 +64,39 @@ def markdown_table_to_df(text: str) -> Optional[pd.DataFrame]:
     except Exception as e:
         print(f"⚠️ 샘플 데이터 파싱 오류: {e}")
         return None
+
+
+def normalize_column_name(col: str) -> str:
+    return col.strip().replace("\u200b", "").replace("\xa0", "").replace("\t", "").replace("\n", "").replace("\r", "")
+
+
+def parse_first_row_dict_from_text(response_text: str) -> dict:
+    """
+    LLM 응답의 첫 줄에서 컬럼명 매핑 dict만 파싱
+    """
+    first_line = response_text.strip().splitlines()[0]
+    try:
+        mapping = ast.literal_eval(first_line)
+        if isinstance(mapping, dict):
+            return mapping
+        else:
+            raise ValueError("파싱된 결과가 dict가 아닙니다.")
+    except Exception as e:
+        raise ValueError(f"컬럼 매핑 파싱 실패: {e}")
+
+
+def save_sqlite(df: pd.DataFrame, save_path: str) -> str:
+    """
+    DataFrame을 SQLite 파일로 저장하고, 저장된 파일 경로를 반환한다.
+    파일명은 현재 시각 기반으로 자동 생성됨.
+    """
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    file_path = os.path.join(save_path, f"{timestamp}.sqlite")
+
+    table_name = "data"  # 기본 테이블명 (원한다면 파라미터로 변경 가능)
+
+    with sqlite3.connect(file_path) as conn:
+        df.to_sql(table_name, conn, index=False, if_exists="replace")
+
+    print(f"✅ SQLite 파일 저장 완료: {file_path}")
+    return file_path

@@ -2,9 +2,8 @@ __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
 # Standard imports
 import os
-import base64
 from contextlib import AsyncExitStack
-from typing import Optional, List
+from typing import Optional
 
 # Third-party imports
 import pandas as pd
@@ -19,7 +18,10 @@ from utils.menus import *
 from utils.prompts import *
 from utils.data_loader_utils import (
     load_files,
-    markdown_table_to_df
+    markdown_table_to_df,
+    normalize_column_name,
+    parse_first_row_dict_from_text,
+    save_sqlite
 )
 
 
@@ -113,9 +115,10 @@ class VibeCraftClient:
             df = load_files()
 
         df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
+        df.columns = [normalize_column_name(col) for col in df.columns]
         if df is not None:
             # 1. Check data
-            print(f"\n📊 최종 데이터프레임 요약:\n{df.to_string(index=False)}")
+            print(f"\n📊 최종 데이터프레임 요약:\n{df.head(3).to_string(index=False)}")
 
             # 2. Check columns
             removal_prompt = recommend_removal_column_prompt(df)
@@ -135,16 +138,21 @@ class VibeCraftClient:
                 print("⚠️ 잘못된 입력입니다. 컬럼 삭제를 건너뜁니다.")
                 to_drop = []
 
-            # TODO: WIP
             print("\n💾 SQLite 테이블화 요청 중...")
+            prompt = df_to_sqlite_with_col_filter_prompt(df, to_drop)
+            result = await self.execute_step(prompt, self.db_mcp_server)
+            print(f"Mapped Column dictionary: {result}")
+
+            mapped_col = parse_first_row_dict_from_text(result)
+            missing = [col for col in mapped_col.keys() if col not in df.columns]
+            if missing:
+                print(f"⚠️ DataFrame에 존재하지 않는 Columns: {missing}")
+            mapped_df = df.rename(columns=mapped_col)[list(mapped_col.values())]
+            print(f"\n🧱 Mapped Result:\n{mapped_df.head(3).to_string(index=False)}")
+
             save_path = "./data_store"
             os.makedirs(save_path, exist_ok=True)
-            prompt = df_to_sqlite_with_col_filter_prompt(save_path, df, to_drop)
-
-            result = await self.execute_step(prompt, self.db_mcp_server)
-            print(f"\n🧱 SQLite 저장 결과:\n{result}")
-
-            # save_sqlite()
+            save_sqlite(mapped_df, save_path)
 
             return df
         else:
