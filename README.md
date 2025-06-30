@@ -56,10 +56,14 @@ source .venv/bin/activate
 ```
 #### 4. Install dependencies
 ```bash
+# Essential packages
 uv add mcp[cli]
 uv add anthropic
 uv add google-genai
 uv add openai
+
+# Additional packages
+uv add chardet 
 ```
 #### 5. Install required npm packages
 ```bash

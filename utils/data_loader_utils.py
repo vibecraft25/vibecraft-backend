@@ -8,6 +8,7 @@ import sqlite3
 
 # Third-party imports
 import pandas as pd
+import chardet
 
 
 def load_files() -> pd.DataFrame:
@@ -15,6 +16,13 @@ def load_files() -> pd.DataFrame:
     file_input = input("파일 경로들: ").strip()
     paths = [path.strip() for path in file_input.split(",")]
     return load_local_files(paths)
+
+
+def detect_file_encoding(path: str, num_bytes: int = 10000) -> str:
+    with open(path, 'rb') as f:
+        raw_data = f.read(num_bytes)
+    result = chardet.detect(raw_data)
+    return result['encoding'] or 'utf-8'
 
 
 def load_local_files(file_paths: List[str]) -> Optional[pd.DataFrame]:
@@ -25,7 +33,8 @@ def load_local_files(file_paths: List[str]) -> Optional[pd.DataFrame]:
             continue
         try:
             if path.endswith(".csv"):
-                df_part = pd.read_csv(path)
+                encoding = detect_file_encoding(path)
+                df_part = pd.read_csv(path, encoding=encoding)
             elif path.endswith(".sqlite") or path.endswith(".db"):
                 with sqlite3.connect(path) as conn:
                     tables = pd.read_sql("SELECT name FROM sqlite_master WHERE type='table';", conn)
@@ -36,7 +45,7 @@ def load_local_files(file_paths: List[str]) -> Optional[pd.DataFrame]:
                 continue
             dataframes.append(df_part)
         except Exception as e:
-            print(f"⚠️ 오류 발생: {e}")
+            print(f"⚠️ 오류 발생: {e} (파일: {path})")
     if dataframes:
         return pd.concat(dataframes, ignore_index=True)
     return None

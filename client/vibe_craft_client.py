@@ -86,7 +86,6 @@ class VibeCraftClient:
     async def step_data_upload_or_collection(self, topic_result: TopicStepResult) -> Optional[pd.DataFrame]:
         print("\n🚦 Step 2: 데이터 업로드 또는 수집")
 
-        # TODO: 다중 파일 load 테스트 확인 필요
         user_choice = select_data_loader_menu()
         if user_choice == "1":
             df = load_files()
@@ -95,6 +94,8 @@ class VibeCraftClient:
             prompt = generate_sample_prompt(topic_result.topic_prompt, topic_result.result)
             sample_data = await self.execute_step(prompt)
             df = markdown_table_to_df(sample_data)
+
+            df.to_csv("data.csv", encoding="cp949", index=False)
         else:
             # TODO: WIP
             print("\n🌐 관련 데이터 다운로드 링크를 추천합니다...")

@@ -35,9 +35,9 @@ def generate_sample_prompt(topic_prompt: str, topic_result: str) -> str:
         f"{topic_prompt}\n\n"
         f"{topic_result}\n\n"
         f"위 주제를 기반으로, 관련된 샘플 데이터를 만들어주세요. "
-        # f"컬럼 이름과 100개 이상의 예시 row를 포함하여 표 형태로 출력해주세요."
+        f"컬럼 이름과 100개 이상의 예시 row를 포함하여 표 형태로 출력해주세요."
         # TODO: TEST WIP
-        f"컬럼 이름과 10개의 예시 row를 포함하여 표 형태로 출력해주세요."
+        # f"컬럼 이름과 10개의 예시 row를 포함하여 표 형태로 출력해주세요."
     )
 
 
