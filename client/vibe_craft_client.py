@@ -168,6 +168,7 @@ class VibeCraftClient:
         )
         print(f"\n💻 웹앱 코드 생성 결과:\n{result}")
 
+    # TODO: WIP
     async def step_deploy(self):
         print("\n🚦 Step 3: 웹앱 코드 생성")
         result = await self.execute_step(
