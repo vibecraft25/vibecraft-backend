@@ -97,7 +97,8 @@ class VibeCraftClient:
             sample_data = await self.execute_step(prompt)
             df = markdown_table_to_df(sample_data)
 
-            df.to_csv("data.csv", encoding="cp949", index=False)
+            # TEST 데이터 생성
+            # df.to_csv("data.csv", encoding="cp949", index=False)
         else:
             # TODO: WIP
             print("\n🌐 관련 데이터 다운로드 링크를 추천합니다...")
