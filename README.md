@@ -63,7 +63,8 @@ uv add google-genai
 uv add openai
 
 # Additional packages
-uv add chardet 
+uv add pandas
+uv add chardet
 ```
 #### 5. Install required npm packages
 ```bash
