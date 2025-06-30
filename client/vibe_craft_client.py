@@ -166,8 +166,11 @@ class VibeCraftClient:
 
     async def run_pipeline(self, topic_prompt: str):
         # topic_prompt_result = await self.step_topic_selection(topic_prompt)
-
-        result = '''
+        # TODO: TEST WIP
+        topic_prompt_result = (
+            TopicStepResult(
+                topic_prompt=topic_prompt,
+                result='''
         피자 일매출 시각화 페이지 제작을 위해 필요한 데이터는 크게 **필수 데이터**와 **추가 분석을 위한 데이터**로 나눌 수 있습니다. 어떤 정보를 얼마나 자세히 보여주고 싶은지에 따라 필요한 데이터의 범위가 달라집니다.
         ---
 
@@ -240,12 +243,9 @@ class VibeCraftClient:
 
         이러한 데이터를 바탕으로 다양한 차트(선 그래프, 막대 그래프, 파이 차트 등)를 활용하여 피자 일매출을 효과적으로 시각화할 수 있습니다.
         '''
-        topic_prompt_result = (
-            TopicStepResult(
-                topic_prompt=topic_prompt,
-                result=result
             )
         )
+
         data_success = await self.step_data_upload_or_collection(topic_prompt_result)
         if not data_success:
             return await self.run_pipeline(input("🎤 새롭게 설정할 주제를 입력하세요: "))
