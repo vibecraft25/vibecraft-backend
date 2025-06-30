@@ -395,7 +395,23 @@
       <option name="project" value="LOCAL" />
       <updated>1751274305456</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="[250630] step_data_upload_or_collection 수정 완료&#10;- table 분리 WIP&#10;- web search WIP">
+      <option name="closed" value="true" />
+      <created>1751274363266</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1751274363266</updated>
+    </task>
+    <task id="LOCAL-00025" summary="[250630] step_data_upload_or_collection 수정 완료&#10;- table 분리 WIP&#10;- web search WIP">
+      <option name="closed" value="true" />
+      <created>1751274405185</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1751274405185</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -436,11 +452,6 @@
           <url>file://$PROJECT_DIR$/backup/clients/samples/client_sample_v1.py</url>
           <line>69</line>
           <option name="timeStamp" value="7" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/client/vibe_craft_client.py</url>
-          <line>157</line>
-          <option name="timeStamp" value="49" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

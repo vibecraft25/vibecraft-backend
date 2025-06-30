@@ -85,7 +85,7 @@ class VibeCraftClient:
             else:
                 print("⚠️ 유효한 선택지를 입력해주세요 (1, 2, 3)")
 
-    async def step_data_upload_or_collection(self, topic_result: TopicStepResult) -> Optional[pd.DataFrame]:
+    async def step_data_upload_or_collection(self, topic_result: TopicStepResult) -> str:
         print("\n🚦 Step 2: 데이터 업로드 또는 수집")
 
         user_choice = select_data_loader_menu()
@@ -153,14 +153,14 @@ class VibeCraftClient:
 
             save_path = "./data_store"
             os.makedirs(save_path, exist_ok=True)
-            save_sqlite(mapped_df, save_path)
+            file_path = save_sqlite(mapped_df, save_path)
 
-            return df
+            return file_path
         else:
             return await self.step_data_upload_or_collection(topic_result)
 
     # TODO: WIP
-    async def step_code_generation(self):
+    async def step_code_generation(self, topic_result: TopicStepResult, db_path: str):
         print("\n🚦 Step 3: 웹앱 코드 생성")
         result = await self.execute_step(
             prompt="앞서 설정한 주제와 SQLite 데이터를 기반으로 시각화 기능을 갖춘 웹앱 코드를 생성해주세요.",
@@ -266,10 +266,10 @@ class VibeCraftClient:
             )
         )
 
-        data_success = await self.step_data_upload_or_collection(topic_prompt_result)
-        if not data_success:
+        file_path = await self.step_data_upload_or_collection(topic_prompt_result)
+        if not file_path:
             return await self.run_pipeline(input("🎤 새롭게 설정할 주제를 입력하세요: "))
-        await self.step_code_generation()
+        await self.step_code_generation(topic_prompt_result, file_path)
         await self.step_deploy()
 
     async def cleanup(self):
