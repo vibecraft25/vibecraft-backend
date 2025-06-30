@@ -6,6 +6,7 @@ from typing import List, Dict
 # Third-party imports
 from mcp import ClientSession
 
+
 class BaseEngine:
     async def generate(self, prompt: str) -> str:
         raise NotImplementedError

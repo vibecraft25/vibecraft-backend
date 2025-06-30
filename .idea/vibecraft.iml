@@ -2,7 +2,7 @@
 <module type="PYTHON_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$" />
-    <orderEntry type="jdk" jdkName="Python 3.10 virtualenv at C:\Users\kimsehun\Desktop\proj\vibecraft-mcp\.venv" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.10 (vibecraft)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PyDocumentationSettings">
