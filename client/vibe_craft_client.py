@@ -124,7 +124,7 @@ class VibeCraftClient:
             # 2. Check columns
             removal_prompt = recommend_removal_column_prompt(df)
             print("\n🧹 컬럼 삭제 추천 요청 중...")
-            suggestion = await self.execute_step(removal_prompt, self.db_mcp_server)
+            suggestion = await self.execute_step(removal_prompt)
             print(f"\n🤖 추천된 컬럼 목록:\n{suggestion}")
 
             choice = select_edit_col_menu()
@@ -141,7 +141,7 @@ class VibeCraftClient:
 
             print("\n💾 SQLite 테이블화 요청 중...")
             prompt = df_to_sqlite_with_col_filter_prompt(df, to_drop)
-            result = await self.execute_step(prompt, self.db_mcp_server)
+            result = await self.execute_step(prompt)
             print(f"Mapped Column dictionary: {result}")
 
             mapped_col = parse_first_row_dict_from_text(result)
@@ -162,6 +162,12 @@ class VibeCraftClient:
     # TODO: WIP
     async def step_code_generation(self, topic_result: TopicStepResult, db_path: str):
         print("\n🚦 Step 3: 웹앱 코드 생성")
+        # TODO: WIP
+        result = await self.execute_step(
+            prompt="앞서 설정한 주제와 SQLite 데이터를 기반으로 시각화 기능을 갖춘 웹앱 코드를 생성해주세요.",
+            server_path=self.db_mcp_server
+        )
+
         result = await self.execute_step(
             prompt="앞서 설정한 주제와 SQLite 데이터를 기반으로 시각화 기능을 갖춘 웹앱 코드를 생성해주세요.",
             server_path=self.code_generation_mcp_server
