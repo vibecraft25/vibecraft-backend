@@ -93,8 +93,8 @@ class VibeCraftClient:
         elif user_choice == "2":
             print("\n🧠 주제 기반 샘플 데이터를 생성 중입니다...")
             prompt = generate_sample_prompt(topic_result.topic_prompt, topic_result.result)
-            response = await self.execute_step(prompt)
-            df = markdown_table_to_df(response)
+            sample_data = await self.execute_step(prompt)
+            df = markdown_table_to_df(sample_data)
         else:
             # TODO: WIP
             print("\n🌐 관련 데이터 다운로드 링크를 추천합니다...")
@@ -140,8 +140,8 @@ class VibeCraftClient:
             os.makedirs(save_path, exist_ok=True)
             prompt = df_to_sqlite_with_col_filter_prompt(save_path, df, to_drop)
 
-            response = await self.execute_step(prompt, self.db_mcp_server)
-            print(f"\n🧱 SQLite 저장 결과:\n{response}")
+            result = await self.execute_step(prompt, self.db_mcp_server)
+            print(f"\n🧱 SQLite 저장 결과:\n{result}")
 
             # save_sqlite()
 
@@ -152,11 +152,19 @@ class VibeCraftClient:
     # TODO: WIP
     async def step_code_generation(self):
         print("\n🚦 Step 3: 웹앱 코드 생성")
-        result, _, _ = await self.execute_step(
+        result = await self.execute_step(
             prompt="앞서 설정한 주제와 SQLite 데이터를 기반으로 시각화 기능을 갖춘 웹앱 코드를 생성해주세요.",
             server_path=self.code_generation_mcp_server
         )
         print(f"\n💻 웹앱 코드 생성 결과:\n{result}")
+
+    async def step_deploy(self):
+        print("\n🚦 Step 3: 웹앱 코드 생성")
+        result = await self.execute_step(
+            prompt="WIP",
+            server_path=self.deploy_mcp_server
+        )
+        print(f"\n💻 배포중...")
 
     async def reset_via_memory_bank(self, reset_message: str):
         if not self.memory_bank_server:
@@ -251,6 +259,7 @@ class VibeCraftClient:
         if not data_success:
             return await self.run_pipeline(input("🎤 새롭게 설정할 주제를 입력하세요: "))
         await self.step_code_generation()
+        await self.step_deploy()
 
     async def cleanup(self):
         await self.exit_stack.aclose()
