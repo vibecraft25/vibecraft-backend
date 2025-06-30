@@ -1,7 +1,6 @@
 __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
 # Standard imports
-from io import StringIO
 from typing import List
 
 # Third-party imports
