@@ -332,7 +332,15 @@
       <option name="project" value="LOCAL" />
       <updated>1751264979479</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="[250630] step_data_upload_or_collection WIP">
+      <option name="closed" value="true" />
+      <created>1751265018816</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1751265018817</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -374,17 +382,17 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/client/vibe_craft_client.py</url>
-          <line>146</line>
+          <line>147</line>
           <option name="timeStamp" value="49" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/client/vibe_craft_client.py</url>
-          <line>142</line>
+          <line>143</line>
           <option name="timeStamp" value="56" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/client/vibe_craft_client.py</url>
-          <line>136</line>
+          <line>137</line>
           <option name="timeStamp" value="60" />
         </line-breakpoint>
       </breakpoints>

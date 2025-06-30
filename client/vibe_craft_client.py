@@ -30,10 +30,11 @@ class VibeCraftClient:
         self.exit_stack = AsyncExitStack()
 
         self.memory_bank_server: Optional[str] = "@aakarsh-sasi/memory-bank-mcp"
-        self.topic_server: Optional[str] = None
-        self.web_search_server: Optional[str] = None
-        self.data_parser_server: Optional[str] = None
-        self.code_generator_server: Optional[str] = None
+        self.topic_mcp_server: Optional[str] = None
+        self.web_search_mcp_server: Optional[str] = None    # TODO
+        self.db_mcp_server: Optional[str] = None            # TODO
+        self.code_generation_mcp_server: Optional[str] = None   # TODO
+        self.deploy_mcp_server: Optional[str] = None        # TODO
 
     async def connect_to_server(self, server_path: Optional[str]):
         if not server_path:
@@ -63,7 +64,7 @@ class VibeCraftClient:
     async def step_topic_selection(self, topic_prompt: str) -> TopicStepResult:
         print("\n🚦 Step 1: 주제 설정")
         prompt = set_topic_prompt(topic_prompt)
-        result = await self.execute_step(prompt, self.topic_server)
+        result = await self.execute_step(prompt, self.topic_mcp_server)
         print(f"\n📌 주제 설정 결과:\n{result}")
 
         while True:
@@ -73,7 +74,7 @@ class VibeCraftClient:
                 return TopicStepResult(topic_prompt=topic_prompt, result=result)
             elif user_choice == "2":
                 additional_query = additional_query_prompt(topic_prompt, result)
-                result = await self.execute_step(additional_query, self.topic_server)
+                result = await self.execute_step(additional_query, self.topic_mcp_server)
                 print(f"\n🛠 수정된 주제 결과:\n{result}")
             elif user_choice == "3":
                 await self.reset_via_memory_bank("주제를 다시 설정하고 싶습니다.")
@@ -99,7 +100,7 @@ class VibeCraftClient:
             print("\n🌐 관련 데이터 다운로드 링크를 추천합니다...")
             prompt = generate_download_link_prompt(topic_result.topic_prompt, topic_result.result)
             try:
-                await self.connect_to_server(self.web_search_server)
+                await self.connect_to_server(self.web_search_mcp_server)
             except Exception as e:
                 print(f"⚠️ 웹 검색 MCP 연결 실패: {e}")
                 return None
@@ -118,7 +119,7 @@ class VibeCraftClient:
             # 2. Check columns
             removal_prompt = recommend_removal_column_prompt(df)
             print("\n🧹 컬럼 삭제 추천 요청 중...")
-            suggestion = await self.execute_step(removal_prompt, self.data_parser_server)
+            suggestion = await self.execute_step(removal_prompt, self.db_mcp_server)
             print(f"\n🤖 추천된 컬럼 목록:\n{suggestion}")
 
             choice = select_edit_col_menu()
@@ -139,7 +140,7 @@ class VibeCraftClient:
             save_path = "./data_store"
             os.makedirs(save_path, exist_ok=True)
 
-            response = await self.execute_step(prompt, self.data_parser_server)
+            response = await self.execute_step(prompt, self.db_mcp_server)
             print(f"\n🧱 SQLite 저장 결과:\n{response}")
 
             # save_sqlite()
@@ -153,7 +154,7 @@ class VibeCraftClient:
         print("\n🚦 Step 3: 웹앱 코드 생성")
         result, _, _ = await self.execute_step(
             prompt="앞서 설정한 주제와 SQLite 데이터를 기반으로 시각화 기능을 갖춘 웹앱 코드를 생성해주세요.",
-            server_path=self.code_generator_server
+            server_path=self.code_generation_mcp_server
         )
         print(f"\n💻 웹앱 코드 생성 결과:\n{result}")
 
