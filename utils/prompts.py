@@ -66,7 +66,7 @@ def recommend_removal_column_prompt(df: pd.DataFrame) -> str:
     return prompt
 
 
-def df_to_sqlite_with_col_filter_prompt(df: pd.DataFrame, save_path: str, to_drop: List[str]) -> str:
+def df_to_sqlite_with_col_filter_prompt(save_path: str, df: pd.DataFrame, to_drop: List[str]) -> str:
     """
     DataFrame을 CSV 형식으로 직렬화하고, SQLite 테이블화 요청 프롬프트로 변환
     """

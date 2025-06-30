@@ -5,7 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250630] step_data_upload_or_collection WIP">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/vibe_craft_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/client/vibe_craft_client.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/prompts.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/prompts.py" afterDir="false" />
     </list>
@@ -349,7 +348,15 @@
       <option name="project" value="LOCAL" />
       <updated>1751265141270</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="[250630] step_data_upload_or_collection WIP">
+      <option name="closed" value="true" />
+      <created>1751267360994</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1751267360994</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -398,11 +405,6 @@
           <url>file://$PROJECT_DIR$/client/vibe_craft_client.py</url>
           <line>143</line>
           <option name="timeStamp" value="56" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/client/vibe_craft_client.py</url>
-          <line>137</line>
-          <option name="timeStamp" value="60" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

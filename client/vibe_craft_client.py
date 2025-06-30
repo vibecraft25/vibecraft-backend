@@ -135,10 +135,10 @@ class VibeCraftClient:
                 to_drop = []
 
             # TODO: WIP
-            prompt = df_to_sqlite_with_col_filter_prompt(df, to_drop)
             print("\n💾 SQLite 테이블화 요청 중...")
             save_path = "./data_store"
             os.makedirs(save_path, exist_ok=True)
+            prompt = df_to_sqlite_with_col_filter_prompt(save_path, df, to_drop)
 
             response = await self.execute_step(prompt, self.db_mcp_server)
             print(f"\n🧱 SQLite 저장 결과:\n{response}")
