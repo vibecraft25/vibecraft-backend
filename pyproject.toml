@@ -11,5 +11,6 @@ dependencies = [
     "google-genai>=1.22.0",
     "mcp[cli]>=1.9.4",
     "openai>=1.92.2",
+    "pandas>=2.3.0",
     "python-dotenv>=1.1.1",
 ]
