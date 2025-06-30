@@ -41,10 +41,9 @@ def generate_sample_prompt(topic_prompt: str, topic_result: str) -> str:
     )
 
 
-def generate_download_link_prompt(topic_prompt: str, topic_result: str) -> str:
+def generate_download_link_prompt(topic_prompt: str) -> str:
     return (
         f"{topic_prompt}\n\n"
-        f"{topic_result}\n\n"
         f"이 주제와 관련된 CSV 또는 SQLite 형식의 오픈 데이터를 다운로드할 수 있는 URL 목록을 알려주세요."
     )
 

@@ -98,7 +98,7 @@ class VibeCraftClient:
         else:
             # TODO: WIP
             print("\n🌐 관련 데이터 다운로드 링크를 추천합니다...")
-            prompt = generate_download_link_prompt(topic_result.topic_prompt, topic_result.result)
+            prompt = generate_download_link_prompt(topic_result.topic_prompt)
             try:
                 await self.connect_to_server(self.web_search_mcp_server)
             except Exception as e:
