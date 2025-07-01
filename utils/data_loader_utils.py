@@ -93,7 +93,7 @@ def save_sqlite(df: pd.DataFrame, save_path: str) -> str:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     file_path = os.path.join(save_path, f"{timestamp}.sqlite")
 
-    table_name = "data"  # 기본 테이블명 (원한다면 파라미터로 변경 가능)
+    table_name = "data"  # 기본 테이블명
 
     with sqlite3.connect(file_path) as conn:
         df.to_sql(table_name, conn, index=False, if_exists="replace")

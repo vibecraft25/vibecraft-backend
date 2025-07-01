@@ -85,3 +85,42 @@ def df_to_sqlite_with_col_filter_prompt(df: pd.DataFrame, to_drop: List[str]) ->
         f"가장 첫 줄에 이전 이름과 변경된 이름의 매핑을 dictionary 형식으로 한 줄로 반환하라. 줄바꿈 없이 반환하라.\n"
     )
     return prompt
+
+
+###########################
+# Code generation prompts #
+###########################
+def generate_dashboard_prompt(
+    topic_prompt: str,
+    table_name: str,
+    schema: dict,
+    sample_rows: list
+) -> str:
+    return (
+        f"당신은 시각화 전문 프론트엔드 개발자입니다. 아래 주제와 SQLite 데이터베이스를 기반으로, "
+        f"브라우저에서 SQLite 파일을 직접 로드하고 쿼리하여 동적으로 시각화하는 웹 대시보드를 HTML/CSS/JS로 작성하세요.\n\n"
+
+        f"[📌 사용자 주제]\n"
+        f"{topic_prompt}\n\n"
+
+        f"[📂 SQLite 테이블 이름]\n"
+        f"{table_name}\n\n"
+
+        f"[🧩 테이블 스키마]\n"
+        + "\n".join([f"- {col}: {dtype}" for col, dtype in schema.items()]) + "\n\n"
+
+        f"[🧪 샘플 데이터 (3행)]\n"
+        + "\n".join([str(row) for row in sample_rows]) + "\n\n"
+
+        f"[🧭 구현 요구사항]\n"
+        f"1. 웹페이지는 HTML, CSS, JavaScript로 구성하며 외부 의존성은 CDN을 통해 연결합니다.\n"
+        f"2. SQLite 데이터베이스(`.sqlite` 파일)는 클라이언트에서 직접 fetch하여 로드한 뒤, JS에서 쿼리 실행이 가능해야 합니다.\n"
+        f"3. `sql.js` 또는 WebAssembly 기반 SQLite 엔진을 사용해 브라우저에서 쿼리를 실행하세요.\n"
+        f"4. 테이블 이름은 `{table_name}`이며, 이 테이블을 기준으로 다양한 시각화를 구성하세요.\n"
+        f"5. 지도, 시계열, 3D 등 적절한 시각화 방식을 자동으로 선택하고, Plotly / Leaflet / D3.js 등 오픈소스 라이브러리를 활용하세요.\n"
+        f"6. 단일 차트가 아닌 여러 시각화 요소(예: 카드, 차트, 지도 등)를 포함한 대시보드 형태로 구성하세요.\n"
+        f"7. UI에는 필터, 탭, 요약 통계 등이 포함되어야 하며 반응형 디자인을 적용하세요.\n\n"
+
+        f"[🎯 산출물 형식]\n"
+        f"완성된 HTML 코드 전체를 제공하세요. 설명 없이 코드만 출력해 주세요."
+    )

@@ -18,6 +18,7 @@ from utils.menus import *
 from utils.prompts import *
 from utils.data_loader_utils import (
     load_files,
+    load_local_files,
     markdown_table_to_df,
     normalize_column_name,
     parse_first_row_dict_from_text,
@@ -107,7 +108,7 @@ class VibeCraftClient:
                 await self.connect_to_server(self.web_search_mcp_server)
             except Exception as e:
                 print(f"⚠️ 웹 검색 MCP 연결 실패: {e}")
-                return None
+                return await self.step_data_upload_or_collection(topic_result)
 
             tools = await self.session.list_tools()
             tool_specs = extract_tool_specs(tools)
@@ -144,11 +145,9 @@ class VibeCraftClient:
             result = await self.execute_step(prompt)
             print(f"Mapped Column dictionary: {result}")
 
-            mapped_col = parse_first_row_dict_from_text(result)
-            missing = [col for col in mapped_col.keys() if col not in df.columns]
-            if missing:
-                print(f"⚠️ DataFrame에 존재하지 않는 Columns: {missing}")
-            mapped_df = df.rename(columns=mapped_col)[list(mapped_col.values())]
+            new_col = parse_first_row_dict_from_text(result)
+            filtered_new_col = {k: v for k, v in new_col.items() if v is not None}
+            mapped_df = df.rename(columns=new_col)[list(filtered_new_col.values())]
             print(f"\n🧱 Mapped Result:\n{mapped_df.head(3).to_string(index=False)}")
 
             save_path = "./data_store"
@@ -162,17 +161,31 @@ class VibeCraftClient:
     # TODO: WIP
     async def step_code_generation(self, topic_result: TopicStepResult, db_path: str):
         print("\n🚦 Step 3: 웹앱 코드 생성")
-        # TODO: WIP
-        result = await self.execute_step(
-            prompt="앞서 설정한 주제와 SQLite 데이터를 기반으로 시각화 기능을 갖춘 웹앱 코드를 생성해주세요.",
-            server_path=self.db_mcp_server
+
+        df = load_local_files([db_path])
+        if df is None or df.empty:
+            print("❌ SQLite 파일로부터 데이터를 불러오지 못했습니다.")
+            return
+
+        schema = {col: str(dtype) for col, dtype in zip(df.columns, df.dtypes)}
+        sample_rows = df.head(3).to_dict(orient="records")
+
+        prompt = generate_dashboard_prompt(
+            topic_prompt=topic_result.topic_prompt,
+            table_name=os.path.splitext(os.path.basename(db_path))[0],
+            schema=schema,
+            sample_rows=sample_rows
         )
 
-        result = await self.execute_step(
-            prompt="앞서 설정한 주제와 SQLite 데이터를 기반으로 시각화 기능을 갖춘 웹앱 코드를 생성해주세요.",
-            server_path=self.code_generation_mcp_server
-        )
-        print(f"\n💻 웹앱 코드 생성 결과:\n{result}")
+        result = await self.execute_step(prompt, server_path=self.code_generation_mcp_server)
+        print(f"\n💻 웹앱 코드 생성 결과:\n\n{result[:3000]}...")  # 길이 제한 표시
+
+        output_dir = "./web_output"
+        os.makedirs(output_dir, exist_ok=True)
+        html_path = os.path.join(output_dir, "dashboard.html")
+        with open(html_path, "w", encoding="utf-8") as f:
+            f.write(result)
+        print(f"\n📁 HTML 파일 저장 완료: {html_path}")
 
     # TODO: WIP
     async def step_deploy(self):
