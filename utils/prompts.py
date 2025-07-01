@@ -90,6 +90,7 @@ def df_to_sqlite_with_col_filter_prompt(df: pd.DataFrame, to_drop: List[str]) ->
 ###########################
 # Code generation prompts #
 ###########################
+# TODO: WIP
 def generate_dashboard_prompt(
     topic_prompt: str,
     table_name: str,
@@ -97,30 +98,32 @@ def generate_dashboard_prompt(
     sample_rows: list
 ) -> str:
     return (
-        f"당신은 시각화 전문 프론트엔드 개발자입니다. 아래 주제와 SQLite 데이터베이스를 기반으로, "
-        f"브라우저에서 SQLite 파일을 직접 로드하고 쿼리하여 동적으로 시각화하는 웹 대시보드를 HTML/CSS/JS로 작성하세요.\n\n"
+        f"당신은 프론트엔드 시각화 전문가입니다. 아래 주제와 SQLite 데이터를 기반으로, "
+        f"브라우저에서 SQLite 파일을 직접 로드하고 쿼리하여 시각화하는 대시보드 웹앱을 생성하세요.\n\n"
 
-        f"[📌 사용자 주제]\n"
+        f"[사용자 주제]\n"
         f"{topic_prompt}\n\n"
 
-        f"[📂 SQLite 테이블 이름]\n"
+        f"[SQLite 테이블 이름]\n"
         f"{table_name}\n\n"
 
-        f"[🧩 테이블 스키마]\n"
+        f"[테이블 스키마]\n"
         + "\n".join([f"- {col}: {dtype}" for col, dtype in schema.items()]) + "\n\n"
 
-        f"[🧪 샘플 데이터 (3행)]\n"
+        f"[샘플 데이터 (3행)]\n"
         + "\n".join([str(row) for row in sample_rows]) + "\n\n"
 
-        f"[🧭 구현 요구사항]\n"
-        f"1. 웹페이지는 HTML, CSS, JavaScript로 구성하며 외부 의존성은 CDN을 통해 연결합니다.\n"
-        f"2. SQLite 데이터베이스(`.sqlite` 파일)는 클라이언트에서 직접 fetch하여 로드한 뒤, JS에서 쿼리 실행이 가능해야 합니다.\n"
-        f"3. `sql.js` 또는 WebAssembly 기반 SQLite 엔진을 사용해 브라우저에서 쿼리를 실행하세요.\n"
-        f"4. 테이블 이름은 `{table_name}`이며, 이 테이블을 기준으로 다양한 시각화를 구성하세요.\n"
-        f"5. 지도, 시계열, 3D 등 적절한 시각화 방식을 자동으로 선택하고, Plotly / Leaflet / D3.js 등 오픈소스 라이브러리를 활용하세요.\n"
-        f"6. 단일 차트가 아닌 여러 시각화 요소(예: 카드, 차트, 지도 등)를 포함한 대시보드 형태로 구성하세요.\n"
-        f"7. UI에는 필터, 탭, 요약 통계 등이 포함되어야 하며 반응형 디자인을 적용하세요.\n\n"
+        f"[구현 요구사항]\n"
+        f"- HTML, CSS, JavaScript로 구성된 하나의 HTML 파일을 작성하세요.\n"
+        f"- 외부 라이브러리는 CDN으로 로드하세요.\n"
+        f"- sql.js를 사용하여 SQLite 파일을 **fetch한 후 반드시 arrayBuffer로 읽고 Uint8Array로 변환**하여 SQL.Database 객체를 생성하세요.\n"
+        f"- initSqlJs()를 사용해 WebAssembly를 초기화하고, locateFile 옵션으로 .wasm 경로를 지정하세요.\n"
+        f"- SQLite 파일은 로컬 파일명(`{table_name}.sqlite`)으로 fetch되며, 브라우저에서 직접 쿼리하여 시각화에 사용하세요.\n"
+        f"- 시계열, 지도, 통계, 분포 등 적절한 시각화를 자동으로 선택하고, 여러 시각화 요소를 포함한 대시보드 형태로 구성하세요.\n"
+        f"- Plotly, Chart.js, D3.js, Leaflet 등의 라이브러리를 자유롭게 활용하세요.\n"
+        f"- 사용자 인터페이스는 필터, 카드, 탭, 요약 통계 등을 포함한 반응형 구조로 구성하세요.\n\n"
 
-        f"[🎯 산출물 형식]\n"
-        f"완성된 HTML 코드 전체를 제공하세요. 설명 없이 코드만 출력해 주세요."
+        f"[출력 형식]\n"
+        f"- 설명 없이 전체 HTML 코드만 출력하세요.\n"
+        f"- SQLite 파일을 문자열이 아닌 바이너리 형식으로 처리하도록 명확히 구현하세요."
     )
