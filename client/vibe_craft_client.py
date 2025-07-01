@@ -33,12 +33,12 @@ class VibeCraftClient:
         self.session: Optional[ClientSession] = None
         self.exit_stack = AsyncExitStack()
 
-        self.memory_bank_server: Optional[str] = "@aakarsh-sasi/memory-bank-mcp"
-        self.topic_mcp_server: Optional[str] = None
-        self.web_search_mcp_server: Optional[str] = None    # TODO: WIP
-        self.db_mcp_server: Optional[str] = None            # TODO: WIP
-        self.code_generation_mcp_server: Optional[str] = None   # TODO: WIP
-        self.deploy_mcp_server: Optional[str] = None        # TODO: WIP
+        self.memory_bank_server: Optional[List[str]] = ["@aakarsh-sasi/memory-bank-mcp"]
+        self.topic_mcp_server: Optional[List[str]] = None
+        self.web_search_mcp_server: Optional[List[str]] = None    # TODO: WIP
+        self.db_mcp_server: Optional[List[str]] = None            # TODO: WIP
+        self.code_generation_mcp_server: Optional[List[str]] = None   # TODO: WIP
+        self.deploy_mcp_server: Optional[List[str]] = None        # TODO: WIP
 
     async def connect_to_server(self, server_path: Optional[str]):
         if not server_path:
@@ -53,16 +53,21 @@ class VibeCraftClient:
         await self.session.initialize()
         print(f"\n🔌 Connected to {server_path}")
 
-    async def execute_step(self, prompt: str, server_path: Optional[str] = None) -> str:
-        if server_path:
-            await self.connect_to_server(server_path)
-            tools = await self.session.list_tools()
-            tool_specs = extract_tool_specs(tools)
-            return await self.engine.generate_with_tools(
-                prompt=prompt,
-                tools=tool_specs,
-                session=self.session
-            )
+    async def execute_step(self, prompt: str, server_paths: Optional[List[str]] = None) -> str:
+        if server_paths:
+            for server_path in server_paths:
+                try:
+                    await self.connect_to_server(server_path)
+                    tools = await self.session.list_tools()
+                    tool_specs = extract_tool_specs(tools)
+                    return await self.engine.generate_with_tools(
+                        prompt=prompt,
+                        tools=tool_specs,
+                        session=self.session
+                    )
+                except Exception as e:
+                    print(f"⚠️ {server_path} 서버 연결 또는 실행 실패: {e}")
+            raise RuntimeError("❌ 모든 서버에서 요청 실패")
         return await self.engine.generate(prompt=prompt)
 
     async def step_topic_selection(self, topic_prompt: str) -> TopicStepResult:
@@ -178,7 +183,7 @@ class VibeCraftClient:
             sample_rows=sample_rows
         )
 
-        result = await self.execute_step(prompt, server_path=self.code_generation_mcp_server)
+        result = await self.execute_step(prompt, self.code_generation_mcp_server)
         print(f"\n💻 웹앱 코드 생성 결과:\n\n{result[:3000]}...")  # 길이 제한 표시
 
         output_dir = "./web_output"
@@ -191,10 +196,7 @@ class VibeCraftClient:
     # TODO: WIP
     async def step_deploy(self):
         print("\n🚦 Step 4: Deploy")
-        result = await self.execute_step(
-            prompt="WIP",
-            server_path=self.deploy_mcp_server
-        )
+        result = await self.execute_step("WIP", self.deploy_mcp_server)
         print(f"\n💻 배포중...")
 
     async def reset_via_memory_bank(self, reset_message: str):
