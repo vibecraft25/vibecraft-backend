@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250701] update gitignore, step_code_generation WIP">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250701] code generation WIP">
       <change beforePath="$PROJECT_DIR$/client/vibe_craft_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/client/vibe_craft_client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/prompts.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/prompts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -445,7 +444,15 @@
       <option name="project" value="LOCAL" />
       <updated>1751334492376</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="[250701] code generation WIP">
+      <option name="closed" value="true" />
+      <created>1751335854715</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1751335854715</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -479,7 +486,8 @@
     <MESSAGE value="[250630] step_data_upload_or_collection 수정 완료&#10;- table 분리 WIP&#10;- web search WIP" />
     <MESSAGE value="[250701] update gitignore" />
     <MESSAGE value="[250701] update gitignore, step_code_generation WIP" />
-    <option name="LAST_COMMIT_MESSAGE" value="[250701] update gitignore, step_code_generation WIP" />
+    <MESSAGE value="[250701] code generation WIP" />
+    <option name="LAST_COMMIT_MESSAGE" value="[250701] code generation WIP" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -17,9 +17,9 @@ load_dotenv()
 
 async def main():
     print("✅ 사용할 AI 모델을 선택하세요: claude / gemini / gpt (기본: claude)")
-    # model_choice = input("모델: ").strip().lower() or "claude"
     # TODO: TEST WIP
-    model_choice = "gemini"
+    # model_choice = "gemini"
+    model_choice = input("모델: ").strip().lower() or "claude"
 
     engine_map = {
         "claude": ClaudeEngine,
@@ -35,9 +35,9 @@ async def main():
     client = VibeCraftClient(engine)
 
     try:
-        # topic = input("🎤 주제를 입력하세요: ").strip()
         # TODO: TEST WIP
-        topic = "피자 일매출을 시각화하는 페이지를 제작할거야"
+        # topic = "피자 일매출을 시각화하는 페이지를 제작할거야"
+        topic = input("🎤 주제를 입력하세요: ").strip()
 
         await client.run_pipeline(topic)
     finally:
