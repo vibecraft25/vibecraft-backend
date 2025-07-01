@@ -22,6 +22,7 @@ from utils.data_loader_utils import (
     markdown_table_to_df,
     normalize_column_name,
     parse_first_row_dict_from_text,
+    save_metadata,
     save_sqlite
 )
 
@@ -97,9 +98,6 @@ class VibeCraftClient:
             prompt = generate_sample_prompt(topic_result.topic_prompt, topic_result.result)
             sample_data = await self.execute_step(prompt)
             df = markdown_table_to_df(sample_data)
-
-            # TODO: WIP TEST 데이터 생성
-            # df.to_csv("data.csv", encoding="cp949", index=False)
         else:
             # TODO: WIP
             print("\n🌐 관련 데이터 다운로드 링크를 추천합니다...")
@@ -137,7 +135,7 @@ class VibeCraftClient:
                 drop_input = input("삭제할 컬럼명을 쉼표(,)로 입력 (Enter 입력 시 건너뜀): ").strip()
                 to_drop = [col.strip() for col in drop_input.split(",")] if drop_input else []
             else:
-                print("⚠️ 잘못된 입력입니다. 컬럼 삭제를 건너뜁니다.")
+                print("컬럼 삭제를 건너뜁니다.")
                 to_drop = []
 
             print("\n💾 SQLite 테이블화 요청 중...")
@@ -147,12 +145,15 @@ class VibeCraftClient:
 
             new_col = parse_first_row_dict_from_text(result)
             filtered_new_col = {k: v for k, v in new_col.items() if v is not None}
+            
             mapped_df = df.rename(columns=new_col)[list(filtered_new_col.values())]
             print(f"\n🧱 Mapped Result:\n{mapped_df.head(3).to_string(index=False)}")
 
             save_path = "./data_store"
             os.makedirs(save_path, exist_ok=True)
+            df.to_csv(os.path.join(save_path, "data.csv"), encoding="cp949", index=False)
             file_path = save_sqlite(mapped_df, save_path)
+            save_metadata(filtered_new_col, save_path, file_path)
 
             return file_path
         else:
@@ -204,7 +205,7 @@ class VibeCraftClient:
         await self.execute_step(reset_message, self.memory_bank_server)
 
     async def run_pipeline(self, topic_prompt: str):
-        # TODO: TEST WIP
+        # # TODO: TEST WIP
         # topic_prompt_result = (
         #     TopicStepResult(
         #         topic_prompt=topic_prompt,

@@ -5,6 +5,7 @@ import os
 from io import StringIO
 from datetime import datetime
 from typing import List, Optional
+import json
 import sqlite3
 import ast
 
@@ -83,6 +84,21 @@ def parse_first_row_dict_from_text(response_text: str) -> dict:
             raise ValueError("파싱된 결과가 dict가 아닙니다.")
     except Exception as e:
         raise ValueError(f"컬럼 매핑 파싱 실패: {e}")
+
+
+def save_metadata(col_info: dict, save_path: str, sqlite_path: str):
+    base_name = os.path.splitext(os.path.basename(sqlite_path))[0]
+    meta_path = os.path.join(save_path, f"{base_name}_meta.json")
+
+    metadata = {
+        "created_at": datetime.now().isoformat(),
+        "column_mapping": col_info
+    }
+
+    with open(meta_path, "w", encoding="utf-8") as f:
+        json.dump(metadata, f, ensure_ascii=False, indent=2)
+
+    print(f"✅ DB 메타데이터 저장 완료: {meta_path}")
 
 
 def save_sqlite(df: pd.DataFrame, save_path: str) -> str:
