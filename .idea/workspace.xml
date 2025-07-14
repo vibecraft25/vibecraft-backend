@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250701] edit connect_to_server method to connect multiple mcp server">
+    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250714] add MCPServerConfig">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/vibe_craft_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/client/vibe_craft_client.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/pipeline_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/pipeline_schemas.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -219,7 +217,7 @@
       <workItem from="1752216007007" duration="6000" />
       <workItem from="1752218423893" duration="21000" />
       <workItem from="1752218679692" duration="14000" />
-      <workItem from="1752468414247" duration="694000" />
+      <workItem from="1752468414247" duration="1467000" />
     </task>
     <task id="LOCAL-00001" summary="[250625] Add samples">
       <option name="closed" value="true" />
@@ -485,7 +483,15 @@
       <option name="project" value="LOCAL" />
       <updated>1751359109498</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="[250714] add MCPServerConfig">
+      <option name="closed" value="true" />
+      <created>1752469187965</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1752469187965</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -522,7 +528,8 @@
     <MESSAGE value="[250701] code generation WIP" />
     <MESSAGE value="[250701] add generate meta data of sqlite" />
     <MESSAGE value="[250701] edit connect_to_server method to connect multiple mcp server" />
-    <option name="LAST_COMMIT_MESSAGE" value="[250701] edit connect_to_server method to connect multiple mcp server" />
+    <MESSAGE value="[250714] add MCPServerConfig" />
+    <option name="LAST_COMMIT_MESSAGE" value="[250714] add MCPServerConfig" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
