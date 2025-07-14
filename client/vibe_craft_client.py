@@ -34,7 +34,7 @@ class VibeCraftClient:
         self.exit_stack = AsyncExitStack()
 
         self.memory_bank_server: Optional[List[MCPServerConfig]] = [
-            MCPServerConfig("@aakarsh-sasi/memory-bank-mcp", "npx")
+            MCPServerConfig("memory-bank-mcp", "npx", ["@aakarsh-sasi/memory-bank-mcp"])
         ]
         self.topic_mcp_server: Optional[List[MCPServerConfig]] = None
         self.web_search_mcp_server: Optional[List[MCPServerConfig]] = None    # TODO: WIP
@@ -48,12 +48,12 @@ class VibeCraftClient:
         await self.exit_stack.aclose()
         self.exit_stack = AsyncExitStack()
         stdio_transport = await self.exit_stack.enter_async_context(stdio_client(
-            StdioServerParameters(command=mcp_server.command, args=[mcp_server.path])
+            StdioServerParameters(command=mcp_server.command, args=mcp_server.args)
         ))
         self.stdio, self.write = stdio_transport
         self.session = await self.exit_stack.enter_async_context(ClientSession(self.stdio, self.write))
         await self.session.initialize()
-        print(f"\n🔌 Connected to {mcp_server.path}")
+        print(f"\n🔌 Connected to {mcp_server.name}")
 
     async def execute_step(self, prompt: str, mcp_servers: Optional[List[MCPServerConfig]] = None) -> str:
         all_tool_specs = []
@@ -66,7 +66,7 @@ class VibeCraftClient:
                     tool_specs = extract_tool_specs(tools)
                     all_tool_specs.extend(tool_specs)
                 except Exception as e:
-                    print(f"⚠️ {mcp_server.path} 서버 연결 또는 실행 실패: {e}")
+                    print(f"⚠️ {mcp_server.name} 서버 연결 또는 실행 실패: {e}")
 
             if not all_tool_specs:
                 raise RuntimeError("❌ 모든 서버에서 tool을 불러오는 데 실패했습니다")
