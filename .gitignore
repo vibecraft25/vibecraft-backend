@@ -2,3 +2,5 @@
 /.env
 /data_store/
 /web_output/
+__pycache__/
+*.pyc
