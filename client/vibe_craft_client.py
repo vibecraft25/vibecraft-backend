@@ -12,7 +12,7 @@ from mcp.client.stdio import stdio_client
 
 # Custom imports
 from engine.base import BaseEngine
-from schemas.pipeline_schemas import TopicStepResult
+from schemas.pipeline_schemas import MCPServerConfig, TopicStepResult
 from utils.tools import extract_tool_specs
 from utils.menus import *
 from utils.prompts import *
@@ -33,41 +33,51 @@ class VibeCraftClient:
         self.session: Optional[ClientSession] = None
         self.exit_stack = AsyncExitStack()
 
-        self.memory_bank_server: Optional[List[str]] = ["@aakarsh-sasi/memory-bank-mcp"]
-        self.topic_mcp_server: Optional[List[str]] = None
-        self.web_search_mcp_server: Optional[List[str]] = None    # TODO: WIP
-        self.db_mcp_server: Optional[List[str]] = None            # TODO: WIP
-        self.code_generation_mcp_server: Optional[List[str]] = None   # TODO: WIP
-        self.deploy_mcp_server: Optional[List[str]] = None        # TODO: WIP
+        self.memory_bank_server: Optional[List[MCPServerConfig]] = [
+            MCPServerConfig("@aakarsh-sasi/memory-bank-mcp", "npx")
+        ]
+        self.topic_mcp_server: Optional[List[MCPServerConfig]] = None
+        self.web_search_mcp_server: Optional[List[MCPServerConfig]] = None    # TODO: WIP
+        self.db_mcp_server: Optional[List[MCPServerConfig]] = None            # TODO: WIP
+        self.code_generation_mcp_server: Optional[List[MCPServerConfig]] = None   # TODO: WIP
+        self.deploy_mcp_server: Optional[List[MCPServerConfig]] = None        # TODO: WIP
 
-    async def connect_to_server(self, server_path: Optional[str]):
-        if not server_path:
+    async def connect_to_server(self, mcp_server: Optional[MCPServerConfig]):
+        if not mcp_server:
             return
         await self.exit_stack.aclose()
         self.exit_stack = AsyncExitStack()
         stdio_transport = await self.exit_stack.enter_async_context(stdio_client(
-            StdioServerParameters(command="npx", args=[server_path])
+            StdioServerParameters(command=mcp_server.command, args=[mcp_server.path])
         ))
         self.stdio, self.write = stdio_transport
         self.session = await self.exit_stack.enter_async_context(ClientSession(self.stdio, self.write))
         await self.session.initialize()
-        print(f"\n🔌 Connected to {server_path}")
+        print(f"\n🔌 Connected to {mcp_server.path}")
 
-    async def execute_step(self, prompt: str, server_paths: Optional[List[str]] = None) -> str:
-        if server_paths:
-            for server_path in server_paths:
+    async def execute_step(self, prompt: str, mcp_servers: Optional[List[MCPServerConfig]] = None) -> str:
+        all_tool_specs = []
+
+        if mcp_servers:
+            for mcp_server in mcp_servers:
                 try:
-                    await self.connect_to_server(server_path)
+                    await self.connect_to_server(mcp_server)
                     tools = await self.session.list_tools()
                     tool_specs = extract_tool_specs(tools)
-                    return await self.engine.generate_with_tools(
-                        prompt=prompt,
-                        tools=tool_specs,
-                        session=self.session
-                    )
+                    all_tool_specs.extend(tool_specs)
                 except Exception as e:
-                    print(f"⚠️ {server_path} 서버 연결 또는 실행 실패: {e}")
-            raise RuntimeError("❌ 모든 서버에서 요청 실패")
+                    print(f"⚠️ {mcp_server.path} 서버 연결 또는 실행 실패: {e}")
+
+            if not all_tool_specs:
+                raise RuntimeError("❌ 모든 서버에서 tool을 불러오는 데 실패했습니다")
+
+            return await self.engine.generate_with_tools(
+                prompt=prompt,
+                tools=all_tool_specs,
+                session=self.session
+            )
+
+        # 서버 없이 처리
         return await self.engine.generate(prompt=prompt)
 
     async def step_topic_selection(self, topic_prompt: str) -> TopicStepResult:
