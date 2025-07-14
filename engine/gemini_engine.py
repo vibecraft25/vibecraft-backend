@@ -17,22 +17,17 @@ class GeminiEngine(BaseEngine):
         self.model = genai.Client()
         self.model_name = "gemini-2.5-flash"
 
-    def _wrap_mcp_tools(self, mcp_tool_specs: List) -> List[types.Tool]:
-        wrapped_tools = []
-        for spec in mcp_tool_specs:
-            # spec이 ('tools', [Tool, Tool, ...]) 형태일 경우
-            if isinstance(spec, tuple) and spec[0] == "tools" and isinstance(spec[1], list):
-                for tool in spec[1]:
-                    wrapped_tools.append(
-                        types.Tool(function_declarations=[
-                            types.FunctionDeclaration(
-                                name=tool.name,
-                                description=tool.description,
-                                parameters=getattr(tool, "inputSchema", {}) or getattr(tool, "input_schema", {})
-                            )
-                        ])
-                    )
-        return wrapped_tools
+    def _wrap_mcp_tools(self, mcp_tool_specs: List[dict]) -> List[types.Tool]:
+        return [
+            types.Tool(function_declarations=[
+                types.FunctionDeclaration(
+                    name=tool["name"],
+                    description=tool["description"],
+                    parameters=tool.get("input_schema", {})
+                )
+            ])
+            for tool in mcp_tool_specs
+        ]
 
     def _parse_response_parts(self, parts: List) -> List[str]:
         result = []
