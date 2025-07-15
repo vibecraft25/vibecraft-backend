@@ -5,7 +5,7 @@ from typing import List
 
 # Third-party imports
 from anthropic import Anthropic
-from mcp import ClientSession
+from mcp import ClientSession, ClientSessionGroup
 
 # Custom imports
 from .base import BaseEngine
@@ -41,7 +41,7 @@ class ClaudeEngine(BaseEngine):
     async def generate_with_tools(
         self,
         prompt: str,
-        session: ClientSession,
+        session: ClientSession | ClientSessionGroup,
         tool_specs: List
     ) -> str:
 

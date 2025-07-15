@@ -4,7 +4,7 @@ __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 from typing import List, Dict
 
 # Third-party imports
-from mcp import ClientSession
+from mcp import ClientSession, ClientSessionGroup
 
 
 class BaseEngine:
@@ -12,6 +12,6 @@ class BaseEngine:
         raise NotImplementedError
 
     async def generate_with_tools(
-        self, prompt: str, tools: List[Dict], session: ClientSession
+        self, prompt: str, tools: List[Dict], session: ClientSession | ClientSessionGroup
     ) -> str:
         raise NotImplementedError

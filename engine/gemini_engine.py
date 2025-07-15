@@ -6,7 +6,7 @@ from typing import List
 # Third-party imports
 from google import genai
 from google.genai import types
-from mcp import ClientSession
+from mcp import ClientSession, ClientSessionGroup
 
 # Custom imports
 from .base import BaseEngine
@@ -55,7 +55,7 @@ class GeminiEngine(BaseEngine):
     async def generate_with_tools(
         self,
         prompt: str,
-        session: ClientSession,
+        session: ClientSession | ClientSessionGroup,
         tools: List[dict]
     ) -> str:
 

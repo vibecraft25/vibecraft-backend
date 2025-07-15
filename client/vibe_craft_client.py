@@ -4,10 +4,10 @@ __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 import os
 from contextlib import AsyncExitStack
 from typing import Optional
+from types import SimpleNamespace
 
 # Third-party imports
-import pandas as pd
-from mcp import ClientSession, StdioServerParameters
+from mcp import StdioServerParameters, ClientSession, ClientSessionGroup
 from mcp.client.stdio import stdio_client
 
 # Custom imports
@@ -30,57 +30,101 @@ from utils.data_loader_utils import (
 class VibeCraftClient:
     def __init__(self, engine: BaseEngine):
         self.engine = engine
-        self.session: Optional[ClientSession] = None
+        self.session: Optional[ClientSession | ClientSessionGroup] = None
         self.exit_stack = AsyncExitStack()
 
         self.memory_bank_server: Optional[List[MCPServerConfig]] = [
             MCPServerConfig("memory-bank-mcp", "npx", ["@aakarsh-sasi/memory-bank-mcp"])
         ]
         self.topic_mcp_server: Optional[List[MCPServerConfig]] = None
-        self.web_search_mcp_server: Optional[List[MCPServerConfig]] = None    # TODO: WIP
-        self.db_mcp_server: Optional[List[MCPServerConfig]] = None            # TODO: WIP
-        self.code_generation_mcp_server: Optional[List[MCPServerConfig]] = None   # TODO: WIP
-        self.deploy_mcp_server: Optional[List[MCPServerConfig]] = None        # TODO: WIP
+        self.web_search_mcp_server: Optional[List[MCPServerConfig]] = None  # TODO: WIP
+        self.db_mcp_server: Optional[List[MCPServerConfig]] = None  # TODO: WIP
+        self.code_generation_mcp_server: Optional[List[MCPServerConfig]] = None  # TODO: WIP
+        self.deploy_mcp_server: Optional[List[MCPServerConfig]] = None  # TODO: WIP
 
-    async def connect_to_server(self, mcp_server: Optional[MCPServerConfig]):
-        if not mcp_server:
-            return
-        await self.exit_stack.aclose()
-        self.exit_stack = AsyncExitStack()
-        stdio_transport = await self.exit_stack.enter_async_context(stdio_client(
-            StdioServerParameters(command=mcp_server.command, args=mcp_server.args)
-        ))
-        self.stdio, self.write = stdio_transport
-        self.session = await self.exit_stack.enter_async_context(ClientSession(self.stdio, self.write))
-        await self.session.initialize()
-        print(f"\n🔌 Connected to {mcp_server.name}")
-
-    async def execute_step(self, prompt: str, mcp_servers: Optional[List[MCPServerConfig]] = None) -> str:
+    async def load_tool(self, server: MCPServerConfig):
+        """ Connect Single MCP server and save to self.session """
         all_tool_specs = []
 
-        if mcp_servers:
-            for mcp_server in mcp_servers:
-                try:
-                    await self.connect_to_server(mcp_server)
-                    tools = await self.session.list_tools()
-                    tool_specs = extract_tool_specs(tools)
-                    all_tool_specs.extend(tool_specs)
-                except Exception as e:
-                    print(f"⚠️ {mcp_server.name} 서버 연결 또는 실행 실패: {e}")
+        try:
+            # connect to server
+            await self.exit_stack.aclose()
+            self.exit_stack = AsyncExitStack()
+            transport = await self.exit_stack.enter_async_context(stdio_client(
+                StdioServerParameters(command=server.command, args=server.args)
+            ))
+            self.stdio, self.write = transport
+            self.session = await self.exit_stack.enter_async_context(ClientSession(self.stdio, self.write))
+            await self.session.initialize()
 
-            if not all_tool_specs:
-                raise RuntimeError("❌ 모든 서버에서 tool을 불러오는 데 실패했습니다")
+            # load tool from connected server
+            response = await self.session.list_tools()
+            tool_specs = extract_tool_specs(response)
+            all_tool_specs.extend(tool_specs)
+
+            tools = response.tools
+            print(f"\n🔌 Connected to {server.name}")
+            print("Connected to server with tools:", [tool.name for tool in tools])
+        except Exception as e:
+            print(f"⚠️ 서버 실패: {server.name} - {e}")
+        return all_tool_specs
+
+    async def load_tool_group(
+            self, mcp_servers: List[MCPServerConfig], component_name_hook=None
+    ):
+        """
+        Connect Multiple MCP servers with ClientSessionGroup, and integrate tools, prompts, resources.
+        Save self.session
+
+        Args:
+            mcp_servers (List[MCPServerConfig]): mcp servers
+            component_name_hook (Optional[Callable]): 충돌 방지용 이름 생성 함수
+        """
+        self.session = ClientSessionGroup(component_name_hook=component_name_hook)
+
+        all_tool_specs = []
+        await self.session.__aenter__()
+
+        for server in mcp_servers:
+            try:
+                server_params = StdioServerParameters(command=server.command, args=server.args)
+                await self.session.connect_to_server(server_params)
+
+                # 현재 연결된 서버 이름 기준으로 tools 추출
+                tools = list(self.session.tools.values())
+                tool_specs = extract_tool_specs(SimpleNamespace(tools=tools))
+                all_tool_specs.extend(tool_specs)
+
+                print(f"\n🔌 Connected to {server.name}")
+                print("Connected to server with tools:", [t["name"] for t in tool_specs])
+            except Exception as e:
+                print(f"⚠️ 서버 실패: {server.name} - {e}")
+
+        return all_tool_specs
+
+    async def execute_step(
+            self, prompt: str, mcp_servers: Optional[List[MCPServerConfig]] = None
+    ) -> str:
+        if mcp_servers:
+            try:
+                if len(mcp_servers) == 1:
+                    tools = await self.load_tool(mcp_servers[0])
+                else:
+                    tools = await self.load_tool_group()
+            except Exception as e:
+                raise RuntimeError(f"❌ 모든 서버에서 tool을 불러오는 데 실패했습니다: {e}")
 
             return await self.engine.generate_with_tools(
                 prompt=prompt,
-                tools=all_tool_specs,
+                tools=tools,
                 session=self.session
             )
-
         # 서버 없이 처리
         return await self.engine.generate(prompt=prompt)
 
-    async def step_topic_selection(self, topic_prompt: str) -> TopicStepResult:
+    async def step_topic_selection(
+            self, topic_prompt: str
+    ) -> TopicStepResult:
         print("\n🚦 Step 1: 주제 설정")
         prompt = set_topic_prompt(topic_prompt)
         result = await self.execute_step(prompt, self.topic_mcp_server)
@@ -102,7 +146,9 @@ class VibeCraftClient:
             else:
                 print("⚠️ 유효한 선택지를 입력해주세요 (1, 2, 3)")
 
-    async def step_data_upload_or_collection(self, topic_result: TopicStepResult) -> str:
+    async def step_data_upload_or_collection(
+            self, topic_result: TopicStepResult
+    ) -> str:
         print("\n🚦 Step 2: 데이터 업로드 또는 수집")
 
         user_choice = select_data_loader_menu()
@@ -114,20 +160,16 @@ class VibeCraftClient:
             sample_data = await self.execute_step(prompt)
             df = markdown_table_to_df(sample_data)
         else:
-            # TODO: WIP
-            print("\n🌐 관련 데이터 다운로드 링크를 추천합니다...")
-            prompt = generate_download_link_prompt(topic_result.topic_prompt)
             try:
-                await self.connect_to_server(self.web_search_mcp_server)
+                # TODO: WIP
+                print("\n🌐 관련 데이터 다운로드 링크를 추천합니다...")
+                prompt = generate_download_link_prompt(topic_result.topic_prompt)
+                result = await self.execute_step(prompt, self.web_search_mcp_server)
+                print(f"\n🔗 추천된 다운로드 링크:\n{result}")
+                df = load_files()
             except Exception as e:
                 print(f"⚠️ 웹 검색 MCP 연결 실패: {e}")
                 return await self.step_data_upload_or_collection(topic_result)
-
-            tools = await self.session.list_tools()
-            tool_specs = extract_tool_specs(tools)
-            result = await self.engine.generate_with_tools(prompt, tool_specs, self.session)
-            print(f"\n🔗 추천된 다운로드 링크:\n{result}")
-            df = load_files()
 
         df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
         df.columns = [normalize_column_name(col) for col in df.columns]
@@ -160,7 +202,7 @@ class VibeCraftClient:
 
             new_col = parse_first_row_dict_from_text(result)
             filtered_new_col = {k: v for k, v in new_col.items() if v is not None}
-            
+
             mapped_df = df.rename(columns=new_col)[list(filtered_new_col.values())]
             print(f"\n🧱 Mapped Result:\n{mapped_df.head(3).to_string(index=False)}")
 
@@ -306,4 +348,10 @@ class VibeCraftClient:
         # await self.step_deploy()
 
     async def cleanup(self):
-        await self.exit_stack.aclose()
+        if isinstance(self.session, ClientSessionGroup):
+            await self.session.__aexit__(None, None, None)
+            self.session = None
+
+        if getattr(self, "exit_stack", None) is not None:
+            await self.exit_stack.aclose()
+            self.exit_stack = None

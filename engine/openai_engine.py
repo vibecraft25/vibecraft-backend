@@ -6,7 +6,7 @@ from typing import List, Dict, Any
 
 # Third-party imports
 from openai import OpenAI
-from mcp import ClientSession
+from mcp import ClientSession, ClientSessionGroup
 
 # Custom imports
 from .base import BaseEngine
@@ -45,7 +45,7 @@ class OpenAIEngine(BaseEngine):
     async def generate_with_tools(
         self,
         prompt: str,
-        session: ClientSession,
+        session: ClientSession | ClientSessionGroup,
         tools: List[Dict[str, Any]]
     ) -> str:
 
