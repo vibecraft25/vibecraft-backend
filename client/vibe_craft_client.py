@@ -42,7 +42,11 @@ class VibeCraftClient:
         self.code_generation_mcp_server: Optional[List[MCPServerConfig]] = None  # TODO: WIP
         self.deploy_mcp_server: Optional[List[MCPServerConfig]] = None  # TODO: WIP
 
-    async def load_tool(self, server: MCPServerConfig):
+        self.tools: Optional[List] = None
+
+    async def load_tool(
+            self, server: MCPServerConfig
+    ) -> List:
         """ Connect Single MCP server and save to self.session """
         all_tool_specs = []
 
@@ -71,7 +75,7 @@ class VibeCraftClient:
 
     async def load_tool_group(
             self, mcp_servers: List[MCPServerConfig], component_name_hook=None
-    ):
+    ) -> List:
         """
         Connect Multiple MCP servers with ClientSessionGroup, and integrate tools, prompts, resources.
         Save self.session
@@ -80,6 +84,11 @@ class VibeCraftClient:
             mcp_servers (List[MCPServerConfig]): mcp servers
             component_name_hook (Optional[Callable]): 충돌 방지용 이름 생성 함수
         """
+        if hasattr(self, "session") and self.session is not None:
+            if isinstance(self.session, ClientSessionGroup):
+                await self.session.__aexit__(None, None, None)
+            self.session = None
+
         self.session = ClientSessionGroup(component_name_hook=component_name_hook)
 
         all_tool_specs = []
@@ -103,23 +112,30 @@ class VibeCraftClient:
         return all_tool_specs
 
     async def execute_step(
-            self, prompt: str, mcp_servers: Optional[List[MCPServerConfig]] = None
+            self,
+            prompt: str,
+            mcp_servers: Optional[List[MCPServerConfig]] = None,
+            reuse_loaded_tools: Optional[bool] = None,
     ) -> str:
+        # Case 1: Load new tools
         if mcp_servers:
             try:
                 if len(mcp_servers) == 1:
-                    tools = await self.load_tool(mcp_servers[0])
+                    self.tools = await self.load_tool(mcp_servers[0])
                 else:
-                    tools = await self.load_tool_group(mcp_servers)
+                    self.tools = await self.load_tool_group(mcp_servers)
             except Exception as e:
                 raise RuntimeError(f"❌ 모든 서버에서 tool을 불러오는 데 실패했습니다: {e}")
 
+        # Case 2: reuse tools or use new tools
+        if self.tools and (reuse_loaded_tools or mcp_servers):
             return await self.engine.generate_with_tools(
                 prompt=prompt,
-                tools=tools,
+                tools=self.tools,
                 session=self.session
             )
-        # 서버 없이 처리
+
+        # Case 3: without tool
         return await self.engine.generate(prompt=prompt)
 
     async def step_topic_selection(
