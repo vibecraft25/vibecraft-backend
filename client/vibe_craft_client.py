@@ -110,7 +110,7 @@ class VibeCraftClient:
                 if len(mcp_servers) == 1:
                     tools = await self.load_tool(mcp_servers[0])
                 else:
-                    tools = await self.load_tool_group()
+                    tools = await self.load_tool_group(mcp_servers)
             except Exception as e:
                 raise RuntimeError(f"❌ 모든 서버에서 tool을 불러오는 데 실패했습니다: {e}")
 
