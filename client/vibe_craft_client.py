@@ -366,8 +366,8 @@ class VibeCraftClient:
     async def cleanup(self):
         if isinstance(self.session, ClientSessionGroup):
             await self.session.__aexit__(None, None, None)
-            self.session = None
 
         if getattr(self, "exit_stack", None) is not None:
             await self.exit_stack.aclose()
             self.exit_stack = None
+        self.session = None
