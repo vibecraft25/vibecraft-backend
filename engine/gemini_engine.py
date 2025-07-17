@@ -69,6 +69,7 @@ class GeminiEngine(BaseEngine):
             config=config
         )
 
+        is_tool_used = False
         result = []
         candidate = response.candidates[0]
 
@@ -78,24 +79,22 @@ class GeminiEngine(BaseEngine):
                 result.append(part.text)
 
             elif hasattr(part, "function_call"):
+                is_tool_used = True
+
                 func_call = part.function_call
-                # 툴 실행
                 tool_result = await session.call_tool(func_call.name, func_call.args)
-                result.append(f"[{func_call.name} Call]: {func_call.name}({func_call.args})\n"
-                              f"[{func_call.name} Result]: {tool_result.content}")
+                result.append(f"[{func_call.name} Result]: {tool_result.content}, args: ({func_call.args})")
                 print(f"[Function Call]: {func_call.name}({func_call.args})")
                 print(f"[Function Result]: {tool_result.content}")
 
-        if result:
+        if is_tool_used:
             # 후속 프롬프트 구성
             result_str = '\n'.join(result)
-            followup_prompt = f"""
-            {result_str}
-            ---
-            이 결과를 바탕으로 다음 응답을 생성해 주세요.
-            ---
-            {prompt}
-            """.strip()
+            followup_prompt = (f"{result_str}\n"
+                               f"---\n"
+                               f"이 결과를 바탕으로 다음 응답을 생성해 주세요.\n"
+                               f"---\n"
+                               f"{prompt}").strip()
 
             # 후속 응답 요청
             followup_response = self.model.models.generate_content(
@@ -105,6 +104,9 @@ class GeminiEngine(BaseEngine):
             )
 
             candidate = followup_response.candidates[0]
-            result = self._parse_response_parts(candidate.content.parts)
-
+            followup_result = "\n".join(self._parse_response_parts(candidate.content.parts))
+            return (f"사용된 데이터:\n"
+                    f"{result}\n"
+                    f"---\n"
+                    f"{followup_result}\n")
         return "\n".join(result)
