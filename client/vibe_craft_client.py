@@ -255,7 +255,7 @@ class VibeCraftClient:
             sample_rows=sample_rows
         )
 
-        result = await self.execute_step(prompt, self.code_generation_mcp_server)
+        result = await self.execute_step(prompt, self.code_generation_mcp_server, use_langchain=False)
         print(f"\n💻 웹앱 코드 생성 결과:\n\n{result[:3000]}...")  # 길이 제한 표시
 
         output_dir = "./web_output"
