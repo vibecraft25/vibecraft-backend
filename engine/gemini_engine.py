@@ -6,6 +6,7 @@ from typing import List
 # Third-party imports
 from google import genai
 from google.genai import types
+from google.genai.types import GenerateContentConfigDict
 from mcp import ClientSession, ClientSessionGroup
 
 # Custom imports
@@ -53,13 +54,15 @@ class GeminiEngine(BaseEngine):
         return "\n".join(result)
 
     async def generate_with_tools(
-        self,
-        prompt: str,
-        session: ClientSession | ClientSessionGroup,
-        tools: List[dict]
+            self,
+            prompt: str,
+            session: ClientSession | ClientSessionGroup,
+            tools: List[dict]
     ) -> str:
 
         config = self._build_config(tools)
+
+        # 초기 응답 요청
         response = self.model.models.generate_content(
             model=self.model_name,
             contents=prompt,
@@ -68,15 +71,38 @@ class GeminiEngine(BaseEngine):
 
         result = []
         candidate = response.candidates[0]
+        followup_prompt = None  # 후속 요청이 필요한 경우 구성
 
+        # 각 파트 처리
         for part in candidate.content.parts:
             if hasattr(part, "text") and part.text:
                 result.append(part.text)
 
             elif hasattr(part, "function_call"):
                 func_call = part.function_call
+
+                # 툴 실행
                 tool_result = await session.call_tool(func_call.name, func_call.args)
-                result.append(f"[Function Call: {func_call.name}]")
-                result.append(str(tool_result.content))
+                print(f"[Function Call]: {func_call.name}({func_call.args})")
+                print(f"[Function Result]: {tool_result.content}")
+
+                # 후속 프롬프트 구성
+                followup_prompt = f"""
+                도구 '{func_call.name}'가 호출되었습니다.
+                입력 값: {func_call.args}
+                도구 실행 결과: {tool_result.content}
+
+                이 결과를 바탕으로 다음 응답을 생성해 주세요.
+                """.strip()
+
+                # 후속 응답 요청
+                followup_response = self.model.models.generate_content(
+                    model=self.model_name,
+                    contents=followup_prompt,
+                    config=GenerateContentConfigDict(temperature=0.7)
+                )
+
+                if hasattr(followup_response, "text"):
+                    result.append(followup_response.text)
 
         return "\n".join(result)

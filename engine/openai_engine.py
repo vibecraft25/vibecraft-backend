@@ -1,4 +1,3 @@
-# TODO: WIP
 __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
 # Standard imports
@@ -6,6 +5,8 @@ from typing import List, Dict, Any
 
 # Third-party imports
 from openai import OpenAI
+from openai.types.chat import ChatCompletionUserMessageParam, ChatCompletionToolParam
+from openai.types.shared_params import FunctionDefinition
 from mcp import ClientSession, ClientSessionGroup
 
 # Custom imports
@@ -17,19 +18,19 @@ class OpenAIEngine(BaseEngine):
         self.model = OpenAI()
         self.model_name = "gpt-4.1"
 
-    def _build_user_prompt(self, prompt: str) -> List[Dict[str, str]]:
+    def _build_user_prompt(self, prompt: str) -> List[ChatCompletionUserMessageParam]:
         return [{"role": "user", "content": prompt}]
 
-    def _wrap_mcp_tools(self, mcp_tools: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _wrap_mcp_tools(self, mcp_tools: List[Dict[str, Any]]) -> List[ChatCompletionToolParam]:
         return [
-            {
-                "type": "function",
-                "function": {
-                    "name": tool["name"],
-                    "description": tool["description"],
-                    "parameters": tool.get("input_schema", {})
-                }
-            }
+            ChatCompletionToolParam(
+                type="function",
+                function=FunctionDefinition(
+                    name=tool["name"],
+                    description=tool["description"],
+                    parameters=tool.get("input_schema", {})
+                )
+            )
             for tool in mcp_tools
         ]
 
@@ -66,7 +67,12 @@ class OpenAIEngine(BaseEngine):
         tool_calls = getattr(response.choices[0].message, "tool_calls", None)
         if tool_calls:
             for tool in tool_calls:
+                # 실제 함수 실행
                 tool_result = await session.call_tool(tool.function.name, tool.function.arguments)
+                print(f"[Tool Call] {tool.function.name}({tool.function.arguments})")
+                print(f"[Tool Result] {tool_result.content}")
+
+                # 메시지에 tool 호출과 결과 추가
                 messages += [
                     {"role": "assistant", "tool_calls": [tool]},
                     {"role": "user", "content": [{
@@ -76,11 +82,14 @@ class OpenAIEngine(BaseEngine):
                     }]}
                 ]
 
+                # 후속 응답 요청
                 followup = self.model.chat.completions.create(
                     model=self.model_name,
                     messages=messages,
                     tools=wrapped_tools
                 )
+
+                # 후속 응답에서 텍스트만 정제하여 추가
                 fcontent = followup.choices[0].message.content or ""
                 if fcontent:
                     result.append(fcontent.strip())
