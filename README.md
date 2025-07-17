@@ -57,10 +57,11 @@ source .venv/bin/activate
 #### 4. Install dependencies
 ```bash
 # Essential packages
-uv add mcp[cli]
-uv add anthropic
-uv add google-genai
-uv add openai
+uv add mcp[cli]   # Windows
+uv add "mcp[cli]" # MacOS/Linux
+uv add openai anthropic google-genai
+uv add langchain langchain-google-genai google-generativeai langchain-anthropic
+uv add langchain_community
 
 # Additional packages
 uv add pandas
@@ -80,9 +81,10 @@ touch .env
 ### .env File Format
 ⚠️Do not share or commit your .env file. It contains sensitive credentials.⚠️
 ```text
-OPENAI_API_KEY=...
-ANTHROPIC_API_KEY=...
-GOOGLE_API_KEY=...
+export OPENAI_API_KEY=...
+export ANTHROPIC_API_KEY=...
+export GEMINI_API_KEY=...
+export GOOGLE_API_KEY=...
 ```
 
 ## 🧠 Engine Architecture

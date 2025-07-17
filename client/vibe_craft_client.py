@@ -74,7 +74,8 @@ class VibeCraftClient:
         return all_tool_specs
 
     async def load_tool_group(
-            self, mcp_servers: List[MCPServerConfig], component_name_hook=None
+            self, mcp_servers: List[MCPServerConfig],
+            component_name_hook=None
     ) -> List:
         """
         Connect Multiple MCP servers with ClientSessionGroup, and integrate tools, prompts, resources.
@@ -115,7 +116,8 @@ class VibeCraftClient:
             self,
             prompt: str,
             mcp_servers: Optional[List[MCPServerConfig]] = None,
-            reuse_loaded_tools: Optional[bool] = None,
+            reuse_loaded_tools: Optional[bool] = False,
+            use_langchain: Optional[bool] = True,
     ) -> str:
         # Case 1: Load new tools
         if mcp_servers:
@@ -129,13 +131,15 @@ class VibeCraftClient:
 
         # Case 2: reuse tools or use new tools
         if self.tools and (reuse_loaded_tools or mcp_servers):
-            return await self.engine.generate_with_tools(
+            return await self.engine.generate_langchain_with_tools(
                 prompt=prompt,
                 tools=self.tools,
                 session=self.session
             )
 
         # Case 3: without tool
+        if use_langchain:
+            return await self.engine.generate_langchain(prompt=prompt)
         return await self.engine.generate(prompt=prompt)
 
     async def step_topic_selection(
@@ -173,7 +177,7 @@ class VibeCraftClient:
         elif user_choice == "2":
             print("\n🧠 주제 기반 샘플 데이터를 생성 중입니다...")
             prompt = generate_sample_prompt(topic_result.topic_prompt, topic_result.result)
-            sample_data = await self.execute_step(prompt)
+            sample_data = await self.execute_step(prompt, use_langchain=False)
             df = markdown_table_to_df(sample_data)
         else:
             try:
