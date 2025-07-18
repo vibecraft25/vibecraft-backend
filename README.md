@@ -59,9 +59,9 @@ source .venv/bin/activate
 # Essential packages
 uv add mcp[cli]   # Windows
 uv add "mcp[cli]" # MacOS/Linux
-uv add openai anthropic google-genai
 uv add langchain langchain-google-genai google-generativeai langchain-anthropic
 uv add langchain_community
+uv add langchain-mcp-adapters langgraph
 
 # Additional packages
 uv add pandas
@@ -136,8 +136,7 @@ $ python main.py
 ├── utils/
 │   ├── data_loader_utils.py  # Data load and File utils
 │   ├── menus.py              # User menu options
-│   ├── prompts.py            # LLM prompts
-│   └── tools.py              # MCP tool spec extractor
+│   └── prompts.py            # LLM prompts
 │
 ├── main.py                   # Entry point for running the pipeline
 ├── .env                      # Environment variables (optional)

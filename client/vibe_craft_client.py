@@ -4,16 +4,17 @@ __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 import os
 from contextlib import AsyncExitStack
 from typing import Optional
-from types import SimpleNamespace
 
 # Third-party imports
-from mcp import StdioServerParameters, ClientSession, ClientSessionGroup
+from langchain_core.tools import BaseTool
+from langchain_mcp_adapters.tools import load_mcp_tools
+from langchain_mcp_adapters.client import MultiServerMCPClient
+from mcp import StdioServerParameters, ClientSession
 from mcp.client.stdio import stdio_client
 
 # Custom imports
 from engine.base import BaseEngine
 from schemas.pipeline_schemas import MCPServerConfig, TopicStepResult
-from utils.tools import extract_tool_specs
 from utils.menus import *
 from utils.prompts import *
 from utils.data_loader_utils import (
@@ -30,8 +31,9 @@ from utils.data_loader_utils import (
 class VibeCraftClient:
     def __init__(self, engine: BaseEngine):
         self.engine = engine
-        self.session: Optional[ClientSession | ClientSessionGroup] = None
+        self.session: Optional[ClientSession] = None
         self.exit_stack = AsyncExitStack()
+        self.client: Optional[MultiServerMCPClient] = None
 
         self.memory_bank_server: Optional[List[MCPServerConfig]] = [
             MCPServerConfig("memory-bank-mcp", "npx", ["@aakarsh-sasi/memory-bank-mcp"])
@@ -44,12 +46,10 @@ class VibeCraftClient:
 
         self.tools: Optional[List] = None
 
-    async def load_tool(
-            self, server: MCPServerConfig
-    ) -> List:
+    async def load_tool(self, server: MCPServerConfig) -> List[BaseTool]:
         """ Connect Single MCP server and save to self.session """
-        all_tool_specs = []
 
+        tools = []
         try:
             # connect to server
             await self.exit_stack.aclose()
@@ -57,60 +57,45 @@ class VibeCraftClient:
             transport = await self.exit_stack.enter_async_context(stdio_client(
                 StdioServerParameters(command=server.command, args=server.args)
             ))
-            self.stdio, self.write = transport
-            self.session = await self.exit_stack.enter_async_context(ClientSession(self.stdio, self.write))
+            stdio, write = transport
+            self.session = await self.exit_stack.enter_async_context(ClientSession(stdio, write))
             await self.session.initialize()
 
             # load tool from connected server
-            response = await self.session.list_tools()
-            tool_specs = extract_tool_specs(response)
-            all_tool_specs.extend(tool_specs)
-
-            tools = response.tools
+            tools = await load_mcp_tools(self.session)
             print(f"\n🔌 Connected to {server.name}")
             print("Connected to server with tools:", [tool.name for tool in tools])
         except Exception as e:
-            print(f"⚠️ 서버 실패: {server.name} - {e}")
-        return all_tool_specs
+            print(f"⚠️ 서버 연결 실패: {server.name} - {e}")
+        return tools
 
-    async def load_tool_group(
-            self, mcp_servers: List[MCPServerConfig],
-            component_name_hook=None
-    ) -> List:
+    async def load_tools(self, mcp_servers: List[MCPServerConfig]) -> List[BaseTool]:
         """
         Connect Multiple MCP servers with ClientSessionGroup, and integrate tools, prompts, resources.
         Save self.session
 
         Args:
             mcp_servers (List[MCPServerConfig]): mcp servers
-            component_name_hook (Optional[Callable]): 충돌 방지용 이름 생성 함수
         """
-        if hasattr(self, "session") and self.session is not None:
-            if isinstance(self.session, ClientSessionGroup):
-                await self.session.__aexit__(None, None, None)
-            self.session = None
 
-        self.session = ClientSessionGroup(component_name_hook=component_name_hook)
-
-        all_tool_specs = []
-        await self.session.__aenter__()
-
-        for server in mcp_servers:
-            try:
-                server_params = StdioServerParameters(command=server.command, args=server.args)
-                await self.session.connect_to_server(server_params)
-
-                # 현재 연결된 서버 이름 기준으로 tools 추출
-                tools = list(self.session.tools.values())
-                tool_specs = extract_tool_specs(SimpleNamespace(tools=tools))
-                all_tool_specs.extend(tool_specs)
-
-                print(f"\n🔌 Connected to {server.name}")
-                print("Connected to server with tools:", [t["name"] for t in tool_specs])
-            except Exception as e:
-                print(f"⚠️ 서버 실패: {server.name} - {e}")
-
-        return all_tool_specs
+        tools = []
+        try:
+            self.client = MultiServerMCPClient(
+                {
+                    tool.name: {
+                        "command": tool.command,
+                        "args": tool.args,
+                        "transport": tool.transport
+                    }
+                    for tool in mcp_servers
+                }
+            )
+            tools = await self.client.get_tools()
+            print(f"\n🔌 Connected to {', '.join([t.name for t in mcp_servers])}")
+            print("Connected to server with tools:", [tool.name for tool in tools])
+        except Exception as e:
+            print(f"⚠️ 서버 연결 실패: {', '.join([t.name for t in mcp_servers])} - {e}")
+        return tools
 
     async def execute_step(
             self,
@@ -125,7 +110,7 @@ class VibeCraftClient:
                 if len(mcp_servers) == 1:
                     self.tools = await self.load_tool(mcp_servers[0])
                 else:
-                    self.tools = await self.load_tool_group(mcp_servers)
+                    self.tools = await self.load_tools(mcp_servers)
             except Exception as e:
                 raise RuntimeError(f"❌ 모든 서버에서 tool을 불러오는 데 실패했습니다: {e}")
 
@@ -134,7 +119,6 @@ class VibeCraftClient:
             return await self.engine.generate_langchain_with_tools(
                 prompt=prompt,
                 tools=self.tools,
-                session=self.session
             )
 
         # Case 3: without tool
@@ -368,10 +352,9 @@ class VibeCraftClient:
         # await self.step_deploy()
 
     async def cleanup(self):
-        if isinstance(self.session, ClientSessionGroup):
-            await self.session.__aexit__(None, None, None)
-
         if getattr(self, "exit_stack", None) is not None:
             await self.exit_stack.aclose()
             self.exit_stack = None
         self.session = None
+        self.client = None
+
