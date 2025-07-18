@@ -150,3 +150,11 @@ $ python main.py
 - 🌐 Web scraping fallback for missing user data
 - 💻 Code generation with charting and visualization
 - 🔁 Stage navigation via redo / go back keywords
+
+### References
+- https://python.langchain.com/docs/introduction/
+- https://python.langchain.com/docs/versions/migrating_memory/conversation_buffer_memory/
+- https://digitalbourgeois.tistory.com/1017
+- https://velog.io/@exoluse/AI-langchain-mcp-%EA%B5%AC%ED%98%84-%EB%8F%84%EC%A4%91-%EB%AC%B8%EC%A0%9C
+- https://markbyun.tistory.com/entry/How-to-use-Gemini-API-via-LangChain
+- https://sean-j.tistory.com/entry/LangGraph-Delete-Messages
