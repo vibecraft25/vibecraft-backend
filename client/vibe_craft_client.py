@@ -374,9 +374,9 @@ class VibeCraftClient:
         result3 = await self.execute_step(prompt, reuse_loaded_tools=True)
         print(f"\n🤖 Langchain with reused tools:\n{result3}\n")
 
-        # Check run Langchain without tools after run generate_langchain_with_tools method
+        # Check run Langchain without tools after run generate_langchain_with_tools
         result4 = await self.execute_step(prompt)
-        print(f"\n🤖 분석 결과:\n{result4}\n")
+        print(f"\n🤖 Check run Langchain without tools after run generate_langchain_with_tools:\n{result4}\n")
 
         while True:
             query = input("\n사용자: ").strip()

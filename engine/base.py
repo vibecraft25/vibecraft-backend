@@ -16,8 +16,8 @@ from langgraph.graph import START, END, MessagesState, StateGraph
 class BaseEngine:
     def __init__(self, model_cls, model_name: str, model_kwargs: dict):
         # 추후 user id로 변경 가능
-        thread_id = uuid.uuid4()
-        self.config = {"configurable": {"thread_id": thread_id}}
+        self.thread_id = uuid.uuid4()
+        self.config = {"configurable": {"thread_id": self.thread_id}}
 
         self.workflow = StateGraph(state_schema=MessagesState)
 
@@ -51,27 +51,33 @@ class BaseEngine:
     async def generate_langchain(self, prompt: str) -> str:
         """ Generation using LangChain without tool integration """
 
-        input_message = HumanMessage(content=prompt)
-        response = await self.app.ainvoke({"messages": [input_message]}, self.config)
-        ai_messages = self.parse_ai_messages(response['messages'])
+        try:
+            input_message = HumanMessage(content=prompt)
+            response = await self.app.ainvoke({"messages": [input_message]}, self.config)
+            ai_messages = self.parse_ai_messages(response['messages'])
 
-        if ai_messages and isinstance(ai_messages[-1], dict):
-            return ai_messages[-1].get("content", "")
-        return ""
+            if ai_messages and isinstance(ai_messages[-1], dict):
+                return ai_messages[-1].get("content", "")
+            return ""
+        except Exception as e:
+            return str(e)
 
     async def generate_langchain_with_tools(
             self, prompt: str, tools: List[BaseTool]
     ) -> str:
         """ Generation using LangChain with external tools integration (via MCP) """
 
-        input_message = HumanMessage(content=prompt)
-        agent = create_react_agent(self.llm, tools=tools, checkpointer=self.memory)
-        response = await agent.ainvoke({"messages": [input_message]}, self.config)
-        ai_messages = self.parse_ai_messages(response['messages'])
+        try:
+            input_message = HumanMessage(content=prompt)
+            agent = create_react_agent(self.llm, tools=tools, checkpointer=self.memory)
+            response = await agent.ainvoke({"messages": [input_message]}, self.config)
+            ai_messages = self.parse_ai_messages(response['messages'])
 
-        if ai_messages and isinstance(ai_messages[-1], dict):
-            return ai_messages[-1].get("content", "")
-        return ""
+            if ai_messages and isinstance(ai_messages[-1], dict):
+                return ai_messages[-1].get("content", "")
+            return ""
+        except Exception as e:
+            return str(e)
 
     @staticmethod
     def parse_ai_messages(messages: List) -> List[dict]:
