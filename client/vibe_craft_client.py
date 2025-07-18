@@ -367,13 +367,12 @@ class VibeCraftClient:
         test_mcp_server = []
 
         # Langchain with tools
-        result2 = await self.execute_step(prompt, [test_mcp_server[0]])
+        result2 = await self.execute_step(prompt, test_mcp_server)
         print(f"\n🤖 Langchain with tools:\n{result2}\n")
 
-        # test용 mcp_server 추가 필요
         # Langchain with reused tools
-        result3 = await self.execute_step(prompt, test_mcp_server, reuse_loaded_tools=True)
-        print(f"\n🤖 분석 결과:\n{result3}\n")
+        result3 = await self.execute_step(prompt, reuse_loaded_tools=True)
+        print(f"\n🤖 Langchain with reused tools:\n{result3}\n")
 
         # Check run Langchain without tools after run generate_langchain_with_tools method
         result4 = await self.execute_step(prompt)
