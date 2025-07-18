@@ -62,6 +62,7 @@ uv add "mcp[cli]" # MacOS/Linux
 uv add langchain langchain-google-genai google-generativeai langchain-anthropic
 uv add langchain_community
 uv add langchain-mcp-adapters langgraph
+uv add grandalf   # Optional
 
 # Additional packages
 uv add pandas
