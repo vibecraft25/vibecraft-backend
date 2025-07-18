@@ -255,6 +255,7 @@ class VibeCraftClient:
         result = await self.execute_step("WIP", self.deploy_mcp_server)
         print(f"\n💻 배포중...")
 
+    # TODO: memory buffer reset으로 replace WIP
     async def reset_via_memory_bank(self, reset_message: str):
         if not self.memory_bank_server:
             print("⚠️ memory_bank_server가 설정되지 않아 초기화 생략")
