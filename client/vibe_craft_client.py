@@ -351,6 +351,39 @@ class VibeCraftClient:
         await self.step_code_generation(topic_prompt_result, file_path)
         # await self.step_deploy()
 
+    async def test(self):
+        print("🔥 Run Test...")
+        prompt = "주제를 자동으로 설정해줘"
+
+        # Run without tool and Langchain
+        result0 = await self.execute_step(prompt, use_langchain=False)
+        print(f"\n🤖 Run without tool and Langchain:\n{result0}\n")
+
+        # Langchain without tool
+        result1 = await self.execute_step(prompt)
+        print(f"\n🤖 Langchain without tool:\n{result1}\n")
+
+        # TODO: test용 mcp_server 추가 필요
+        test_mcp_server = []
+
+        # Langchain with tools
+        result2 = await self.execute_step(prompt, [test_mcp_server[0]])
+        print(f"\n🤖 Langchain with tools:\n{result2}\n")
+
+        # test용 mcp_server 추가 필요
+        # Langchain with reused tools
+        result3 = await self.execute_step(prompt, test_mcp_server, reuse_loaded_tools=True)
+        print(f"\n🤖 분석 결과:\n{result3}\n")
+
+        # Check run Langchain without tools after run generate_langchain_with_tools method
+        result4 = await self.execute_step(prompt)
+        print(f"\n🤖 분석 결과:\n{result4}\n")
+
+        while True:
+            query = input("\n사용자: ").strip()
+            result = await self.execute_step(query, reuse_loaded_tools=True)
+            print(result)
+
     async def cleanup(self):
         if getattr(self, "exit_stack", None) is not None:
             await self.exit_stack.aclose()
