@@ -13,8 +13,12 @@ from langgraph.prebuilt import ToolNode
 from langgraph.graph import START, END, MessagesState, StateGraph
 
 
+from typing import Annotated
+
+
 class State(MessagesState):
     summary: str
+    messages: Annotated[list, "messages"]
 
 
 class BaseEngine:
@@ -27,7 +31,7 @@ class BaseEngine:
         self.thread_id = uuid.uuid4()
         self.config = {"configurable": {"thread_id": self.thread_id}}
 
-        self.workflow = StateGraph(state_schema=MessagesState)
+        self.workflow = StateGraph(state_schema=State)
         self.model_name = model_name
         if tools:
             self.llm = model_cls(model=model_name, **model_kwargs).bind_tools(tools)
@@ -142,18 +146,73 @@ class BaseEngine:
         except Exception as e:
             return str(e)
 
-    # TODO: WIP
-    def save_conversation(self):
-        print()
+    # TODO: WIP 1
+    def save_chat_history(self, save_dir: str = "saved_conversations"):
+        import os
+        import json
+        from datetime import datetime
 
-    # TODO: WIP
+        os.makedirs(save_dir, exist_ok=True)
+
+        # 현재 스레드 기준 상태 이력 조회
+        history = list(self.app.get_state_history(self.config))
+        if not history:
+            print("[!] 저장할 대화 기록이 없습니다.")
+            return
+
+        all_messages = []
+        summary = ""
+
+        # 상태 이력에서 메시지와 요약 수집
+        for snapshot in history:
+            state = snapshot.values
+            messages = state.get("messages", [])
+            for msg in messages:
+                all_messages.append({
+                    "type": type(msg).__name__,
+                    "content": msg.content,
+                    "tool_calls": getattr(msg, "tool_calls", None),
+                    "name": getattr(msg, "name", None),
+                })
+            if "summary" in state and state["summary"]:
+                summary = state["summary"]
+
+        chat_entry = {
+            "thread_id": str(self.thread_id),
+            "timestamp": datetime.now().isoformat(),
+            "summary": summary,
+            "chat_history": all_messages
+        }
+
+        # 파일 저장
+        filename = os.path.join(save_dir, f"conversation_{str(self.thread_id)}.json")
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(chat_entry, f, ensure_ascii=False, indent=2)
+
+        print(f"[✔] 대화 기록이 '{filename}' 에 저장되었습니다.")
+
+    # TODO: WIP 2
+    def load_chat_history(self, thread_id: str, save_dir: str = "saved_conversations"):
+        import json
+        import os
+
+        try:
+            filename = os.path.join(save_dir, f"conversation_{str(thread_id)}.json")
+            with open(filename, "r", encoding="utf-8") as f:
+                chat_data = json.load(f)
+                return chat_data.get("chat_history", [])
+        except FileNotFoundError:
+            print("[!] 저장된 대화가 없습니다.")
+            return []
+
+    # TODO: WIP 3
     def clear_memory(self):
         checkpoints = list(self.app.get_state_history(self.config))
         if len(checkpoints) > 1:
-            temp1 = self.app.get_state_history(self.config)
+            temp1 = list(self.app.get_state_history(self.config))
             previous_state = checkpoints[1].values  # 두 번째로 최근 상태
             self.app.update_state(self.config, previous_state)
-            temp2 = self.app.get_state_history(self.config)
+            temp2 = list(self.app.get_state_history(self.config))
             print()
 
     @staticmethod
