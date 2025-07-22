@@ -2,18 +2,13 @@ __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
 # Standard imports
 import os
-from contextlib import AsyncExitStack
 from typing import Optional
 
 # Third-party imports
-from langchain_core.tools import BaseTool
-from langchain_mcp_adapters.tools import load_mcp_tools
 from langchain_mcp_adapters.client import MultiServerMCPClient
-from mcp import StdioServerParameters, ClientSession
-from mcp.client.stdio import stdio_client
 
 # Custom imports
-from engine.base import BaseEngine
+from engine import ClaudeEngine, OpenAIEngine, GeminiEngine
 from schemas.pipeline_schemas import MCPServerConfig, TopicStepResult
 from utils.menus import *
 from utils.prompts import *
@@ -29,12 +24,18 @@ from utils.data_loader_utils import (
 
 
 class VibeCraftClient:
-    def __init__(self, engine: BaseEngine):
-        self.engine = engine
-        self.session: Optional[ClientSession] = None
-        self.exit_stack = AsyncExitStack()
+    def __init__(self, engine: str):
+        if engine == "claude":
+            self.engine = ClaudeEngine()
+        elif engine == "gemini":
+            self.engine = GeminiEngine()
+        elif engine == "gpt":
+            self.engine = OpenAIEngine()
+        else:
+            raise ValueError("Not Supported Engine")
         self.client: Optional[MultiServerMCPClient] = None
 
+        self.mcp_tools: Optional[List[MCPServerConfig]] = None  # common MCP tools
         self.memory_bank_server: Optional[List[MCPServerConfig]] = [
             MCPServerConfig("memory-bank-mcp", "npx", ["@aakarsh-sasi/memory-bank-mcp"])
         ]
@@ -46,92 +47,45 @@ class VibeCraftClient:
 
         self.tools: Optional[List] = None
 
-    async def load_tool(self, server: MCPServerConfig) -> List[BaseTool]:
-        """ Connect Single MCP server and save to self.session """
-
-        tools = []
-        try:
-            # connect to server
-            await self.exit_stack.aclose()
-            self.exit_stack = AsyncExitStack()
-            transport = await self.exit_stack.enter_async_context(stdio_client(
-                StdioServerParameters(command=server.command, args=server.args)
-            ))
-            stdio, write = transport
-            self.session = await self.exit_stack.enter_async_context(ClientSession(stdio, write))
-            await self.session.initialize()
-
-            # load tool from connected server
-            tools = await load_mcp_tools(self.session)
-            print(f"\n🔌 Connected to {server.name}")
-            print("Connected to server with tools:", [tool.name for tool in tools])
-        except Exception as e:
-            print(f"⚠️ 서버 연결 실패: {server.name} - {e}")
-        return tools
-
-    async def load_tools(self, mcp_servers: List[MCPServerConfig]) -> List[BaseTool]:
+    async def load_tools(self, mcp_servers: Optional[List[MCPServerConfig]] = None):
         """
         Connect Multiple MCP servers with ClientSessionGroup, and integrate tools, prompts, resources.
         Save self.session
-
-        Args:
-            mcp_servers (List[MCPServerConfig]): mcp servers
         """
 
-        tools = []
-        try:
-            self.client = MultiServerMCPClient(
-                {
-                    tool.name: {
-                        "command": tool.command,
-                        "args": tool.args,
-                        "transport": tool.transport
-                    }
-                    for tool in mcp_servers
-                }
-            )
-            tools = await self.client.get_tools()
-            print(f"\n🔌 Connected to {', '.join([t.name for t in mcp_servers])}")
-            print("Connected to server with tools:", [tool.name for tool in tools])
-        except Exception as e:
-            print(f"⚠️ 서버 연결 실패: {', '.join([t.name for t in mcp_servers])} - {e}")
-        return tools
-
-    async def execute_step(
-            self,
-            prompt: str,
-            mcp_servers: Optional[List[MCPServerConfig]] = None,
-            reuse_loaded_tools: Optional[bool] = False,
-            use_langchain: Optional[bool] = True,
-    ) -> str:
-        # Case 1: Load new tools
+        mcp_servers = mcp_servers or self.mcp_tools
         if mcp_servers:
             try:
-                if len(mcp_servers) == 1:
-                    self.tools = await self.load_tool(mcp_servers[0])
-                else:
-                    self.tools = await self.load_tools(mcp_servers)
+                self.client = MultiServerMCPClient(
+                    {
+                        tool.name: {
+                            "command": tool.command,
+                            "args": tool.args,
+                            "transport": tool.transport
+                        }
+                        for tool in mcp_servers
+                    }
+                )
+                self.tools = await self.client.get_tools()
+                self.engine.update_tools(self.tools)
+                print(f"\n🔌 Connected to {', '.join([t.name for t in mcp_servers])}")
+                print("Connected to server with tools:", [tool.name for tool in self.tools])
             except Exception as e:
-                raise RuntimeError(f"❌ 모든 서버에서 tool을 불러오는 데 실패했습니다: {e}")
+                print(f"⚠️ 서버 연결 실패: {', '.join([t.name for t in mcp_servers])} - {e}")
 
-        # Case 2: reuse tools or use new tools
-        if self.tools and (reuse_loaded_tools or mcp_servers):
-            return await self.engine.generate_langchain_with_tools(
-                prompt=prompt,
-                tools=self.tools,
-            )
-
-        # Case 3: without tool
+    async def execute_step(self, prompt: str, use_langchain: Optional[bool] = True) -> str:
         if use_langchain:
             return await self.engine.generate_langchain(prompt=prompt)
         return await self.engine.generate(prompt=prompt)
 
     async def step_topic_selection(
-            self, topic_prompt: str
+        self, topic_prompt: str
     ) -> TopicStepResult:
+        await self.load_tools(self.topic_mcp_server)
+
         print("\n🚦 Step 1: 주제 설정")
         prompt = set_topic_prompt(topic_prompt)
-        result = await self.execute_step(prompt, self.topic_mcp_server)
+        result = await self.execute_step(prompt)
         print(f"\n📌 주제 설정 결과:\n{result}")
 
         while True:
@@ -141,7 +95,7 @@ class VibeCraftClient:
                 return TopicStepResult(topic_prompt=topic_prompt, result=result)
             elif user_choice == "2":
                 additional_query = additional_query_prompt(topic_prompt, result)
-                result = await self.execute_step(additional_query, self.topic_mcp_server)
+                result = await self.execute_step(additional_query)
                 print(f"\n🛠 수정된 주제 결과:\n{result}")
             elif user_choice == "3":
                 await self.reset_via_memory_bank("주제를 다시 설정하고 싶습니다.")
@@ -151,10 +105,11 @@ class VibeCraftClient:
                 print("⚠️ 유효한 선택지를 입력해주세요 (1, 2, 3)")
 
     async def step_data_upload_or_collection(
-            self, topic_result: TopicStepResult
+        self, topic_result: TopicStepResult
     ) -> str:
-        print("\n🚦 Step 2: 데이터 업로드 또는 수집")
+        await self.load_tools(self.web_search_mcp_server)
 
+        print("\n🚦 Step 2: 데이터 업로드 또는 수집")
         user_choice = select_data_loader_menu()
         if user_choice == "1":
             df = load_files()
@@ -168,7 +123,7 @@ class VibeCraftClient:
                 # TODO: WIP
                 print("\n🌐 관련 데이터 다운로드 링크를 추천합니다...")
                 prompt = generate_download_link_prompt(topic_result.topic_prompt)
-                result = await self.execute_step(prompt, self.web_search_mcp_server)
+                result = await self.execute_step(prompt)
                 print(f"\n🔗 추천된 다운로드 링크:\n{result}")
                 df = load_files()
             except Exception as e:
@@ -222,8 +177,9 @@ class VibeCraftClient:
 
     # TODO: WIP
     async def step_code_generation(self, topic_result: TopicStepResult, db_path: str):
-        print("\n🚦 Step 3: 웹앱 코드 생성")
+        await self.load_tools(self.code_generation_mcp_server)
 
+        print("\n🚦 Step 3: 웹앱 코드 생성")
         df = load_local_files([db_path])
         if df is None or df.empty:
             print("❌ SQLite 파일로부터 데이터를 불러오지 못했습니다.")
@@ -239,7 +195,7 @@ class VibeCraftClient:
             sample_rows=sample_rows
         )
 
-        result = await self.execute_step(prompt, self.code_generation_mcp_server, use_langchain=False)
+        result = await self.execute_step(prompt, use_langchain=False)
         print(f"\n💻 웹앱 코드 생성 결과:\n\n{result[:3000]}...")  # 길이 제한 표시
 
         output_dir = "./web_output"
@@ -251,17 +207,21 @@ class VibeCraftClient:
 
     # TODO: WIP
     async def step_deploy(self):
+        await self.load_tools(self.deploy_mcp_server)
+
         print("\n🚦 Step 4: Deploy")
-        result = await self.execute_step("WIP", self.deploy_mcp_server)
+        result = await self.execute_step("WIP")
         print(f"\n💻 배포중...")
 
     # TODO: memory buffer reset으로 replace WIP
     async def reset_via_memory_bank(self, reset_message: str):
+        await self.load_tools(self.memory_bank_server)
+
         if not self.memory_bank_server:
             print("⚠️ memory_bank_server가 설정되지 않아 초기화 생략")
             return
         print("🔁 Memory Bank 초기화 중...")
-        await self.execute_step(reset_message, self.memory_bank_server)
+        await self.execute_step(reset_message)
 
     async def run_pipeline(self, topic_prompt: str):
         # # TODO: TEST WIP
@@ -364,30 +324,10 @@ class VibeCraftClient:
         result1 = await self.execute_step(prompt)
         print(f"\n🤖 Langchain without tool:\n{result1}\n")
 
-        # TODO: test용 mcp_server 추가 필요
-        test_mcp_server = []
-
-        # Langchain with tools
-        result2 = await self.execute_step(prompt, test_mcp_server)
-        print(f"\n🤖 Langchain with tools:\n{result2}\n")
-
-        # Langchain with reused tools
-        result3 = await self.execute_step(prompt, reuse_loaded_tools=True)
-        print(f"\n🤖 Langchain with reused tools:\n{result3}\n")
-
-        # Check run Langchain without tools after run generate_langchain_with_tools
-        result4 = await self.execute_step(prompt)
-        print(f"\n🤖 Check run Langchain without tools after run generate_langchain_with_tools:\n{result4}\n")
-
         while True:
             query = input("\n사용자: ").strip()
-            result = await self.execute_step(query, reuse_loaded_tools=True)
+            result = await self.execute_step(query)
             print(result)
 
     async def cleanup(self):
-        if getattr(self, "exit_stack", None) is not None:
-            await self.exit_stack.aclose()
-            self.exit_stack = None
-        self.session = None
         self.client = None
-

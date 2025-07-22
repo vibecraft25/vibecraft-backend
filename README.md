@@ -158,3 +158,5 @@ $ python main.py
 - https://velog.io/@exoluse/AI-langchain-mcp-%EA%B5%AC%ED%98%84-%EB%8F%84%EC%A4%91-%EB%AC%B8%EC%A0%9C
 - https://markbyun.tistory.com/entry/How-to-use-Gemini-API-via-LangChain
 - https://sean-j.tistory.com/entry/LangGraph-Delete-Messages
+- https://langchain-ai.github.io/langgraph/how-tos/memory/add-memory/
+- https://rudaks.tistory.com/entry/langgraph-%EB%8C%80%ED%99%94-%EC%9D%B4%EB%A0%A5%EC%9D%84-%EC%9A%94%EC%95%BD%ED%95%98%EB%8A%94-%EB%B0%A9%EB%B2%95
