@@ -18,7 +18,7 @@ from langgraph.graph.state import CompiledStateGraph
 from langgraph.graph import START, END, MessagesState, StateGraph
 
 # Custom imports
-from schemas.mcp_schemas import ChatHistory
+from schemas import ChatHistory
 
 
 class State(MessagesState):
