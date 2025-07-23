@@ -5,6 +5,7 @@ import os
 import uuid
 import json
 from typing import List, Literal, Optional
+from typing import AsyncGenerator
 from pathlib import Path
 
 # Third-party imports
@@ -13,10 +14,11 @@ from langchain_core.tools import BaseTool
 from langchain_core.messages import SystemMessage, HumanMessage, RemoveMessage
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.prebuilt import ToolNode
+from langgraph.graph.state import CompiledStateGraph
 from langgraph.graph import START, END, MessagesState, StateGraph
 
 # Custom imports
-from schemas import ChatHistory
+from schemas.mcp_schemas import ChatHistory
 
 
 class State(MessagesState):
@@ -25,23 +27,26 @@ class State(MessagesState):
 
 class BaseEngine:
     def __init__(
-            self,
-            model_cls, model_name: str, model_kwargs: dict,
-            tools: Optional[List[BaseTool]] = None,
+        self,
+        model_cls, model_name: str, model_kwargs: dict,
+        tools: Optional[List[BaseTool]] = None,
     ):
         self.thread_id = uuid.uuid4()
         self.config = {"configurable": {"thread_id": self.thread_id}}
-
-        self.workflow = StateGraph(state_schema=State)
         self.model_name = model_name
+
+        self.workflow = None
         if tools:
             self.llm = model_cls(model=model_name, **model_kwargs).bind_tools(tools)
         else:
             tools = []
             self.llm = model_cls(model=model_name, **model_kwargs)
-        tool_node = ToolNode(tools)
-
         self.memory = MemorySaver()
+        self.app = self.build_graph(tools)
+
+    def build_graph(self, tools: Optional[List[BaseTool]] = None) -> CompiledStateGraph:
+        self.workflow = StateGraph(state_schema=State)
+        tool_node = ToolNode(tools)
 
         # Set Node
         self.workflow.add_node("agent", self.call_model)
@@ -57,10 +62,12 @@ class BaseEngine:
         self.workflow.add_edge("summarize_conversation", END)
         self.workflow.add_edge("tools", "agent")
 
-        self.app = self.workflow.compile(checkpointer=self.memory)
+        app = self.workflow.compile(checkpointer=self.memory)
         print("--- LangGraph Flow ---")
-        print(self.app.get_graph().draw_ascii())
+        print(app.get_graph().draw_ascii())
         print("----------------------")
+
+        return app
 
     # LanGraph Logic Start
     def call_model(self, state: State):
@@ -147,6 +154,34 @@ class BaseEngine:
             return ""
         except Exception as e:
             return str(e)
+
+    async def stream_generate(self, prompt: str):
+        """ Streaming generation method without LangChain and tools """
+        async for chunk in self.llm.astream(
+            prompt,
+            self.config,
+            stream_mode="messages"
+        ):
+            messages = chunk.get("messages", [])
+            content = messages[0].content
+            content.pretty_print()
+            yield content
+
+        self.save_chat_history()
+
+    async def stream_generate_langchain(self, prompt: str):
+        input_message = HumanMessage(content=prompt)
+
+        async for chunk in self.app.astream(
+                {"messages": [input_message]},
+                self.config,
+                stream_mode="messages"
+                # stream_mode="values"
+        ):
+            content = chunk[0].content
+            yield content
+
+        self.save_chat_history()
 
     def save_chat_history(self, save_dir: str = "chat-data"):
         os.makedirs(save_dir, exist_ok=True)

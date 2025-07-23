@@ -47,6 +47,9 @@ class VibeCraftClient:
 
         self.tools: Optional[List] = None
 
+    def load_chat_history(self, thread_id: str):
+        self.engine.load_chat_history(thread_id=thread_id)
+
     async def load_tools(self, mcp_servers: Optional[List[MCPServerConfig]] = None):
         """
         Connect Multiple MCP servers with ClientSessionGroup, and integrate tools, prompts, resources.
@@ -73,10 +76,24 @@ class VibeCraftClient:
             except Exception as e:
                 print(f"⚠️ 서버 연결 실패: {', '.join([t.name for t in mcp_servers])} - {e}")
 
-    async def execute_step(self, prompt: str, use_langchain: Optional[bool] = True) -> str:
+    async def execute_step(
+        self, prompt: str,
+        use_langchain: Optional[bool] = True,
+    ) -> str:
         if use_langchain:
             return await self.engine.generate_langchain(prompt=prompt)
         return await self.engine.generate(prompt=prompt)
+
+    async def execute_stream_step(
+        self, prompt: str,
+        use_langchain: Optional[bool] = True,
+    ):
+        if use_langchain:
+            async for chunk in self.engine.stream_generate_langchain(prompt=prompt):
+                yield chunk
+        else:
+            async for chunk in self.engine.stream_generate(prompt=prompt):
+                yield chunk
 
     async def step_topic_selection(
         self, topic_prompt: str
