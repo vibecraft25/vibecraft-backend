@@ -48,11 +48,13 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 #### 3. Create and activate the virtual environment
 ```bash
-uv venv
+uv venv --python=python3.12
 # Windows
 .venv\Scripts\activate
 # MacOS/Linux
 source .venv/bin/activate
+
+uv init
 ```
 #### 4. Install dependencies
 ```bash
@@ -62,6 +64,7 @@ uv add "mcp[cli]" # MacOS/Linux
 uv add langchain langchain-google-genai google-generativeai langchain-anthropic
 uv add langchain_community
 uv add langchain-mcp-adapters langgraph
+uv add langchain_mcp_adapters
 uv add grandalf   # Optional
 
 # Additional packages

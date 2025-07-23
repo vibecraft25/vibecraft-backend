@@ -316,13 +316,16 @@ class VibeCraftClient:
         print("🔥 Run Test...")
         prompt = "주제를 자동으로 설정해줘"
 
-        # Run without tool and Langchain
+        # Run without Langchain
         result0 = await self.execute_step(prompt, use_langchain=False)
         print(f"\n🤖 Run without tool and Langchain:\n{result0}\n")
 
-        # Langchain without tool
+        # Run Langchain
         result1 = await self.execute_step(prompt)
         print(f"\n🤖 Langchain without tool:\n{result1}\n")
+
+        # self.engine.save_chat_history()
+        self.engine.load_chat_history(thread_id="e1bc5357-d78f-4469-9174-098ad51ba0bb")
 
         while True:
             query = input("\n사용자: ").strip()
