@@ -1,32 +1,29 @@
 __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
-# Standard imports
-import asyncio
-
 # Third-party imports
+import uvicorn
+from fastapi import FastAPI
 from dotenv import load_dotenv
 
 # Custom imports
-from client.vibe_craft_client import VibeCraftClient
+from config import settings
+from routers import chat
 
-load_dotenv()
+load_dotenv()   # TODO: 추후 사용자 토큰 받을 수 있게 대체 필요
 
+app = FastAPI(
+    version="1.0.0",
+    title="VibeCraft SSE API",
+    swagger_ui_parameters={"syntaxHighlight": True},
+    docs_url="/docs",
+)
+app.include_router(chat, tags=["chat"])
 
-async def main():
-    print("✅ 사용할 AI 모델을 선택하세요: claude / gemini / gpt (기본: claude)")
-    # TODO: TEST WIP
-    engine = "gemini"
-    # engine = input("모델: ").strip().lower() or "claude"
-    client = VibeCraftClient(engine)
-
-    try:
-        # TODO: TEST WIP
-        topic = "피자 일매출을 시각화하는 페이지를 제작할거야"
-        # topic = input("🎤 주제를 입력하세요: ").strip()
-
-        await client.run_pipeline(topic)
-    finally:
-        await client.cleanup()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    from platform import platform
+    # 운영 체제에 맞는 방식으로 서버 실행
+    if "Windows" in platform():
+        uvicorn.run("main:app", host=settings.host, port=settings.port, reload=True)
+    else:
+        uvicorn.run(app, host=settings.host, port=settings.port)
