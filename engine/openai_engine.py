@@ -4,7 +4,7 @@ __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 from typing import List, Optional
 
 # Third-party imports
-from langchain.chat_models import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI
 from langchain_core.tools import BaseTool
 
 # Custom imports

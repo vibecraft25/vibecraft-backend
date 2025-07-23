@@ -4,12 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250722] add save langchain WIP">
+    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250723] add save/load conversation history">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/vibe_craft_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/client/vibe_craft_client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/engine/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/engine/base.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/engine/openai_engine.py" beforeDir="false" afterPath="$PROJECT_DIR$/engine/openai_engine.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -225,15 +222,7 @@
       <workItem from="1752218423893" duration="21000" />
       <workItem from="1752218679692" duration="14000" />
       <workItem from="1752468414247" duration="33946000" />
-      <workItem from="1753245249914" duration="1180000" />
-    </task>
-    <task id="LOCAL-00008" summary="[250626] update&#10;- apply @mcp.resource">
-      <option name="closed" value="true" />
-      <created>1750926518331</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1750926518331</updated>
+      <workItem from="1753245249914" duration="1646000" />
     </task>
     <task id="LOCAL-00009" summary="[250626] add Dispatcher">
       <option name="closed" value="true" />
@@ -619,7 +608,15 @@
       <option name="project" value="LOCAL" />
       <updated>1753160968459</updated>
     </task>
-    <option name="localTasksCounter" value="57" />
+    <task id="LOCAL-00057" summary="[250723] add save/load conversation history">
+      <option name="closed" value="true" />
+      <created>1753246622283</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1753246622283</updated>
+    </task>
+    <option name="localTasksCounter" value="58" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -637,7 +634,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="[250626] INIT PROJECT" />
     <MESSAGE value="[250627] remove files" />
     <MESSAGE value="[250627] update README.md" />
     <MESSAGE value="[250630] step_data_upload_or_collection WIP" />
@@ -662,7 +658,8 @@
     <MESSAGE value="[250718] update README.md references" />
     <MESSAGE value="[250722] update base engine" />
     <MESSAGE value="[250722] add save langchain WIP" />
-    <option name="LAST_COMMIT_MESSAGE" value="[250722] add save langchain WIP" />
+    <MESSAGE value="[250723] add save/load conversation history" />
+    <option name="LAST_COMMIT_MESSAGE" value="[250723] add save/load conversation history" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
