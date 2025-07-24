@@ -75,13 +75,13 @@ async def stream_new_chat(
     async def event_generator():
         try:
             # 스트리밍 결과 전송
-            async for chunk in client.execute_stream_step(
+            async for event, chunk in client.execute_stream_step(
                 query, use_langchain=use_langchain
             ):
                 if chunk:
                     yield ServerSentEvent(
-                        event="progress",
-                        data=f"data: {chunk}"
+                        event=event or "progress",
+                        data=f"{chunk}"
                     )
                     await asyncio.sleep(0.1)
 
@@ -114,13 +114,13 @@ async def stream_load_chat(
     async def event_generator():
         try:
             # 스트리밍 결과 전송
-            async for chunk in client.execute_stream_step(
+            async for event, chunk in client.execute_stream_step(
                 query, use_langchain=use_langchain
             ):
                 if chunk:
                     yield ServerSentEvent(
-                        event="progress",
-                        data=f"data: {chunk}"
+                        event=event or "progress",
+                        data=f"{chunk}"
                     )
                     await asyncio.sleep(0.1)
 
