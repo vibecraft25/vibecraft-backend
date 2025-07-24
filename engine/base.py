@@ -200,17 +200,62 @@ class BaseEngine:
 
         print(f"[✔] 대화 기록이 '{filepath}' 에 저장되었습니다.")
 
-    def load_chat_history(self, thread_id: str, save_dir: str = "chat-data"):
+    def merge_chat_history(self, thread_id: str, save_dir: str = "chat-data"):
+        """
+        Load a saved chat history and merge its messages with the current session.
+
+        This method retrieves a chat record from a JSON file, extracts the message history,
+        and appends it in front of the current session's messages. It keeps the current
+        configuration and application state intact, updating only the message history.
+
+        Parameters:
+            thread_id (str): Unique identifier of the chat history to load.
+            save_dir (str): Directory path where chat history JSON files are stored. Default is "chat-data".
+        """
         filepath = Path(save_dir) / f"chat_{thread_id}.json"
         if not filepath.exists():
-            print(f"[!] 대화 기록 파일이 존재하지 않습니다: {filepath}")
+            print(f"[!] Chat history file does not exist: {filepath}")
             return
 
         try:
             with open(filepath, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 record = ChatHistory(**data)
-                print(f"[✔] 대화 기록이 성공적으로 불러와졌습니다: {filepath}")
+                print(f"[✔] Chat history successfully loaded: {filepath}")
+
+                loaded_messages = record.values.get("messages", [])
+                current_messages = self.app.get_state(self.config).values.get("messages", [])
+                merged_messages = loaded_messages + current_messages
+
+                self.memory = MemorySaver()
+                self.app = self.workflow.compile(checkpointer=self.memory)
+                self.app.update_state(self.config, {"messages": merged_messages})
+
+        except Exception as e:
+            print(f"[!] Failed to load chat history: {e}")
+
+    def load_chat_history(self, thread_id: str, save_dir: str = "chat-data"):
+        """
+        Load a saved chat history and completely replace the current session state.
+
+        This method loads a full chat session including the thread ID, configuration, and
+        conversation messages from a JSON file, and resets the current application state
+        to match the loaded session.
+
+        Parameters:
+            thread_id (str): Unique identifier of the chat history to load.
+            save_dir (str): Directory path where chat history JSON files are stored. Default is "chat-data".
+        """
+        filepath = Path(save_dir) / f"chat_{thread_id}.json"
+        if not filepath.exists():
+            print(f"[!] Chat history file does not exist: {filepath}")
+            return
+
+        try:
+            with open(filepath, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                record = ChatHistory(**data)
+                print(f"[✔] Chat history successfully loaded: {filepath}")
 
                 self.thread_id = record.thread_id
                 self.config = record.config
@@ -220,7 +265,7 @@ class BaseEngine:
                 self.app.update_state(self.config, record.values)
 
         except Exception as e:
-            print(f"[!] 대화 기록 불러오기 실패: {e}")
+            print(f"[!] Failed to load chat history: {e}")
 
     # TODO: implement HERE (go-back-to-previous-step)
     def clear_memory(self):

@@ -50,6 +50,9 @@ class VibeCraftClient:
     def get_thread_id(self) -> str:
         return str(self.engine.thread_id)
 
+    def merge_chat_history(self, thread_id: str):
+        self.engine.merge_chat_history(thread_id=thread_id)
+
     def load_chat_history(self, thread_id: str):
         self.engine.load_chat_history(thread_id=thread_id)
 
@@ -344,13 +347,14 @@ class VibeCraftClient:
         result1 = await self.execute_step(prompt)
         print(f"\n🤖 Langchain without tool:\n{result1}\n")
 
-        # self.engine.save_chat_history()
-        self.engine.load_chat_history(thread_id="e1bc5357-d78f-4469-9174-098ad51ba0bb")
-
         while True:
             query = input("\n사용자: ").strip()
             result = await self.execute_step(query)
             print(result)
+
+            self.engine.save_chat_history()
+            self.merge_chat_history(thread_id="0d11b676-9cc5-4eb2-a90e-59277ca590fa")
+            self.load_chat_history(thread_id="0d11b676-9cc5-4eb2-a90e-59277ca590fa")
 
     async def cleanup(self):
         self.client = None
