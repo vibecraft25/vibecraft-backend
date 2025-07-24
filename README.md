@@ -67,6 +67,9 @@ uv add langchain-mcp-adapters langgraph
 uv add langchain_mcp_adapters
 uv add grandalf   # Optional
 
+# Essential packages for server
+uv add fastapi uvicorn sqlalchemy pydantic
+
 # Additional packages
 uv add pandas
 uv add chardet
@@ -134,8 +137,13 @@ $ python main.py
 ├── client/
 │   └── vibe_craft_client.py  # Main pipeline client using MCP stdio
 │
+├── routers/
+│   └── chat.py             # LLM web socket server
+│
 ├── schemas/
-│   └── pipeline_schemas.py   # Pipeline schemas
+│   ├── chat_history_shcemas.py   # MCP chat history schemas
+│   ├── chat_shcemas.py           # Fastapi server chat schemas
+│   └── pipeline_schemas.py       # Pipeline schemas
 │
 ├── utils/
 │   ├── data_loader_utils.py  # Data load and File utils

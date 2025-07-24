@@ -1,0 +1,12 @@
+version:
+  server: "1.0.0"
+
+base_url: "http://127.0.0.1:8000"
+host: "127.0.0.1"
+port: 8000
+
+resource:
+  mcp: "C:/Users/kimsehun/Desktop/Aircok/ffdm_mcp/servers"
+
+log:
+  path: "./ffdm-app-python-log"

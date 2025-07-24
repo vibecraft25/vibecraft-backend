@@ -47,6 +47,9 @@ class VibeCraftClient:
 
         self.tools: Optional[List] = None
 
+    def get_thread_id(self) -> str:
+        return str(self.engine.thread_id)
+
     def load_chat_history(self, thread_id: str):
         self.engine.load_chat_history(thread_id=thread_id)
 

@@ -1,21 +1,23 @@
 [project]
-name = "vibecraft"
+name = "vibecraft-mcp"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "chardet>=5.2.0",
-    "fastmcp>=2.9.0",
+    "fastapi>=0.116.1",
     "google-generativeai>=0.8.5",
     "grandalf>=0.8",
     "langchain>=0.3.26",
-    "langchain-anthropic>=0.3.16",
+    "langchain-anthropic>=0.3.17",
     "langchain-community>=0.3.27",
     "langchain-google-genai>=2.0.10",
     "langchain-mcp-adapters>=0.1.9",
-    "langgraph>=0.5.3",
-    "mcp[cli]>=1.9.4",
-    "pandas>=2.3.0",
-    "python-dotenv>=1.1.1",
+    "langgraph>=0.5.4",
+    "mcp[cli]>=1.12.1",
+    "pandas>=2.3.1",
+    "pydantic>=2.11.7",
+    "sqlalchemy>=2.0.41",
+    "uvicorn>=0.35.0",
 ]
