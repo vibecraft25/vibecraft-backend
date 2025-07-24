@@ -156,15 +156,8 @@ class BaseEngine:
 
     async def stream_generate(self, prompt: str):
         """ Streaming generation method without LangChain and tools """
-        async for chunk in self.llm.astream(
-            prompt,
-            self.config,
-            stream_mode="messages"
-        ):
-            messages = chunk.get("messages", [])
-            content = messages[0].content
-            content.pretty_print()
-            yield content
+        async for chunk in self.llm.astream(prompt):
+            yield chunk.content
 
         self.save_chat_history()
 
@@ -175,7 +168,6 @@ class BaseEngine:
                 {"messages": [input_message]},
                 self.config,
                 stream_mode="messages"
-                # stream_mode="values"
         ):
             content = chunk[0].content
             yield content
