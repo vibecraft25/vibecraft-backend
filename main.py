@@ -7,7 +7,11 @@ from dotenv import load_dotenv
 
 # Custom imports
 from config import settings
-from routers import chat
+from routers import (
+    chat,
+    workflow,
+    content,
+)
 
 load_dotenv()   # TODO: 추후 사용자 토큰 받을 수 있게 대체 필요
 
@@ -18,6 +22,8 @@ app = FastAPI(
     docs_url="/docs",
 )
 app.include_router(chat, tags=["chat"])
+app.include_router(workflow, tags=["workflow"])
+app.include_router(content, tags=["content"])
 
 
 if __name__ == "__main__":

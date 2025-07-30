@@ -17,23 +17,20 @@ def set_topic_prompt(topic_prompt: str) -> str:
     )
 
 
-def additional_query_prompt(topic_prompt: str, result: str) -> str:
-    additional_prompt = input("✏️ 추가 수정 요청을 입력해주세요: ")
+def additional_query_prompt(additional_query: str) -> str:
     return (
         f"다음 요청을 반영해 주제 설정 결과를 수정해주세요:"
-        f"\n{topic_prompt}\n---\n{result}\n---\n"
-        f"사용자 요청: {additional_prompt}"
+        f"---\n"
+        f"사용자 요청: {additional_query}"
     )
 
 
 #######################
 # Data loader prompts #
 #######################
-def generate_sample_prompt(topic_prompt: str, topic_result: str) -> str:
+def generate_sample_prompt() -> str:
     return (
-        f"{topic_prompt}\n\n"
-        f"{topic_result}\n\n"
-        f"위 주제를 기반으로, 관련된 샘플 데이터를 만들어주세요. "
+        f"지금까지의 내용을 기반으로, 관련된 샘플 데이터를 만들어주세요. "
         f"컬럼 이름과 100개 이상의 예시 row를 포함하여 표 형태로 출력해주세요."
         # TODO: TEST WIP
         # f"컬럼 이름과 10개의 예시 row를 포함하여 표 형태로 출력해주세요."
@@ -85,45 +82,3 @@ def df_to_sqlite_with_col_filter_prompt(df: pd.DataFrame, to_drop: List[str]) ->
         f"가장 첫 줄에 이전 이름과 변경된 이름의 매핑을 dictionary 형식으로 한 줄로 반환하라. 줄바꿈 없이 반환하라.\n"
     )
     return prompt
-
-
-###########################
-# Code generation prompts #
-###########################
-# TODO: WIP
-def generate_dashboard_prompt(
-    topic_prompt: str,
-    table_name: str,
-    schema: dict,
-    sample_rows: list
-) -> str:
-    return (
-        f"당신은 프론트엔드 시각화 전문가입니다. 아래 주제와 SQLite 데이터를 기반으로, "
-        f"브라우저에서 SQLite 파일을 직접 로드하고 쿼리하여 시각화하는 대시보드 웹앱을 생성하세요.\n\n"
-
-        f"[사용자 주제]\n"
-        f"{topic_prompt}\n\n"
-
-        f"[SQLite 테이블 이름]\n"
-        f"{table_name}\n\n"
-
-        f"[테이블 스키마]\n"
-        + "\n".join([f"- {col}: {dtype}" for col, dtype in schema.items()]) + "\n\n"
-
-        f"[샘플 데이터 (3행)]\n"
-        + "\n".join([str(row) for row in sample_rows]) + "\n\n"
-
-        f"[구현 요구사항]\n"
-        f"- HTML, CSS, JavaScript로 구성된 하나의 HTML 파일을 작성하세요.\n"
-        f"- 외부 라이브러리는 CDN으로 로드하세요.\n"
-        f"- sql.js를 사용하여 SQLite 파일을 **fetch한 후 반드시 arrayBuffer로 읽고 Uint8Array로 변환**하여 SQL.Database 객체를 생성하세요.\n"
-        f"- initSqlJs()를 사용해 WebAssembly를 초기화하고, locateFile 옵션으로 .wasm 경로를 지정하세요.\n"
-        f"- SQLite 파일은 로컬 파일명(`{table_name}.sqlite`)으로 fetch되며, 브라우저에서 직접 쿼리하여 시각화에 사용하세요.\n"
-        f"- 시계열, 지도, 통계, 분포 등 적절한 시각화를 자동으로 선택하고, 여러 시각화 요소를 포함한 대시보드 형태로 구성하세요.\n"
-        f"- Plotly, Chart.js, D3.js, Leaflet 등의 라이브러리를 자유롭게 활용하세요.\n"
-        f"- 사용자 인터페이스는 필터, 카드, 탭, 요약 통계 등을 포함한 반응형 구조로 구성하세요.\n\n"
-
-        f"[출력 형식]\n"
-        f"- 설명 없이 전체 HTML 코드만 출력하세요.\n"
-        f"- SQLite 파일을 문자열이 아닌 바이너리 형식으로 처리하도록 명확히 구현하세요."
-    )

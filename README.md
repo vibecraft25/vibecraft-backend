@@ -69,17 +69,18 @@ uv add grandalf   # Optional
 
 # Essential packages for server
 uv add fastapi uvicorn sqlalchemy pydantic
+uv add pyjwt==2.1.0
 
 # Additional packages
+uv add pillow
 uv add pandas
 uv add chardet
 ```
-#### 5. Install required npm packages
+#### 5. Check nodejs for unsing mcp server (Future work)
 ```bash
 # Download and install Node.js from the official website:
 #👉 https://nodejs.org
 npm -v
-npm install -g @aakarsh-sasi/memory-bank-mcp
 ```
 #### 6. Add .env for your API keys
 ```bash

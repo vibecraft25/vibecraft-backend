@@ -14,36 +14,40 @@ from starlette.responses import JSONResponse
 from client.vibe_craft_client import VibeCraftClient
 from schemas import ChatResponse
 
-prefix = "chat"
+prefix = "workflow"
 router = APIRouter(prefix=f"/{prefix}", responses={401: {"description": "raw data file upload"}})
 
 
-@router.get(
-    "/new-chat",
-    response_model=ChatResponse
-)
-async def new_chat(
+@router.get("/stream/set-topic")
+async def stream_set_topic(
     query: str = Query(..., description="Prompt Query"),
-    use_langchain: Optional[bool] = Query(True, description="Trigger for Langchain")
 ):
     engine = "gemini"
     client = VibeCraftClient(engine)
 
-    await client.load_tools()
-    response = await client.execute_step(query, use_langchain=use_langchain)
+    async def event_generator():
+        try:
+            async for msg in client.stream_topic_selection(query):
+                if msg:
+                    yield msg
+                    await asyncio.sleep(0.1)
+            yield ServerSentEvent(
+                event="complete",
+                data=client.get_thread_id()
+            )
 
-    return JSONResponse(
-        content=ChatResponse(
-            data=response,
-            thread_id=client.get_thread_id(),
-    ).model_dump(), status_code=200)
+        except Exception as e:
+            yield ServerSentEvent(
+                event="error",
+                data=f"data: ❗ 오류 발생: {str(e)}"
+            )
+
+    return EventSourceResponse(event_generator())
 
 
-@router.get(
-    "/load-chat",
-    response_model=ChatResponse
-)
-async def load_chat(
+# TODO: WIP
+@router.get("/data-generator")
+async def generate_data(
     query: str = Query(..., description="Prompt Query"),
     thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),
     use_langchain: Optional[bool] = Query(True, description="Trigger for Langchain")
@@ -53,24 +57,6 @@ async def load_chat(
 
     await client.load_tools()
     client.load_chat_history(thread_id)
-    response = await client.execute_step(query, use_langchain=use_langchain)
-
-    return JSONResponse(
-        content=ChatResponse(
-            data=response,
-            thread_id=client.get_thread_id(),
-    ).model_dump(), status_code=200)
-
-
-@router.get("/stream/new-chat")
-async def stream_new_chat(
-    query: str = Query(..., description="Prompt Query"),
-    use_langchain: Optional[bool] = Query(True, description="Trigger for Langchain")
-):
-    engine = "gemini"
-    client = VibeCraftClient(engine)
-
-    await client.load_tools()
 
     async def event_generator():
         try:
@@ -99,8 +85,10 @@ async def stream_new_chat(
     return EventSourceResponse(event_generator())
 
 
-@router.get("/stream/load-chat")
-async def stream_load_chat(
+# TODO: WIP
+@router.get("/code-generator")
+# @router.get("/stream/code-generator")
+async def generate_code(
     query: str = Query(..., description="Prompt Query"),
     thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),
     use_langchain: Optional[bool] = Query(True, description="Trigger for Langchain")
@@ -129,6 +117,54 @@ async def stream_load_chat(
                 data=client.get_thread_id()
             )
 
+        except Exception as e:
+            yield ServerSentEvent(
+                event="error",
+                data=f"data: ❗ 오류 발생: {str(e)}"
+            )
+
+    return EventSourceResponse(event_generator())
+
+
+# TODO: WIP
+@router.get("/go-to-step")
+async def go_to_step(
+    thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),
+):
+    engine = "gemini"
+    client = VibeCraftClient(engine)
+
+    await client.load_tools()
+    client.load_chat_history(thread_id)
+
+
+# TODO: WIP
+@router.get("/set-menu")
+async def set_menu(
+    thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),
+    step: str = Query(..., description="Workflow Step", example="1"),
+    option: str = Query(..., description="Selected option number", example="1"),
+    query: Optional[str] = Query(None, description="Prompt Query"),
+):
+    engine = "gemini"
+    client = VibeCraftClient(engine)
+    client.load_chat_history(thread_id)
+
+    async def event_generator():
+        try:
+            if step == "1":
+                async for msg in client.stream_topic_selection_menu_handler(
+                    selected_option=option, query=query
+                ):
+                    if msg:
+                        yield msg
+                        await asyncio.sleep(0.1)
+                yield ServerSentEvent(
+                    event="complete",
+                    data=client.get_thread_id()
+                )
+            elif step == "2":
+                print("WIP")
         except Exception as e:
             yield ServerSentEvent(
                 event="error",

@@ -267,14 +267,11 @@ class BaseEngine:
         except Exception as e:
             print(f"[!] Failed to load chat history: {e}")
 
-    # TODO: implement HERE (go-back-to-previous-step)
     def clear_memory(self):
         checkpoints = list(self.app.get_state_history(self.config))
         if len(checkpoints) > 1:
-            temp1 = list(self.app.get_state_history(self.config))
             previous_state = checkpoints[1].values
             self.app.update_state(self.config, previous_state)
-            temp2 = list(self.app.get_state_history(self.config))
 
     @staticmethod
     def parse_ai_messages(messages: List) -> List[dict]:

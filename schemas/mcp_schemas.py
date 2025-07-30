@@ -30,9 +30,3 @@ class MCPServerConfig:
             self._transport = Transport(value)
         else:
             raise ValueError("transport must be a str or Transport enum")
-
-
-@dataclass
-class TopicStepResult:
-    topic_prompt: str
-    result: str

@@ -1,7 +1,6 @@
 from .chat_schemas import ChatResponse
 from .chat_history_schemas import ChatHistory
-from .pipeline_schemas import (
+from .mcp_schemas import (
     Transport,
     MCPServerConfig,
-    TopicStepResult
 )
