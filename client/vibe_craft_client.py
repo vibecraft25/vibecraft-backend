@@ -111,18 +111,17 @@ class VibeCraftClient:
         prompt = set_topic_prompt(topic_prompt)
         result = await self.execute_step(prompt)
         print(result)
-        print(topic_selection_menu())
 
     async def topic_selection_menu_handler(self):
-        user_choice = input().strip()
+        selected_option = input(topic_selection_menu()).strip()
 
-        if user_choice == "1":
+        if selected_option == "1":
             await self.load_data(cli=True)
-        elif user_choice == "2":
+        elif selected_option == "2":
             additional_query = input("✏️ 추가 수정 요청을 입력해주세요: ")
             result = await self.execute_step(additional_query)
             print(result)
-        elif user_choice == "3":
+        elif selected_option == "3":
             self.engine.clear_memory()
             new_prompt = input("🎤 새로운 주제를 입력하세요: ")
             result = self.topic_selection(new_prompt)
@@ -220,8 +219,9 @@ class VibeCraftClient:
             suggestion = await self.execute_step(removal_prompt)
             print(f"\n🤖 추천된 컬럼 목록:\n{suggestion}")
 
-            print(select_edit_col_menu())
-            choice = input().strip()
+
+            choice = input(select_edit_col_menu()).strip()
+
 
             if choice == "1":
                 columns_line = suggestion.splitlines()[0]
@@ -271,7 +271,8 @@ class VibeCraftClient:
 
     async def run_pipeline(self, topic_prompt: str):
         await self.topic_selection(topic_prompt)
-        await self.topic_selection_menu_handler()
+        while self.data is None:
+            await self.topic_selection_menu_handler()
         await self.data_handler(self.data)
         breakpoint()
         # await self.step_code_generation()
