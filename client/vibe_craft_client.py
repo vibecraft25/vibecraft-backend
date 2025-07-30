@@ -107,7 +107,6 @@ class VibeCraftClient:
     async def topic_selection(self, topic_prompt: str):
         await self.load_tools(self.topic_mcp_server)
 
-        prompt = set_topic_prompt(topic_prompt)
         print("\n🚦 Step 1: 주제 설정")
         prompt = set_topic_prompt(topic_prompt)
         result = await self.execute_step(prompt)
@@ -207,7 +206,7 @@ class VibeCraftClient:
             return load_files()
 
     # TODO: refactoring
-    async def data_handler(self, df: pd.DataFrame, cli: bool = False):
+    async def data_handler(self, df: pd.DataFrame, cli: Optional[bool] = False):
         df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
         df.columns = [normalize_column_name(col) for col in df.columns]
 
