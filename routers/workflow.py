@@ -18,7 +18,12 @@ router = APIRouter(
 @router.get(
     "/stream/set-topic",
     summary="워크플로우 1단계: 주제 설정",
-    description="워크플로우의 첫 번째 단계로 주제를 설정합니다."
+    description=(
+        "Menu call api logic\n\n"
+        "1: call `/workflow/load-data`\n\n"
+        "2: call `/chat/stream/load-chat`\n\n"
+        "3: call `/workflow/stream/set-topic`\n\n"
+    )
 )
 async def stream_set_topic(
     query: str = Query(..., description="Prompt Query"),
@@ -30,22 +35,31 @@ async def stream_set_topic(
 
 @router.get(
     "/stream/set-data",
-    summary="워크플로우 2-1단계: 데이터 로드",
-    description="지정된 스레드에서 데이터를 로드하거나 생성합니다."
+    summary="워크플로우 2-1단계: 데이터 로드 or 생성",
+    description=(
+        "Menu call api logic\n\n"
+        "1: call `/workflow/stream/process-data-selection`\n\n"
+        "2: call `/workflow/stream/process-data-selection`\n\n"
+        "3: call `/workflow/code-generator`\n\n"
+    )
 )
 async def set_data(
     thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),
-    code: Optional[str] = Query(None, description="upload file code", example="f09d8c6e"),
+    code: Optional[str] = Query(None, description="Use file code after upload with `/contents/upload` api", example="f09d8c6e"),
 ):
     return EventSourceResponse(
         workflow_service.execute_set_data(thread_id, code)
     )
 
 
-@router.post(
+@router.get(
     "/stream/process-data-selection",
     summary="워크플로우 2-2단계: 데이터 선택 처리",
-    description="사용자가 선택한 데이터를 처리합니다. (loop)"
+    description=(
+        "Menu call api logic\n\n"
+        "1: call `/workflow/stream/process-data-selection`\n\n"
+        "2: call `/workflow/code-generator`\n\n"
+    )
 )
 async def process_data_selection(
     thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),

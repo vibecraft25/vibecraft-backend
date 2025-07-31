@@ -4,18 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250730] Update vibecraft client methods">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250730] remove examples">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/vibe_craft_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/client/vibe_craft_client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config-development.yml" beforeDir="false" afterPath="$PROJECT_DIR$/config-development.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/chat.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/chat.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routers/workflow.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/workflow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/data_loader_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/data_loader_utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/menus.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/menus.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/path_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/path_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/prompts.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/prompts.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,7 +78,7 @@
       <recent name="C:\Users\Administrator\Desktop\Aircok\vibecraft\clients\samples" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.vibe-craft-code">
+  <component name="RunManager" selected="Python.main">
     <configuration name="client_sample_v1" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="vibecraft" />
       <option name="ENV_FILES" value="" />
@@ -203,8 +196,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.vibe-craft-code" />
         <item itemvalue="Python.main" />
+        <item itemvalue="Python.vibe-craft-code" />
         <item itemvalue="Python.vibe_craft_sample" />
         <item itemvalue="Python.smithery_sample" />
         <item itemvalue="Python.client_sample_v1" />
@@ -237,23 +230,7 @@
       <workItem from="1752218679692" duration="14000" />
       <workItem from="1752468414247" duration="33946000" />
       <workItem from="1753245249914" duration="3006000" />
-      <workItem from="1753407623545" duration="30177000" />
-    </task>
-    <task id="LOCAL-00016" summary="[250630] step_data_upload_or_collection WIP">
-      <option name="closed" value="true" />
-      <created>1751265018816</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1751265018817</updated>
-    </task>
-    <task id="LOCAL-00017" summary="[250630] step_data_upload_or_collection WIP">
-      <option name="closed" value="true" />
-      <created>1751265141270</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1751265141270</updated>
+      <workItem from="1753407623545" duration="32221000" />
     </task>
     <task id="LOCAL-00018" summary="[250630] step_data_upload_or_collection WIP">
       <option name="closed" value="true" />
@@ -631,7 +608,23 @@
       <option name="project" value="LOCAL" />
       <updated>1753863019539</updated>
     </task>
-    <option name="localTasksCounter" value="65" />
+    <task id="LOCAL-00065" summary="[250730] Add service logic, Edit routers">
+      <option name="closed" value="true" />
+      <created>1753946689424</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1753946689424</updated>
+    </task>
+    <task id="LOCAL-00066" summary="[250730] remove examples">
+      <option name="closed" value="true" />
+      <created>1753946724725</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1753946724726</updated>
+    </task>
+    <option name="localTasksCounter" value="67" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -649,8 +642,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="[250701] update gitignore, step_code_generation WIP" />
-    <MESSAGE value="[250701] code generation WIP" />
     <MESSAGE value="[250701] add generate meta data of sqlite" />
     <MESSAGE value="[250701] edit connect_to_server method to connect multiple mcp server" />
     <MESSAGE value="[250714] add MCPServerConfig" />
@@ -674,7 +665,9 @@
     <MESSAGE value="[250730] update routers, mcp client" />
     <MESSAGE value="[250730] Update&#10;- add content router&#10;- add file/path utils&#10;- add workflow router&#10;- update vibecraft client" />
     <MESSAGE value="[250730] Update vibecraft client methods" />
-    <option name="LAST_COMMIT_MESSAGE" value="[250730] Update vibecraft client methods" />
+    <MESSAGE value="[250730] Add service logic, Edit routers" />
+    <MESSAGE value="[250730] remove examples" />
+    <option name="LAST_COMMIT_MESSAGE" value="[250730] remove examples" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -688,7 +681,7 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/vibecraft$main.coverage" NAME="main Coverage Results" MODIFIED="1753346361061" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/vibecraft$main.coverage" NAME="main Coverage Results" MODIFIED="1753948698664" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/vibecraft$temp.coverage" NAME="temp Coverage Results" MODIFIED="1750994457994" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/vibecraft$topic_server.coverage" NAME="topic_server Coverage Results" MODIFIED="1750914323325" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/servers" />
     <SUITE FILE_PATH="coverage/vibecraft$vibe_craft.coverage" NAME="vibe_craft Coverage Results" MODIFIED="1750997980081" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

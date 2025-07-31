@@ -7,15 +7,15 @@ __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 def topic_selection_menu() -> str:
     """
     Frontend call flow
-    1 -> run /workflow/load-data api
-    2 -> run /chat/stream/load-chat api
-    3 -> run /workflow/stream/set-topic api
+    1 -> call /workflow/load-data api
+    2 -> call /chat/stream/load-chat api
+    3 -> call /workflow/stream/set-topic api
     """
-    return ("\n[Options]\n"
+    return ("[Options]\n"
             "1. 위 결과로 계속 진행\n"
             "2. 위 결과 추가 수정\n"
             "3. 주제 재설정\n"
-            "👉 번호를 입력하세요 (1/2/3): \n")
+            "👉 번호를 입력하세요 (1/2/3): ")
 
 
 ####################
@@ -31,24 +31,24 @@ def select_data_loader_menu() -> str:
 def select_edit_col_menu() -> str:
     """
     Frontend call flow
-    1 -> run /workflow/stream/process-data-selection api
-    2 -> run /workflow/stream/process-data-selection api
-    3 -> run /workflow/code-generator api
+    1 -> call /workflow/stream/process-data-selection api
+    2 -> call /workflow/stream/process-data-selection api
+    3 -> call /workflow/code-generator api
     """
-    return ("\n✅ 위 컬럼들을 삭제하시겠습니까?\n"
+    return ("✅ 위 컬럼들을 삭제하시겠습니까?\n"
             "1. 예 (추천 목록 삭제)\n"
             "2. 아니오 (직접 선택)\n"
             "3. 건너 뛰기\n"
-            "👉 선택 (1/2/3): \n")
+            "👉 선택 (1/2/3): ")
 
 
 def additional_select_edit_col_menu() -> str:
     """
     Frontend call flow
-    1 -> run /workflow/stream/process-data-selection api
-    3 -> run /workflow/code-generator api
+    1 -> call /workflow/stream/process-data-selection api
+    2 -> call /workflow/code-generator api
     """
     return ("\n✅ 추가적으로 수정하시겠습니까?\n"
             "1. 예 \n"
             "2. 코드 생성\n"
-            "👉 선택 (1/2): \n")
+            "👉 선택 (1/2): ")

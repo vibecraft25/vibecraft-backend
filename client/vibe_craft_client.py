@@ -38,7 +38,7 @@ class VibeCraftClient:
 
         self.mcp_tools: Optional[List[MCPServerConfig]] = None  # common MCP tools
         self.topic_mcp_server: Optional[List[MCPServerConfig]] = None
-        self.load_data_mcp_server: Optional[List[MCPServerConfig]] = None  # TODO: WIP
+        self.set_data_mcp_server: Optional[List[MCPServerConfig]] = None  # TODO: WIP
         self.deploy_mcp_server: Optional[List[MCPServerConfig]] = None  # TODO: WIP
 
         self.tools: Optional[List] = None
@@ -110,10 +110,10 @@ class VibeCraftClient:
         print(result)
 
     async def topic_selection_menu_handler(self):
-        selected_option = input(topic_selection_menu()).strip()
+        selected_option = input(f"\n{topic_selection_menu()}\n").strip()
 
         if selected_option == "1":
-            await self.load_data(cli=True)
+            await self.set_data(cli=True)
         elif selected_option == "2":
             additional_query = input("✏️ 추가 수정 요청을 입력해주세요: ")
             result = await self.execute_step(additional_query)
@@ -144,7 +144,7 @@ class VibeCraftClient:
     async def set_data(
         self, file_path: Optional[str] = None, cli: bool = False
     ):
-        await self.load_tools(self.load_data_mcp_server)
+        await self.load_tools(self.set_data_mcp_server)
 
         selected_option = None
         if cli:
@@ -152,7 +152,7 @@ class VibeCraftClient:
             selected_option = select_data_loader_menu()
 
         if selected_option == "1" or file_path:
-            self.data = self.upload_data(file_path)
+            self.data = self.set_data(file_path)
         else:
             self.data = await self.generate_data()
 
@@ -220,7 +220,7 @@ class VibeCraftClient:
             df = self.data
         df, suggestion = await self.data_processing(df)
 
-        selected_option = input(select_edit_col_menu()).strip()
+        selected_option = input(f"\n{select_edit_col_menu()}\n").strip()
 
         if selected_option == "1":
             columns_line = suggestion.splitlines()[0]
@@ -255,7 +255,7 @@ class VibeCraftClient:
         df.columns = [normalize_column_name(col) for col in df.columns]
 
         yield ServerSentEvent(
-            event="data_summary",
+            event="data",
             data=f"📊 최종 데이터프레임 요약:\n{df.head(3).to_string(index=False)}"
         )
 
@@ -267,10 +267,16 @@ class VibeCraftClient:
                 data=chunk
             )
         yield ServerSentEvent(
+            event="data",
+            data=', '.join(df.columns)
+        )
+
+        yield ServerSentEvent(
             event="menu",
             data=select_edit_col_menu()
         )
 
+    # TODO: Column명을 정확하게 받을지 결정 필요
     async def stream_data_handler(
         self, query: str,
         df: Optional[pd.DataFrame] = None, meta: Optional[str] = None,
