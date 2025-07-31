@@ -2,11 +2,9 @@ __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
 # Standard imports
 import os
-from typing import Optional
 
 # Third-party imports
 from langchain_mcp_adapters.client import MultiServerMCPClient
-import pandas as pd
 from sse_starlette import ServerSentEvent
 
 # Custom imports
@@ -40,8 +38,7 @@ class VibeCraftClient:
 
         self.mcp_tools: Optional[List[MCPServerConfig]] = None  # common MCP tools
         self.topic_mcp_server: Optional[List[MCPServerConfig]] = None
-        self.web_search_mcp_server: Optional[List[MCPServerConfig]] = None  # TODO: WIP
-        self.db_mcp_server: Optional[List[MCPServerConfig]] = None  # TODO: WIP
+        self.load_data_mcp_server: Optional[List[MCPServerConfig]] = None  # TODO: WIP
         self.deploy_mcp_server: Optional[List[MCPServerConfig]] = None  # TODO: WIP
 
         self.tools: Optional[List] = None
@@ -143,40 +140,12 @@ class VibeCraftClient:
             data=topic_selection_menu()
         )
 
-    async def stream_topic_selection_menu_handler(
-        self,
-        selected_option: str,
-        query: Optional[str] = None,
-    ):
-        if selected_option == "1":
-            await self.load_data(cli=False)
-            yield ServerSentEvent(
-                event="data",
-                # data=f"{chunk}"
-                data="[data_path]"
-            )
-        elif selected_option == "2":
-            if query:
-                async for event, chunk in self.execute_stream_step(query):
-                    yield ServerSentEvent(
-                        event=event,
-                        data=f"{chunk}"
-                    )
-        elif selected_option == "3":
-            self.engine.clear_memory()
-            async for msg in self.stream_topic_selection(query):
-                yield msg
-        else:
-            yield ServerSentEvent(
-                event="error",
-                data="⚠️ 유효한 선택지를 입력해주세요 (1, 2, 3)"
-            )
-
-    """Data Generator and Analysis Methods"""
-    # TODO: api와 cli 로직 재설계 필요
-    async def load_data(
+    """Data loading and generation Methods"""
+    async def set_data(
         self, file_path: Optional[str] = None, cli: bool = False
     ):
+        await self.load_tools(self.load_data_mcp_server)
+
         selected_option = None
         if cli:
             file_path = None
@@ -184,11 +153,12 @@ class VibeCraftClient:
 
         if selected_option == "1" or file_path:
             self.data = self.upload_data(file_path)
-        self.data = await self.generate_data()
+        else:
+            self.data = await self.generate_data()
+
+        await self.data_save(self.data, [])
 
     async def generate_data(self) -> pd.DataFrame:
-        await self.load_tools(self.web_search_mcp_server)
-
         print("\n🚦 Step 2: 주제 기반 샘플 데이터를 생성")
         prompt = generate_sample_prompt()
         sample_data = await self.execute_step(prompt)
@@ -204,56 +174,122 @@ class VibeCraftClient:
         else:
             return load_files()
 
-    # TODO: refactoring
-    async def data_handler(self, df: pd.DataFrame, cli: Optional[bool] = False):
+    """Data processing Methods"""
+    async def data_processing(self, df: Optional[pd.DataFrame] = None):
+        """데이터 전처리 및 컬럼 추천"""
+        if df is None:
+            df = self.data
+
+        # 1. 데이터 전처리
+        df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
+        df.columns = [normalize_column_name(col) for col in df.columns]
+        print(f"\n📊 최종 데이터프레임 요약:\n{df.head(3).to_string(index=False)}")
+
+        # 2. 컬럼 삭제 추천
+        removal_prompt = recommend_removal_column_prompt(df)
+        print("\n🧹 컬럼 삭제 추천 요청 중...")
+        suggestion = await self.execute_step(removal_prompt)
+        print(f"\n🤖 추천된 컬럼 목록:\n{suggestion}")
+
+        return df, suggestion
+
+    async def data_save(self, df: pd.DataFrame, to_drop: List[str]):
+        """데이터 저장 처리"""
+        print("\n💾 SQLite 테이블화 요청 중...")
+        prompt = df_to_sqlite_with_col_filter_prompt(df, to_drop)
+        result = await self.execute_step(prompt)
+        print(f"Mapped Column dictionary: {result}")
+
+        new_col = parse_first_row_dict_from_text(result)
+        filtered_new_col = {k: v for k, v in new_col.items() if v is not None}
+
+        mapped_df = df.rename(columns=new_col)[list(filtered_new_col.values())]
+        print(f"\n🧱 Mapped Result:\n{mapped_df.head(3).to_string(index=False)}")
+
+        # 파일 저장
+        path = PathUtils.generate_path(self.get_thread_id())
+        mapped_df.to_csv(os.path.join(path, f"{self.get_thread_id()}.csv"), encoding="cp949", index=False)
+        file_path = save_sqlite(mapped_df, path, self.get_thread_id())
+        save_metadata(filtered_new_col, path, file_path)
+
+    async def data_handler(self, df: Optional[pd.DataFrame] = None) -> bool:
+        """데이터 처리 메뉴 핸들러"""
+        is_running = True
+
+        if df is None:
+            df = self.data
+        df, suggestion = await self.data_processing(df)
+
+        selected_option = input(select_edit_col_menu()).strip()
+
+        if selected_option == "1":
+            columns_line = suggestion.splitlines()[0]
+            to_drop = [col.strip() for col in columns_line.split(",")]
+        elif selected_option == "2":
+            print(f"\n🧹 현재 컬럼 목록:\n{', '.join(df.columns)}")
+            drop_input = input("삭제할 컬럼명을 쉼표(,)로 입력 (Enter 입력 시 건너뜀): ").strip()
+            to_drop = [col.strip() for col in drop_input.split(",")] if drop_input else []
+        else:
+            print("컬럼 삭제를 건너뜁니다.")
+            to_drop = []
+            is_running = False
+
+        await self.data_save(df, to_drop)
+
+        return is_running
+
+    async def stream_data_processing(self, df: Optional[pd.DataFrame] = None):
+        """스트림 방식 데이터 처리"""
+        if df is None:
+            df = self.data
+
+        if df is None:
+            yield ServerSentEvent(
+                event="error",
+                data="데이터가 없습니다."
+            )
+            return
+
+        # 데이터 전처리
         df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
         df.columns = [normalize_column_name(col) for col in df.columns]
 
-        if df is not None:
-            # 1. Check data
-            print(f"\n📊 최종 데이터프레임 요약:\n{df.head(3).to_string(index=False)}")
+        yield ServerSentEvent(
+            event="data_summary",
+            data=f"📊 최종 데이터프레임 요약:\n{df.head(3).to_string(index=False)}"
+        )
 
-            # 2. Check columns
-            removal_prompt = recommend_removal_column_prompt(df)
-            print("\n🧹 컬럼 삭제 추천 요청 중...")
-            suggestion = await self.execute_step(removal_prompt)
-            print(f"\n🤖 추천된 컬럼 목록:\n{suggestion}")
+        # 컬럼 삭제 추천 스트리밍
+        removal_prompt = recommend_removal_column_prompt(df)
+        async for event, chunk in self.execute_stream_step(removal_prompt):
+            yield ServerSentEvent(
+                event=event,
+                data=chunk
+            )
+        yield ServerSentEvent(
+            event="menu",
+            data=select_edit_col_menu()
+        )
 
+    async def stream_data_handler(
+        self, query: str,
+        df: Optional[pd.DataFrame] = None, meta: Optional[str] = None,
+    ):
+        """데이터 처리 메뉴 핸들러"""
+        if df is None:
+            df = self.data
 
-            choice = input(select_edit_col_menu()).strip()
+        removal_prompt = parse_removal_column_prompt(df, query, meta)
+        suggestion = await self.execute_step(removal_prompt)
+        columns_line = suggestion.splitlines()[0]
+        to_drop = [col.strip() for col in columns_line.split(",")]
 
+        await self.data_save(df, to_drop)
 
-            if choice == "1":
-                columns_line = suggestion.splitlines()[0]
-                to_drop = [col.strip() for col in columns_line.split(",")]
-            elif choice == "2":
-                print(f"\n🧹 현재 컬럼 목록:\n{', '.join(df.columns)}")
-                drop_input = input("삭제할 컬럼명을 쉼표(,)로 입력 (Enter 입력 시 건너뜀): ").strip()
-                to_drop = [col.strip() for col in drop_input.split(",")] if drop_input else []
-            else:
-                print("컬럼 삭제를 건너뜁니다.")
-                to_drop = []
-
-            print("\n💾 SQLite 테이블화 요청 중...")
-            prompt = df_to_sqlite_with_col_filter_prompt(df, to_drop)
-            result = await self.execute_step(prompt)
-            print(f"Mapped Column dictionary: {result}")
-
-            new_col = parse_first_row_dict_from_text(result)
-            filtered_new_col = {k: v for k, v in new_col.items() if v is not None}
-
-            mapped_df = df.rename(columns=new_col)[list(filtered_new_col.values())]
-            print(f"\n🧱 Mapped Result:\n{mapped_df.head(3).to_string(index=False)}")
-
-            save_path = "./data_store"
-            os.makedirs(save_path, exist_ok=True)
-            df.to_csv(os.path.join(save_path, "data.csv"), encoding="cp949", index=False)
-            file_path = save_sqlite(mapped_df, save_path)
-            save_metadata(filtered_new_col, save_path, file_path)
-
-            return file_path
-        else:
-            return await self.load_data(cli)
+        yield ServerSentEvent(
+            event="menu",
+            data=additional_select_edit_col_menu()
+        )
 
     """Code Generator Methods"""
     # TODO: WIP
@@ -273,7 +309,8 @@ class VibeCraftClient:
         await self.topic_selection(topic_prompt)
         while self.data is None:
             await self.topic_selection_menu_handler()
-        await self.data_handler(self.data)
+        while await self.data_handler():
+            pass
         breakpoint()
         # await self.step_code_generation()
         # await self.step_deploy()

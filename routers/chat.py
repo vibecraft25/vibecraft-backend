@@ -1,138 +1,72 @@
 __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
-# Standard imports
-import asyncio
 from typing import Optional
 
-# Third-party imports
 from fastapi import APIRouter
 from fastapi.params import Query
-from sse_starlette.sse import EventSourceResponse, ServerSentEvent
-from starlette.responses import JSONResponse
+from sse_starlette.sse import EventSourceResponse
 
-# Custom imports
-from client.vibe_craft_client import VibeCraftClient
 from schemas import ChatResponse
+from services.chat_service import chat_service
 
 prefix = "chat"
-router = APIRouter(prefix=f"/{prefix}", responses={401: {"description": "raw data file upload"}})
+router = APIRouter(
+    prefix=f"/{prefix}",
+    responses={401: {"description": "raw data file upload"}}
+)
 
 
 @router.get(
     "/new-chat",
-    response_model=ChatResponse
+    response_model=ChatResponse,
+    summary="새 채팅 시작",
+    description="새로운 채팅 세션을 시작합니다."
 )
 async def new_chat(
     query: str = Query(..., description="Prompt Query"),
     use_langchain: Optional[bool] = Query(True, description="Trigger for Langchain")
 ):
-    engine = "gemini"
-    client = VibeCraftClient(engine)
-
-    await client.load_tools()
-    response = await client.execute_step(query, use_langchain=use_langchain)
-
-    return JSONResponse(
-        content=ChatResponse(
-            data=response,
-            thread_id=client.get_thread_id(),
-    ).model_dump(), status_code=200)
+    return await chat_service.execute_chat(query, use_langchain)
 
 
 @router.get(
     "/load-chat",
-    response_model=ChatResponse
+    response_model=ChatResponse,
+    summary="기존 채팅 로드",
+    description="기존 채팅 세션을 로드하여 대화를 이어갑니다."
 )
 async def load_chat(
     query: str = Query(..., description="Prompt Query"),
     thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),
     use_langchain: Optional[bool] = Query(True, description="Trigger for Langchain")
 ):
-    engine = "gemini"
-    client = VibeCraftClient(engine)
-
-    await client.load_tools()
-    client.load_chat_history(thread_id)
-    response = await client.execute_step(query, use_langchain=use_langchain)
-
-    return JSONResponse(
-        content=ChatResponse(
-            data=response,
-            thread_id=client.get_thread_id(),
-    ).model_dump(), status_code=200)
+    return await chat_service.execute_chat(query, use_langchain, thread_id)
 
 
-@router.get("/stream/new-chat")
+@router.get(
+    "/stream/new-chat",
+    summary="새 채팅 스트리밍",
+    description="새로운 채팅 세션을 스트리밍으로 시작합니다."
+)
 async def stream_new_chat(
     query: str = Query(..., description="Prompt Query"),
     use_langchain: Optional[bool] = Query(True, description="Trigger for Langchain")
 ):
-    engine = "gemini"
-    client = VibeCraftClient(engine)
-
-    await client.load_tools()
-
-    async def event_generator():
-        try:
-            # 스트리밍 결과 전송
-            async for event, chunk in client.execute_stream_step(
-                query, use_langchain=use_langchain
-            ):
-                if chunk:
-                    yield ServerSentEvent(
-                        event=event or "progress",
-                        data=f"{chunk}"
-                    )
-                    await asyncio.sleep(0.1)
-
-            yield ServerSentEvent(
-                event="complete",
-                data=client.get_thread_id()
-            )
-
-        except Exception as e:
-            yield ServerSentEvent(
-                event="error",
-                data=f"data: ❗ 오류 발생: {str(e)}"
-            )
-
-    return EventSourceResponse(event_generator())
+    return EventSourceResponse(
+        chat_service.execute_stream_chat(query, use_langchain)
+    )
 
 
-@router.get("/stream/load-chat")
+@router.get(
+    "/stream/load-chat",
+    summary="기존 채팅 스트리밍 로드",
+    description="기존 채팅 세션을 스트리밍으로 로드합니다."
+)
 async def stream_load_chat(
     query: str = Query(..., description="Prompt Query"),
     thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),
     use_langchain: Optional[bool] = Query(True, description="Trigger for Langchain")
 ):
-    engine = "gemini"
-    client = VibeCraftClient(engine)
-
-    await client.load_tools()
-    client.load_chat_history(thread_id)
-
-    async def event_generator():
-        try:
-            # 스트리밍 결과 전송
-            async for event, chunk in client.execute_stream_step(
-                query, use_langchain=use_langchain
-            ):
-                if chunk:
-                    yield ServerSentEvent(
-                        event=event or "progress",
-                        data=f"{chunk}"
-                    )
-                    await asyncio.sleep(0.1)
-
-            yield ServerSentEvent(
-                event="complete",
-                data=client.get_thread_id()
-            )
-
-        except Exception as e:
-            yield ServerSentEvent(
-                event="error",
-                data=f"data: ❗ 오류 발생: {str(e)}"
-            )
-
-    return EventSourceResponse(event_generator())
+    return EventSourceResponse(
+        chat_service.execute_stream_chat(query, use_langchain, thread_id)
+    )

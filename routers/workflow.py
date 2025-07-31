@@ -1,174 +1,72 @@
 __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
-# Standard imports
-import asyncio
 from typing import Optional
 
-# Third-party imports
 from fastapi import APIRouter
 from fastapi.params import Query
-from sse_starlette.sse import EventSourceResponse, ServerSentEvent
-from starlette.responses import JSONResponse
+from sse_starlette.sse import EventSourceResponse
 
-# Custom imports
-from client.vibe_craft_client import VibeCraftClient
-from schemas import ChatResponse
+from services.workflow_service import workflow_service
 
 prefix = "workflow"
-router = APIRouter(prefix=f"/{prefix}", responses={401: {"description": "raw data file upload"}})
+router = APIRouter(
+    prefix=f"/{prefix}", 
+    responses={401: {"description": "raw data file upload"}}
+)
 
 
-@router.get("/stream/set-topic")
+@router.get(
+    "/stream/set-topic",
+    summary="워크플로우 1단계: 주제 설정",
+    description="워크플로우의 첫 번째 단계로 주제를 설정합니다."
+)
 async def stream_set_topic(
     query: str = Query(..., description="Prompt Query"),
 ):
-    engine = "gemini"
-    client = VibeCraftClient(engine)
-
-    async def event_generator():
-        try:
-            async for msg in client.stream_topic_selection(query):
-                if msg:
-                    yield msg
-                    await asyncio.sleep(0.1)
-            yield ServerSentEvent(
-                event="complete",
-                data=client.get_thread_id()
-            )
-
-        except Exception as e:
-            yield ServerSentEvent(
-                event="error",
-                data=f"data: ❗ 오류 발생: {str(e)}"
-            )
-
-    return EventSourceResponse(event_generator())
+    return EventSourceResponse(
+        workflow_service.execute_topic_selection(query)
+    )
 
 
-# TODO: WIP
-@router.get("/data-generator")
-async def generate_data(
-    query: str = Query(..., description="Prompt Query"),
+@router.get(
+    "/stream/set-data",
+    summary="워크플로우 2-1단계: 데이터 로드",
+    description="지정된 스레드에서 데이터를 로드하거나 생성합니다."
+)
+async def set_data(
     thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),
-    use_langchain: Optional[bool] = Query(True, description="Trigger for Langchain")
+    code: Optional[str] = Query(None, description="upload file code", example="f09d8c6e"),
 ):
-    engine = "gemini"
-    client = VibeCraftClient(engine)
+    return EventSourceResponse(
+        workflow_service.execute_set_data(thread_id, code)
+    )
 
-    await client.load_tools()
-    client.load_chat_history(thread_id)
 
-    async def event_generator():
-        try:
-            # 스트리밍 결과 전송
-            async for event, chunk in client.execute_stream_step(
-                query, use_langchain=use_langchain
-            ):
-                if chunk:
-                    yield ServerSentEvent(
-                        event=event or "progress",
-                        data=f"{chunk}"
-                    )
-                    await asyncio.sleep(0.1)
-
-            yield ServerSentEvent(
-                event="complete",
-                data=client.get_thread_id()
-            )
-
-        except Exception as e:
-            yield ServerSentEvent(
-                event="error",
-                data=f"data: ❗ 오류 발생: {str(e)}"
-            )
-
-    return EventSourceResponse(event_generator())
+@router.post(
+    "/stream/process-data-selection",
+    summary="워크플로우 2-2단계: 데이터 선택 처리",
+    description="사용자가 선택한 데이터를 처리합니다. (loop)"
+)
+async def process_data_selection(
+    thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),
+    query: str = Query(..., description="데이터 컬럼명)"),
+):
+    return EventSourceResponse(
+        workflow_service.execute_data_selection_processing(thread_id, query)
+    )
 
 
 # TODO: WIP
-@router.get("/code-generator")
-# @router.get("/stream/code-generator")
+@router.get(
+    "/code-generator",
+    summary="워크플로우 3단계: 코드 생성",
+    description="워크플로우의 마지막 단계로 코드를 생성합니다. (WIP)"
+)
 async def generate_code(
     query: str = Query(..., description="Prompt Query"),
     thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),
-    use_langchain: Optional[bool] = Query(True, description="Trigger for Langchain")
 ):
-    engine = "gemini"
-    client = VibeCraftClient(engine)
-
-    await client.load_tools()
-    client.load_chat_history(thread_id)
-
-    async def event_generator():
-        try:
-            # 스트리밍 결과 전송
-            async for event, chunk in client.execute_stream_step(
-                query, use_langchain=use_langchain
-            ):
-                if chunk:
-                    yield ServerSentEvent(
-                        event=event or "progress",
-                        data=f"{chunk}"
-                    )
-                    await asyncio.sleep(0.1)
-
-            yield ServerSentEvent(
-                event="complete",
-                data=client.get_thread_id()
-            )
-
-        except Exception as e:
-            yield ServerSentEvent(
-                event="error",
-                data=f"data: ❗ 오류 발생: {str(e)}"
-            )
-
-    return EventSourceResponse(event_generator())
-
-
-# TODO: WIP
-@router.get("/go-to-step")
-async def go_to_step(
-    thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),
-):
-    engine = "gemini"
-    client = VibeCraftClient(engine)
-
-    await client.load_tools()
-    client.load_chat_history(thread_id)
-
-
-# TODO: WIP
-@router.get("/set-menu")
-async def set_menu(
-    thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),
-    step: str = Query(..., description="Workflow Step", example="1"),
-    option: str = Query(..., description="Selected option number", example="1"),
-    query: Optional[str] = Query(None, description="Prompt Query"),
-):
-    engine = "gemini"
-    client = VibeCraftClient(engine)
-    client.load_chat_history(thread_id)
-
-    async def event_generator():
-        try:
-            if step == "1":
-                async for msg in client.stream_topic_selection_menu_handler(
-                    selected_option=option, query=query
-                ):
-                    if msg:
-                        yield msg
-                        await asyncio.sleep(0.1)
-                yield ServerSentEvent(
-                    event="complete",
-                    data=client.get_thread_id()
-                )
-            elif step == "2":
-                print("WIP")
-        except Exception as e:
-            yield ServerSentEvent(
-                event="error",
-                data=f"data: ❗ 오류 발생: {str(e)}"
-            )
-
-    return EventSourceResponse(event_generator())
+    # WIP: 현재는 클라이언트 설정만 수행
+    client = workflow_service.setup_code_generation(query, thread_id)
+    # TODO: 실제 코드 생성 로직 구현 필요
+    return {"message": "Code generation setup completed", "thread_id": client.get_thread_id()}

@@ -1,0 +1,15 @@
+version:
+  server: "1.0.0"
+
+base_url: "http://0.0.0.0:8080"
+host: "0.0.0.0"
+port: 8080
+
+resource:
+  mcp: "/app/vibecraft/servers"
+
+file:
+  path: "/app/vibecraft/data_store"
+
+log:
+  path: "/app/vibecraft/vibecraft-app-python-log"

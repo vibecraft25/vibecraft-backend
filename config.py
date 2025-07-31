@@ -17,6 +17,8 @@ class Settings(BaseSettings):
 
     mcp_path: str
 
+    file_path: str
+
     log_path: str
 
     @classmethod
@@ -33,6 +35,7 @@ class Settings(BaseSettings):
             host=config["host"],
             port=config["port"],
             mcp_path=config["resource"]["mcp"],
+            file_path=config["file"]["path"],
             log_path=config["log"]["path"],
         )
 

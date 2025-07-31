@@ -1,6 +1,10 @@
-from glob import glob
-from datetime import datetime
+__author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
+# Standard imports
+from glob import glob
+import os
+
+# Custom imports
 from exceptions import NotFoundException
 from config import settings
 
@@ -9,7 +13,9 @@ class PathUtils:
 
     @staticmethod
     def generate_path(user: str) -> str:
-        return f"{settings.file_path}/{user}/{datetime.now().strftime('%y%m')}"
+        path = f"{settings.file_path}/{user}"
+        os.makedirs(path, exist_ok=True)
+        return path
 
     @staticmethod
     def get_path(user: str, file_name: str) -> list[str]:

@@ -2,7 +2,6 @@ __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
 # Standard imports
 import os
-from io import StringIO
 from datetime import datetime
 from typing import List, Optional
 import json
@@ -56,14 +55,68 @@ def load_local_files(file_paths: List[str]) -> Optional[pd.DataFrame]:
 
 def markdown_table_to_df(text: str) -> Optional[pd.DataFrame]:
     try:
-        if "|" in text:
-            lines = [line[1:-1] for line in text.splitlines() if "|" in line and "---" not in line]
-            parsed_data = "\n".join(lines)
+        # 텍스트에서 마크다운 테이블 부분만 추출
+        lines = text.strip().split('\n')
+
+        # 테이블 시작과 끝 찾기
+        table_lines = []
+        in_table = False
+
+        for line in lines:
+            line = line.strip()
+            if '|' in line:
+                if not in_table:
+                    in_table = True
+                    table_lines.append(line)
+                elif '---' in line:  # 구분선은 건너뛰기
+                    continue
+                else:
+                    table_lines.append(line)
+            elif in_table:
+                # 테이블이 끝났으면 중단
+                break
+
+        if len(table_lines) < 2:
+            raise ValueError("유효한 테이블을 찾을 수 없습니다.")
+
+        # 파이프 정리 및 데이터 준비
+        cleaned_lines = []
+        for line in table_lines:
+            # 양쪽 끝 파이프 제거 및 내부 파이프로 분할
+            if line.startswith('|'):
+                line = line[1:]
+            if line.endswith('|'):
+                line = line[:-1]
+
+            # 셀들을 분할하고 공백 제거
+            cells = [cell.strip() for cell in line.split('|')]
+            cleaned_lines.append(cells)
+
+        # DataFrame 생성
+        if len(cleaned_lines) > 0:
+            headers = cleaned_lines[0]
+            data = cleaned_lines[1:] if len(cleaned_lines) > 1 else []
+
+            # 모든 행의 컬럼 수를 헤더와 맞추기
+            for i, row in enumerate(data):
+                if len(row) < len(headers):
+                    data[i].extend([''] * (len(headers) - len(row)))
+                elif len(row) > len(headers):
+                    data[i] = row[:len(headers)]
+
+            df = pd.DataFrame(data, columns=headers)
+
+            # 빈 행 제거
+            df = df.dropna(how='all').reset_index(drop=True)
+
+            print(f"✅ 성공적으로 파싱됨: {len(df)} 행, {len(df.columns)} 컬럼")
+            return df
         else:
-            parsed_data = text
-        return pd.read_csv(StringIO(parsed_data), sep="|")
+            raise ValueError("테이블 데이터가 없습니다.")
+
     except Exception as e:
         print(f"⚠️ 샘플 데이터 파싱 오류: {e}")
+        print(f"원본 텍스트 일부:\n{text[:500]}...")
         return None
 
 
@@ -101,13 +154,12 @@ def save_metadata(col_info: dict, save_path: str, sqlite_path: str):
     print(f"✅ DB 메타데이터 저장 완료: {meta_path}")
 
 
-def save_sqlite(df: pd.DataFrame, save_path: str) -> str:
+def save_sqlite(df: pd.DataFrame, save_path: str, file_name: str) -> str:
     """
     DataFrame을 SQLite 파일로 저장하고, 저장된 파일 경로를 반환한다.
     파일명은 현재 시각 기반으로 자동 생성됨.
     """
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    file_path = os.path.join(save_path, f"{timestamp}.sqlite")
+    file_path = os.path.join(save_path, f"{file_name}.sqlite")
 
     table_name = "data"  # 기본 테이블명
 
