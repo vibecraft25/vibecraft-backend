@@ -15,7 +15,6 @@ from utils.menus import *
 from utils.prompts import *
 from utils.data_loader_utils import (
     load_files,
-    load_local_files,
     markdown_table_to_df,
     normalize_column_name,
     parse_first_row_dict_from_text,
@@ -300,7 +299,7 @@ class VibeCraftClient:
     """Code Generator Methods"""
     # TODO: WIP
     async def step_code_generation(self):
-        # TODO: langchain chat history summary 이후 cli run
+        # TODO: langchain chat history summary 이후 cli run 로직 추가 필요
         print("\n🚦 Step 3: 웹앱 코드 생성")
 
     # TODO: WIP

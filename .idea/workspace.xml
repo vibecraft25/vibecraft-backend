@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250730] remove examples">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250730] Update workflow">
       <change beforePath="$PROJECT_DIR$/client/vibe_craft_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/client/vibe_craft_client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/workflow.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/workflow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/menus.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/menus.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -230,15 +227,7 @@
       <workItem from="1752218679692" duration="14000" />
       <workItem from="1752468414247" duration="33946000" />
       <workItem from="1753245249914" duration="3006000" />
-      <workItem from="1753407623545" duration="32221000" />
-    </task>
-    <task id="LOCAL-00018" summary="[250630] step_data_upload_or_collection WIP">
-      <option name="closed" value="true" />
-      <created>1751267360994</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1751267360994</updated>
+      <workItem from="1753407623545" duration="32410000" />
     </task>
     <task id="LOCAL-00019" summary="[250630] step_data_upload_or_collection WIP">
       <option name="closed" value="true" />
@@ -624,7 +613,15 @@
       <option name="project" value="LOCAL" />
       <updated>1753946724726</updated>
     </task>
-    <option name="localTasksCounter" value="67" />
+    <task id="LOCAL-00067" summary="[250730] Update workflow">
+      <option name="closed" value="true" />
+      <created>1753948726713</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1753948726713</updated>
+    </task>
+    <option name="localTasksCounter" value="68" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -642,7 +639,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="[250701] add generate meta data of sqlite" />
     <MESSAGE value="[250701] edit connect_to_server method to connect multiple mcp server" />
     <MESSAGE value="[250714] add MCPServerConfig" />
     <MESSAGE value="[250714] edit GeminiEngine" />
@@ -667,7 +663,8 @@
     <MESSAGE value="[250730] Update vibecraft client methods" />
     <MESSAGE value="[250730] Add service logic, Edit routers" />
     <MESSAGE value="[250730] remove examples" />
-    <option name="LAST_COMMIT_MESSAGE" value="[250730] remove examples" />
+    <MESSAGE value="[250730] Update workflow" />
+    <option name="LAST_COMMIT_MESSAGE" value="[250730] Update workflow" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
