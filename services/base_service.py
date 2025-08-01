@@ -68,11 +68,11 @@ class BaseStreamService:
         # 문자열인 경우 이벤트 타입에 따라 적절한 SSE 이벤트 생성
         if event == SSEEventType.TOOL.value:
             return SSEEventBuilder.create_tool_event(chunk)
-        elif event == SSEEventType.AI_MESSAGE_CHUNK.value:
-            return SSEEventBuilder.create_ai_message_chunk(chunk)
         elif event == SSEEventType.MENU.value:
             return SSEEventBuilder.create_menu_event(chunk)
         elif event == SSEEventType.DATA.value:
             return SSEEventBuilder.create_data_event(chunk)
+        elif SSEEventType.AI_MESSAGE_CHUNK.value in event.lower():
+            return SSEEventBuilder.create_ai_message_chunk(chunk)
         else:
             return SSEEventBuilder.create_undefined_event(chunk)
