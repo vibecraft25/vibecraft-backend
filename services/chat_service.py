@@ -1,7 +1,6 @@
 __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
 # Standard imports
-import asyncio
 from typing import Optional, AsyncGenerator
 
 # Third-party imports
@@ -9,19 +8,17 @@ from sse_starlette.sse import ServerSentEvent
 from starlette.responses import JSONResponse
 
 # Custom imports
-from client.vibe_craft_client import VibeCraftClient
+from mcp_agent.client import VibeCraftClient
 from schemas import ChatResponse
+from services import BaseStreamService
 
 
-class ChatService:
+class ChatService(BaseStreamService):
     """채팅 관련 비즈니스 로직을 처리하는 서비스 클래스"""
 
-    def __init__(self, engine: str = "gemini"):
-        self.engine = engine
-
     async def _create_client(self, thread_id: Optional[str] = None) -> VibeCraftClient:
-        """클라이언트 생성 및 초기화"""
-        client = VibeCraftClient(self.engine)
+        """클라이언트 생성 및 초기화 (채팅용 - 도구 로드 포함)"""
+        client = super()._create_client()
         await client.load_tools()
 
         if thread_id:
@@ -56,25 +53,9 @@ class ChatService:
         """스트리밍 채팅 실행"""
         client = await self._create_client(thread_id)
 
-        try:
-            async for event, chunk in client.execute_stream_step(query, use_langchain=use_langchain):
-                if chunk:
-                    yield ServerSentEvent(
-                        event=event or "progress",
-                        data=f"{chunk}"
-                    )
-                    await asyncio.sleep(0.1)
-
-            yield ServerSentEvent(
-                event="complete",
-                data=client.get_thread_id()
-            )
-
-        except Exception as e:
-            yield ServerSentEvent(
-                event="error",
-                data=f"data: ❗ 오류 발생: {str(e)}"
-            )
+        # 부모 클래스의 공통 스트림 생성기 사용
+        async for event in self._create_chat_stream_generator(client, query, use_langchain):
+            yield event
 
 
 # 싱글톤 인스턴스

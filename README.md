@@ -129,29 +129,55 @@ $ python main.py
 
 ```plaintext
 .
-├── engine/
-│   ├── base.py               # Abstract base engine
-│   ├── claude_engine.py      # Claude model integration
-│   ├── openai_engine.py      # OpenAI GPT integration
-│   └── gemini_engine.py      # Gemini model integration
+├── core/
+│   ├── cors.py                 # CORS error handler
+│   ├── exception_handler.py    # Exception handler
+│   └── logger.py               # logger
 │
-├── client/
-│   └── vibe_craft_client.py  # Main pipeline client using MCP stdio
+├── exceptions/
+│   ├── base_custom_exception.py
+│   ├── not_found.py    
+│   └── unauthorized.py
+│
+├── mcp_agent/
+│   ├── client/            
+│   │   └── vibe_craft_client.py  # Main pipeline client using MCP stdio
+│   │
+│   ├── engine/
+│   │   ├── base.py               # Abstract base engine
+│   │   ├── claude_engine.py      # Claude model integration
+│   │   ├── openai_engine.py      # OpenAI GPT integration
+│   │   └── gemini_engine.py      # Gemini model integration
+│   │
+│   └── mcp_schemas/         
+│       ├── chat_history_schemas.py     # LLM chat history schemas
+│       └── server_schemas.py           # Server config schemas
 │
 ├── routers/
-│   └── chat.py             # LLM web socket server
+│   ├── chat.py         # chat api
+│   ├── content.py      # file upload api
+│   └── workflow.py     # workflow api
 │
 ├── schemas/
 │   ├── chat_history_shcemas.py   # MCP chat history schemas
-│   ├── chat_shcemas.py           # Fastapi server chat schemas
-│   └── pipeline_schemas.py       # Pipeline schemas
+│   └── sse_response_schemas.py   # SSE response schemas
+│
+├── services/
+│   ├── base_service.py       # base service logic
+│   ├── chat_service.py       # chat service logic
+│   └── workflow_service.py   # workflow service logic
 │
 ├── utils/
-│   ├── data_loader_utils.py  # Data load and File utils
+│   ├── code_generator.py     # File code generator
+│   ├── data_loader_utils.py  # Data load and File utils for Agent
+│   ├── image_utils.py        # Image utils
 │   ├── menus.py              # User menu options
+│   ├── path_utils.py         # File save path generator
 │   └── prompts.py            # LLM prompts
 │
+├── config.py                 # Config
 ├── main.py                   # Entry point for running the pipeline
+├── vibecraft-code.py         # VibeCraft cli workflow
 ├── .env                      # Environment variables (optional)
 └── README.md
 ```

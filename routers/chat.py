@@ -1,12 +1,15 @@
 __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
+# Standard imports
 from typing import Optional
 
+# Third-party imports
 from fastapi import APIRouter
 from fastapi.params import Query
 from sse_starlette.sse import EventSourceResponse
 
-from schemas import ChatResponse
+# Custom imports
+from schemas import ChatResponse, SSEStreamDocumentation
 from services.chat_service import chat_service
 
 prefix = "chat"
@@ -46,12 +49,22 @@ async def load_chat(
 @router.get(
     "/stream/new-chat",
     summary="새 채팅 스트리밍",
-    description="새로운 채팅 세션을 스트리밍으로 시작합니다."
+    description="새로운 채팅 세션을 스트리밍으로 시작합니다.",
+    responses=SSEStreamDocumentation.get_chat_stream_responses()
 )
 async def stream_new_chat(
-    query: str = Query(..., description="Prompt Query"),
-    use_langchain: Optional[bool] = Query(True, description="Trigger for Langchain")
+        query: str = Query(..., description="Prompt Query"),
+        use_langchain: Optional[bool] = Query(True, description="Trigger for Langchain")
 ):
+    """
+    새로운 채팅을 SSE 스트림으로 시작합니다.
+
+    **이벤트 타입:**
+    - `ai`: AI 응답 내용
+    - `tool`: MCP 서버 도구 사용 결과
+    - `complete`: 작업 완료 (thread_id 반환)
+    - `error`: 에러 발생
+    """
     return EventSourceResponse(
         chat_service.execute_stream_chat(query, use_langchain)
     )
@@ -60,13 +73,23 @@ async def stream_new_chat(
 @router.get(
     "/stream/load-chat",
     summary="기존 채팅 스트리밍 로드",
-    description="기존 채팅 세션을 스트리밍으로 로드합니다."
+    description="기존 채팅 세션을 스트리밍으로 로드합니다.",
+    responses=SSEStreamDocumentation.get_chat_stream_responses()
 )
 async def stream_load_chat(
-    query: str = Query(..., description="Prompt Query"),
-    thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),
-    use_langchain: Optional[bool] = Query(True, description="Trigger for Langchain")
+        query: str = Query(..., description="Prompt Query"),
+        thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),
+        use_langchain: Optional[bool] = Query(True, description="Trigger for Langchain")
 ):
+    """
+    기존 채팅 세션을 SSE 스트림으로 로드합니다.
+
+    **이벤트 타입:**
+    - `ai`: AI 응답 내용
+    - `tool`: MCP 서버 도구 사용 결과
+    - `complete`: 작업 완료 (thread_id 반환)
+    - `error`: 에러 발생
+    """
     return EventSourceResponse(
         chat_service.execute_stream_chat(query, use_langchain, thread_id)
     )

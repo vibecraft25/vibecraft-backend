@@ -8,8 +8,9 @@ from langchain_mcp_adapters.client import MultiServerMCPClient
 from sse_starlette import ServerSentEvent
 
 # Custom imports
-from engine import ClaudeEngine, OpenAIEngine, GeminiEngine
-from schemas.mcp_schemas import MCPServerConfig
+from mcp_agent.engine import ClaudeEngine, OpenAIEngine, GeminiEngine
+from schemas import SSEEventBuilder
+from mcp_agent.schemas.server_schemas import MCPServerConfig
 from utils import PathUtils
 from utils.menus import *
 from utils.prompts import *
@@ -130,14 +131,8 @@ class VibeCraftClient:
 
         prompt = set_topic_prompt(topic_prompt)
         async for event, chunk in self.execute_stream_step(prompt):
-            yield ServerSentEvent(
-                event=event,
-                data=f"{chunk}"
-            )
-        yield ServerSentEvent(
-            event="menu",
-            data=topic_selection_menu()
-        )
+            yield ServerSentEvent(event=event, data=chunk)
+        yield SSEEventBuilder.create_menu_event(topic_selection_menu())
 
     """Data loading and generation Methods"""
     async def set_data(
@@ -243,39 +238,24 @@ class VibeCraftClient:
             df = self.data
 
         if df is None:
-            yield ServerSentEvent(
-                event="error",
-                data="데이터가 없습니다."
-            )
+            yield SSEEventBuilder.create_error_event("데이터가 없습니다.")
             return
 
         # 데이터 전처리
         df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
         df.columns = [normalize_column_name(col) for col in df.columns]
 
-        yield ServerSentEvent(
-            event="data",
-            data=f"📊 최종 데이터프레임 요약:\n{df.head(3).to_string(index=False)}"
+        yield SSEEventBuilder.create_data_event(
+            f"📊 최종 데이터프레임 요약:\n{df.head(3).to_string(index=False)}"
         )
 
         # 컬럼 삭제 추천 스트리밍
         removal_prompt = recommend_removal_column_prompt(df)
         async for event, chunk in self.execute_stream_step(removal_prompt):
-            yield ServerSentEvent(
-                event=event,
-                data=chunk
-            )
-        yield ServerSentEvent(
-            event="data",
-            data=', '.join(df.columns)
-        )
+            yield ServerSentEvent(event=event, data=chunk)
+        yield SSEEventBuilder.create_data_event(', '.join(df.columns))
+        yield SSEEventBuilder.create_menu_event(select_edit_col_menu())
 
-        yield ServerSentEvent(
-            event="menu",
-            data=select_edit_col_menu()
-        )
-
-    # TODO: Column명을 정확하게 받을지 결정 필요
     async def stream_data_handler(
         self, query: str,
         df: Optional[pd.DataFrame] = None, meta: Optional[str] = None,
@@ -290,11 +270,7 @@ class VibeCraftClient:
         to_drop = [col.strip() for col in columns_line.split(",")]
 
         await self.data_save(df, to_drop)
-
-        yield ServerSentEvent(
-            event="menu",
-            data=additional_select_edit_col_menu()
-        )
+        yield SSEEventBuilder.create_menu_event(additional_select_edit_col_menu())
 
     """Code Generator Methods"""
     # TODO: WIP
@@ -302,6 +278,7 @@ class VibeCraftClient:
         # TODO: langchain chat history summary 이후 cli run 로직 추가 필요
         print("\n🚦 Step 3: 웹앱 코드 생성")
 
+    """Deploy Methods"""
     # TODO: WIP
     async def step_deploy(self):
         await self.load_tools(self.deploy_mcp_server)

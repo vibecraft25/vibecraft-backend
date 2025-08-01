@@ -7,7 +7,7 @@ import asyncio
 from dotenv import load_dotenv
 
 # Custom imports
-from client.vibe_craft_client import VibeCraftClient
+from mcp_agent.client import VibeCraftClient
 
 load_dotenv()
 
