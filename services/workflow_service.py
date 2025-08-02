@@ -100,8 +100,8 @@ class WorkflowService(BaseStreamService):
         if PathUtils.is_exist(thread_id, f"{thread_id}.sqlite"):
             sqlite_path = PathUtils.get_path(thread_id, f"{thread_id}.sqlite")
             await client.set_data(sqlite_path[0])
-
-        return await client.recommend_visualization_type()
+            return await client.recommend_visualization_type()
+        return []
 
     # TODO: WIP
     def setup_code_generation(self, query: str, thread_id: str) -> VibeCraftClient:

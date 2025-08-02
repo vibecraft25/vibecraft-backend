@@ -4,16 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250802] Update api">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250802] Add visualization recommendation">
       <change beforePath="$PROJECT_DIR$/config-development.yml" beforeDir="false" afterPath="$PROJECT_DIR$/config-development.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mcp_agent/client/vibe_craft_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/mcp_agent/client/vibe_craft_client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mcp_agent/engine/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/mcp_agent/engine/base.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mcp_agent/schemas/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/mcp_agent/schemas/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/workflow.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/workflow.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/services/workflow_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/workflow_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/data_loader_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/data_loader_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/prompts.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/prompts.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -235,14 +228,6 @@
       <workItem from="1752468414247" duration="33946000" />
       <workItem from="1753245249914" duration="3006000" />
       <workItem from="1753407623545" duration="38341000" />
-    </task>
-    <task id="LOCAL-00023" summary="[250630] step_data_upload_or_collection 수정 완료&#10;- table 분리 WIP&#10;- web search WIP">
-      <option name="closed" value="true" />
-      <created>1751274305456</created>
-      <option name="number" value="00023" />
-      <option name="presentableId" value="LOCAL-00023" />
-      <option name="project" value="LOCAL" />
-      <updated>1751274305456</updated>
     </task>
     <task id="LOCAL-00024" summary="[250630] step_data_upload_or_collection 수정 완료&#10;- table 분리 WIP&#10;- web search WIP">
       <option name="closed" value="true" />
@@ -628,7 +613,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754123810062</updated>
     </task>
-    <option name="localTasksCounter" value="72" />
+    <task id="LOCAL-00072" summary="[250802] Add visualization recommendation">
+      <option name="closed" value="true" />
+      <created>1754127843509</created>
+      <option name="number" value="00072" />
+      <option name="presentableId" value="LOCAL-00072" />
+      <option name="project" value="LOCAL" />
+      <updated>1754127843509</updated>
+    </task>
+    <option name="localTasksCounter" value="73" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -646,7 +639,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="[250714] edit GeminiEngine" />
     <MESSAGE value="[250714] edit MCPServerConfig" />
     <MESSAGE value="[250714] edit _wrap_mcp_tools" />
     <MESSAGE value="[250715] update load tool method" />
@@ -671,7 +663,8 @@
     <MESSAGE value="[250730] Update workflow" />
     <MESSAGE value="[250802] add get history" />
     <MESSAGE value="[250802] Update api" />
-    <option name="LAST_COMMIT_MESSAGE" value="[250802] Update api" />
+    <MESSAGE value="[250802] Add visualization recommendation" />
+    <option name="LAST_COMMIT_MESSAGE" value="[250802] Add visualization recommendation" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -680,6 +673,21 @@
           <url>file://$PROJECT_DIR$/backup/clients/samples/client_sample_v1.py</url>
           <line>69</line>
           <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/services/workflow_service.py</url>
+          <line>99</line>
+          <option name="timeStamp" value="18" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/services/workflow_service.py</url>
+          <line>100</line>
+          <option name="timeStamp" value="19" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/services/workflow_service.py</url>
+          <line>101</line>
+          <option name="timeStamp" value="20" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
