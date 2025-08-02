@@ -8,6 +8,7 @@ from sse_starlette.sse import ServerSentEvent
 from starlette.responses import JSONResponse
 
 # Custom imports
+from mcp_agent.engine import BaseEngine
 from mcp_agent.client import VibeCraftClient
 from schemas import ChatResponse
 from services import BaseStreamService
@@ -56,6 +57,19 @@ class ChatService(BaseStreamService):
         # 부모 클래스의 공통 스트림 생성기 사용
         async for event in self._create_chat_stream_generator(client, query, use_langchain):
             yield event
+
+    @staticmethod
+    def get_chat_history(thread_id: str) -> JSONResponse:
+        """특정 thread_id의 채팅 기록을 JSONResponse로 반환"""
+        chat_history = BaseEngine.load_chat_history_file(thread_id)
+
+        if chat_history:
+            return JSONResponse(content=chat_history.model_dump(), status_code=200)
+        else:
+            return JSONResponse(
+                content={"error": f"채팅 기록을 찾을 수 없습니다. Thread ID: {thread_id}"},
+                status_code=404
+            )
 
 
 # 싱글톤 인스턴스

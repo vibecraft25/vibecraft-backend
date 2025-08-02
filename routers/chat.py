@@ -10,6 +10,7 @@ from sse_starlette.sse import EventSourceResponse
 
 # Custom imports
 from schemas import ChatResponse, SSEStreamDocumentation
+from mcp_agent.schemas import ChatHistory
 from services.chat_service import chat_service
 
 prefix = "chat"
@@ -93,3 +94,15 @@ async def stream_load_chat(
     return EventSourceResponse(
         chat_service.execute_stream_chat(query, use_langchain, thread_id)
     )
+
+
+@router.get(
+    "/history",
+    summary="채팅 기록 조회",
+    description="특정 thread_id의 채팅 기록을 JSON 형태로 반환합니다.",
+    response_model=ChatHistory
+)
+async def get_chat_history(
+    thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8")
+):
+    return chat_service.get_chat_history(thread_id)

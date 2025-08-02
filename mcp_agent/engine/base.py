@@ -94,6 +94,7 @@ class BaseEngine:
             return "summarize_conversation"
         return END
 
+    # TODO: topic 대화 내용 정리하여 code generation workflow에 넘기는 형태로 수정
     def summarize_conversation(self, state: State):
         # 우선, 대화를 요약한다.
         summary = state.get("summary", "")
@@ -175,16 +176,13 @@ class BaseEngine:
 
         self.save_chat_history()
 
-    def save_chat_history(self, save_dir: str = "chat-data"):
-        os.makedirs(save_dir, exist_ok=True)
-
-        # 현재 스레드 기준 상태 이력 조회
+    def get_chat_history(self) -> Optional[ChatHistory]:
         snapshot = self.app.get_state(self.config)
         if not snapshot:
             print("[!] 저장할 대화 기록이 없습니다.")
-            return
+            return None
 
-        chat_entry = ChatHistory(
+        return ChatHistory(
             thread_id=str(self.thread_id),
             values=snapshot.values,
             next=snapshot.next,
@@ -194,11 +192,47 @@ class BaseEngine:
             parent_config=snapshot.parent_config,
         )
 
-        filepath = Path(save_dir) / f"chat_{self.thread_id}.json"
-        with open(filepath, "w", encoding="utf-8") as f:
-            f.write(chat_entry.model_dump_json(indent=2))
+    def save_chat_history(self, save_dir: str = "chat-data"):
+        os.makedirs(save_dir, exist_ok=True)
+        chat_entry = self.get_chat_history()
 
-        print(f"[✔] 대화 기록이 '{filepath}' 에 저장되었습니다.")
+        if chat_entry:
+            filepath = Path(save_dir) / f"chat_{self.thread_id}.json"
+            with open(filepath, "w", encoding="utf-8") as f:
+                f.write(chat_entry.model_dump_json(indent=2))
+
+            print(f"[✔] 대화 기록이 '{filepath}' 에 저장되었습니다.")
+        print(f"[!] 저장할 대화 기록이 없습니다.")
+
+    @staticmethod
+    def load_chat_history_file(
+            thread_id: str, save_dir: str = "chat-data"
+    ) -> ChatHistory | None:
+        """
+        Load chat history from a JSON file.
+
+        Parameters:
+            thread_id (str): Unique identifier of the chat history to load.
+            save_dir (str): Directory path where chat history JSON files are stored.
+
+        Returns:
+            ChatHistory | None: Loaded chat history object or None if loading fails.
+        """
+        filepath = Path(save_dir) / f"chat_{thread_id}.json"
+
+        if not filepath.exists():
+            print(f"[!] Chat history file does not exist: {filepath}")
+            return None
+
+        try:
+            with open(filepath, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                record = ChatHistory(**data)
+                print(f"[✔] Chat history successfully loaded: {filepath}")
+                return record
+        except Exception as e:
+            print(f"[!] Failed to load chat history: {e}")
+            return None
 
     def merge_chat_history(self, thread_id: str, save_dir: str = "chat-data"):
         """
@@ -212,27 +246,17 @@ class BaseEngine:
             thread_id (str): Unique identifier of the chat history to load.
             save_dir (str): Directory path where chat history JSON files are stored. Default is "chat-data".
         """
-        filepath = Path(save_dir) / f"chat_{thread_id}.json"
-        if not filepath.exists():
-            print(f"[!] Chat history file does not exist: {filepath}")
+        record = self.load_chat_history_file(thread_id, save_dir)
+        if record is None:
             return
 
-        try:
-            with open(filepath, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                record = ChatHistory(**data)
-                print(f"[✔] Chat history successfully loaded: {filepath}")
+        loaded_messages = record.values.get("messages", [])
+        current_messages = self.app.get_state(self.config).values.get("messages", [])
+        merged_messages = loaded_messages + current_messages
 
-                loaded_messages = record.values.get("messages", [])
-                current_messages = self.app.get_state(self.config).values.get("messages", [])
-                merged_messages = loaded_messages + current_messages
-
-                self.memory = MemorySaver()
-                self.app = self.workflow.compile(checkpointer=self.memory)
-                self.app.update_state(self.config, {"messages": merged_messages})
-
-        except Exception as e:
-            print(f"[!] Failed to load chat history: {e}")
+        self.memory = MemorySaver()
+        self.app = self.workflow.compile(checkpointer=self.memory)
+        self.app.update_state(self.config, {"messages": merged_messages})
 
     def load_chat_history(self, thread_id: str, save_dir: str = "chat-data"):
         """
@@ -246,26 +270,16 @@ class BaseEngine:
             thread_id (str): Unique identifier of the chat history to load.
             save_dir (str): Directory path where chat history JSON files are stored. Default is "chat-data".
         """
-        filepath = Path(save_dir) / f"chat_{thread_id}.json"
-        if not filepath.exists():
-            print(f"[!] Chat history file does not exist: {filepath}")
+        record = self.load_chat_history_file(thread_id, save_dir)
+        if record is None:
             return
 
-        try:
-            with open(filepath, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                record = ChatHistory(**data)
-                print(f"[✔] Chat history successfully loaded: {filepath}")
+        self.thread_id = record.thread_id
+        self.config = record.config
 
-                self.thread_id = record.thread_id
-                self.config = record.config
-
-                self.memory = MemorySaver()
-                self.app = self.workflow.compile(checkpointer=self.memory)
-                self.app.update_state(self.config, record.values)
-
-        except Exception as e:
-            print(f"[!] Failed to load chat history: {e}")
+        self.memory = MemorySaver()
+        self.app = self.workflow.compile(checkpointer=self.memory)
+        self.app.update_state(self.config, record.values)
 
     def clear_memory(self):
         checkpoints = list(self.app.get_state_history(self.config))
