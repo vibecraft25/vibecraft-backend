@@ -4,16 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250730] Update workflow">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vibecraft.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vibecraft.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250802] add get history">
       <change beforePath="$PROJECT_DIR$/config-development.yml" beforeDir="false" afterPath="$PROJECT_DIR$/config-development.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mcp_agent/engine/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/mcp_agent/engine/base.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/chat.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/chat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/chat_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/chat_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -233,14 +225,6 @@
       <workItem from="1752468414247" duration="33946000" />
       <workItem from="1753245249914" duration="3006000" />
       <workItem from="1753407623545" duration="38341000" />
-    </task>
-    <task id="LOCAL-00020" summary="[250630] step_data_upload_or_collection WIP">
-      <option name="closed" value="true" />
-      <created>1751267752218</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
-      <option name="project" value="LOCAL" />
-      <updated>1751267752218</updated>
     </task>
     <task id="LOCAL-00021" summary="[250630] step_data_upload_or_collection WIP&#10;- 다중파일 load 테스트 완료">
       <option name="closed" value="true" />
@@ -626,7 +610,15 @@
       <option name="project" value="LOCAL" />
       <updated>1753948904278</updated>
     </task>
-    <option name="localTasksCounter" value="69" />
+    <task id="LOCAL-00069" summary="[250802] add get history">
+      <option name="closed" value="true" />
+      <created>1754123545602</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1754123545602</updated>
+    </task>
+    <option name="localTasksCounter" value="70" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -644,7 +636,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="[250701] edit connect_to_server method to connect multiple mcp server" />
     <MESSAGE value="[250714] add MCPServerConfig" />
     <MESSAGE value="[250714] edit GeminiEngine" />
     <MESSAGE value="[250714] edit MCPServerConfig" />
@@ -669,7 +660,8 @@
     <MESSAGE value="[250730] Add service logic, Edit routers" />
     <MESSAGE value="[250730] remove examples" />
     <MESSAGE value="[250730] Update workflow" />
-    <option name="LAST_COMMIT_MESSAGE" value="[250730] Update workflow" />
+    <MESSAGE value="[250802] add get history" />
+    <option name="LAST_COMMIT_MESSAGE" value="[250802] add get history" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
