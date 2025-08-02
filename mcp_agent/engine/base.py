@@ -202,7 +202,8 @@ class BaseEngine:
                 f.write(chat_entry.model_dump_json(indent=2))
 
             print(f"[✔] 대화 기록이 '{filepath}' 에 저장되었습니다.")
-        print(f"[!] 저장할 대화 기록이 없습니다.")
+        else:
+            print(f"[!] 저장할 대화 기록이 없습니다.")
 
     @staticmethod
     def load_chat_history_file(

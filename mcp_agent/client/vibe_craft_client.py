@@ -8,9 +8,16 @@ from langchain_mcp_adapters.client import MultiServerMCPClient
 from sse_starlette import ServerSentEvent
 
 # Custom imports
-from mcp_agent.engine import ClaudeEngine, OpenAIEngine, GeminiEngine
+from mcp_agent.engine import (
+    ClaudeEngine,
+    OpenAIEngine,
+    GeminiEngine
+)
 from schemas import SSEEventBuilder
-from mcp_agent.schemas.server_schemas import MCPServerConfig
+from mcp_agent.schemas import (
+    MCPServerConfig,
+    VisualizationRecommendation
+)
 from utils import PathUtils
 from utils.menus import *
 from utils.prompts import *
@@ -20,7 +27,7 @@ from utils.data_loader_utils import (
     normalize_column_name,
     parse_first_row_dict_from_text,
     save_metadata,
-    save_sqlite
+    save_sqlite, parse_visualization_recommendation
 )
 
 
@@ -272,6 +279,11 @@ class VibeCraftClient:
         await self.data_save(df, to_drop)
         yield SSEEventBuilder.create_menu_event(additional_select_edit_col_menu())
 
+    async def recommend_visualization_type(self) -> List[VisualizationRecommendation]:
+        prompt = recommend_visualization_template_prompt(self.data, None)
+        result = await self.execute_step(prompt)
+        return parse_visualization_recommendation(result)
+
     """Code Generator Methods"""
     # TODO: WIP
     async def step_code_generation(self):
@@ -293,8 +305,10 @@ class VibeCraftClient:
             await self.topic_selection_menu_handler()
         while await self.data_handler():
             pass
+        # Optional
+        v_types = await self.recommend_visualization_type()
         breakpoint()
-        # await self.step_code_generation()
+        await self.step_code_generation()
         # await self.step_deploy()
 
     async def test(self):

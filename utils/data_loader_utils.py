@@ -2,15 +2,19 @@ __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
 # Standard imports
 import os
-from datetime import datetime
-from typing import List, Optional
 import json
+import re
 import sqlite3
 import ast
+from typing import List, Optional
+from datetime import datetime
 
 # Third-party imports
 import pandas as pd
 import chardet
+
+# Custom imports
+from mcp_agent.schemas import VisualizationRecommendation
 
 
 def load_files() -> pd.DataFrame:
@@ -168,3 +172,46 @@ def save_sqlite(df: pd.DataFrame, save_path: str, file_name: str) -> str:
 
     print(f"✅ SQLite 파일 저장 완료: {file_path}")
     return file_path
+
+
+def parse_visualization_recommendation(llm_response: str) -> List[VisualizationRecommendation]:
+    """
+    LLM 응답에서 시각화 추천 정보를 파싱합니다.
+
+    Args:
+        llm_response (str): LLM의 응답 텍스트
+
+    Returns:
+        VisualizationRecommendationList: 파싱된 추천 목록
+
+    Raises:
+        ValueError: JSON 파싱 실패 또는 데이터 검증 실패시
+        json.JSONDecodeError: JSON 형식이 올바르지 않을 때
+    """
+    try:
+        # JSON 코드 블록에서 JSON 부분만 추출
+        json_match = re.search(r'```json\s*(\[.*?\])\s*```', llm_response, re.DOTALL)
+        if json_match:
+            json_str = json_match.group(1)
+        else:
+            # 코드 블록이 없는 경우 전체 응답에서 JSON 배열 찾기
+            json_match = re.search(r'(\[.*?\])', llm_response, re.DOTALL)
+            if json_match:
+                json_str = json_match.group(1)
+            else:
+                raise ValueError("응답에서 JSON 형식을 찾을 수 없습니다")
+
+        # JSON 파싱
+        parsed_data = json.loads(json_str)
+
+        # 단일 객체인 경우 리스트로 변환
+        if isinstance(parsed_data, dict):
+            parsed_data = [parsed_data]
+
+        # Pydantic 모델로 검증
+        return [VisualizationRecommendation(**item) for item in parsed_data]
+
+    except json.JSONDecodeError as e:
+        raise json.JSONDecodeError(f"JSON 파싱 실패: {str(e)}", e.doc, e.pos)
+    except Exception as e:
+        raise ValueError(f"데이터 파싱 실패: {str(e)}")

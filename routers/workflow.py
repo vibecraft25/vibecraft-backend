@@ -1,7 +1,7 @@
 __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
 # Standard imports
-from typing import Optional
+from typing import List, Optional
 
 # Third-party imports
 from fastapi import APIRouter
@@ -10,6 +10,7 @@ from sse_starlette.sse import EventSourceResponse
 
 # Custom imports
 from schemas import SSEStreamDocumentation
+from mcp_agent.schemas import VisualizationRecommendation
 from services.workflow_service import workflow_service
 
 prefix = "workflow"
@@ -55,13 +56,13 @@ async def stream_set_topic(
             "**Menu call api logic:**\n\n"
             "- `1`: call `/workflow/stream/process-data-selection`\n"
             "- `2`: call `/workflow/stream/process-data-selection`\n"
-            "- `3`: call `/workflow/code-generator`\n"
+            "- `3`: call `/workflow/visualization-type or /workflow/code-generator`\n"
     ),
     responses=SSEStreamDocumentation.get_workflow_stream_responses()
 )
 async def set_data(
         thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),
-        code: Optional[str] = Query(None, description="Use file code after upload with `/contents/upload` api",
+        code: Optional[str] = Query(None, description="Use `/contents/upload` api to upload file and get code",
                                     example="f09d8c6e"),
 ):
     """
@@ -85,7 +86,7 @@ async def set_data(
     description=(
             "**Menu call api logic:**\n\n"
             "- `1`: call `/workflow/stream/process-data-selection`\n"
-            "- `2`: call `/workflow/code-generator`\n"
+            "- `2`: call `/workflow/visualization-type or /workflow/code-generator`\n"
     ),
     responses=SSEStreamDocumentation.get_workflow_stream_responses()
 )
@@ -106,6 +107,18 @@ async def process_data_selection(
     return EventSourceResponse(
         workflow_service.execute_data_selection_processing(thread_id, query)
     )
+
+
+@router.get(
+    "/visualization-type",
+    summary="[Optional] 워크플로우 2-3단계: 시각화 방식 추천",
+    description="",
+    response_model=List[VisualizationRecommendation]
+)
+async def visualization_type(
+        thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),
+):
+    return await workflow_service.execute_recommend_visualization_type(thread_id)
 
 
 # TODO: WIP

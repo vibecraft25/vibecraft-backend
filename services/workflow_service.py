@@ -2,7 +2,7 @@ __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
 # Standard imports
 import json
-from typing import Optional, AsyncGenerator
+from typing import List, AsyncGenerator, Optional
 
 # Third-party imports
 from sse_starlette.sse import ServerSentEvent
@@ -10,6 +10,7 @@ from sse_starlette.sse import ServerSentEvent
 # Custom imports
 from mcp_agent.client import VibeCraftClient
 from schemas import SSEEventBuilder
+from mcp_agent.schemas import VisualizationRecommendation
 from services import BaseStreamService
 from utils import PathUtils
 
@@ -87,6 +88,20 @@ class WorkflowService(BaseStreamService):
                     lambda: thread_id
             ):
                 yield event
+
+    async def execute_recommend_visualization_type(
+            self,
+            thread_id: str,
+    ) -> List[VisualizationRecommendation]:
+        """데이터 선택 처리"""
+        client = self._create_client()
+        client.load_chat_history(thread_id)
+
+        if PathUtils.is_exist(thread_id, f"{thread_id}.sqlite"):
+            sqlite_path = PathUtils.get_path(thread_id, f"{thread_id}.sqlite")
+            await client.set_data(sqlite_path[0])
+
+        return await client.recommend_visualization_type()
 
     # TODO: WIP
     def setup_code_generation(self, query: str, thread_id: str) -> VibeCraftClient:
