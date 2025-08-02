@@ -97,9 +97,10 @@ class WorkflowService(BaseStreamService):
         client = self._create_client()
         client.load_chat_history(thread_id)
 
-        if PathUtils.is_exist(thread_id, f"{thread_id}.sqlite"):
-            sqlite_path = PathUtils.get_path(thread_id, f"{thread_id}.sqlite")
-            await client.set_data(sqlite_path[0])
+        # TODO: file path 정의 필요
+        if PathUtils.is_exist(thread_id, f"{thread_id}.csv"):
+            csv_path = PathUtils.get_path(thread_id, f"{thread_id}.csv")
+            await client.upload_data(csv_path[0])
             return await client.recommend_visualization_type()
         return []
 
