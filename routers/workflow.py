@@ -1,7 +1,7 @@
 __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
 # Standard imports
-from typing import List, Optional
+from typing import Optional
 
 # Third-party imports
 from fastapi import APIRouter
@@ -10,7 +10,10 @@ from sse_starlette.sse import EventSourceResponse
 
 # Custom imports
 from schemas import SSEStreamDocumentation
-from mcp_agent.schemas import VisualizationRecommendationResponse
+from mcp_agent.schemas import (
+    VisualizationRecommendationResponse,
+    VisualizationType
+)
 from services.workflow_service import workflow_service
 
 prefix = "workflow"
@@ -129,8 +132,8 @@ async def visualization_type(
     responses=SSEStreamDocumentation.get_workflow_stream_responses()
 )
 async def generate_code(
-        query: str = Query(..., description="Prompt Query"),
         thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),
+        visualization_type: VisualizationType = Query(..., description="Visualization Type"),
 ):
     """
     워크플로우 3단계: 웹앱 코드를 생성합니다. (현재 WIP)
@@ -138,6 +141,6 @@ async def generate_code(
     **TODO:** 실제 코드 생성 로직 구현 필요
     """
     # WIP: 현재는 클라이언트 설정만 수행
-    client = workflow_service.setup_code_generation(query, thread_id)
+    client = workflow_service.execute_code_generator(thread_id, visualization_type)
     # TODO: 실제 코드 생성 로직 구현 필요
     return {"message": "Code generation setup completed", "thread_id": client.get_thread_id()}

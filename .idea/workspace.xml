@@ -4,8 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250804] Add agent runner">
-      <change beforePath="$PROJECT_DIR$/mcp_agent/client/vibe_craft_agent_runner.py" beforeDir="false" afterPath="$PROJECT_DIR$/mcp_agent/client/vibe_craft_agent_runner.py" afterDir="false" />
+    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250804] Edit agent runner (WIP)">
+      <change beforePath="$PROJECT_DIR$/routers/workflow.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/workflow.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/services/workflow_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/workflow_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -231,22 +231,6 @@
       <workItem from="1752468414247" duration="33946000" />
       <workItem from="1753245249914" duration="3006000" />
       <workItem from="1753407623545" duration="38341000" />
-    </task>
-    <task id="LOCAL-00028" summary="[250701] update gitignore">
-      <option name="closed" value="true" />
-      <created>1751334374771</created>
-      <option name="number" value="00028" />
-      <option name="presentableId" value="LOCAL-00028" />
-      <option name="project" value="LOCAL" />
-      <updated>1751334374771</updated>
-    </task>
-    <task id="LOCAL-00029" summary="[250701] update gitignore, step_code_generation WIP">
-      <option name="closed" value="true" />
-      <created>1751334492376</created>
-      <option name="number" value="00029" />
-      <option name="presentableId" value="LOCAL-00029" />
-      <option name="project" value="LOCAL" />
-      <updated>1751334492376</updated>
     </task>
     <task id="LOCAL-00030" summary="[250701] code generation WIP">
       <option name="closed" value="true" />
@@ -624,7 +608,23 @@
       <option name="project" value="LOCAL" />
       <updated>1754295299731</updated>
     </task>
-    <option name="localTasksCounter" value="77" />
+    <task id="LOCAL-00077" summary="[250804] Edit agent runner (WIP)">
+      <option name="closed" value="true" />
+      <created>1754295535370</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1754295535370</updated>
+    </task>
+    <task id="LOCAL-00078" summary="[250804] Edit agent runner (WIP)">
+      <option name="closed" value="true" />
+      <created>1754295607692</created>
+      <option name="number" value="00078" />
+      <option name="presentableId" value="LOCAL-00078" />
+      <option name="project" value="LOCAL" />
+      <updated>1754295607692</updated>
+    </task>
+    <option name="localTasksCounter" value="79" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -642,7 +642,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="[250717] update engines" />
     <MESSAGE value="[250717] update gemini_engine.py" />
     <MESSAGE value="[250717] add langchain" />
     <MESSAGE value="[250718] update engines and langchain logic" />
@@ -667,7 +666,8 @@
     <MESSAGE value="[250804] Edit visualization logic" />
     <MESSAGE value="[250804] Add apis&#10;- /chat/summary: 요약 내용 요청 및 요약 결과 없을 시 생성&#10;- /content/meta: 생성/업로드된 데이터 meta.json 반환" />
     <MESSAGE value="[250804] Add agent runner" />
-    <option name="LAST_COMMIT_MESSAGE" value="[250804] Add agent runner" />
+    <MESSAGE value="[250804] Edit agent runner (WIP)" />
+    <option name="LAST_COMMIT_MESSAGE" value="[250804] Edit agent runner (WIP)" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -109,7 +109,7 @@ class WorkflowService(BaseStreamService):
         raise NotFoundException(detail=f"Resource Not Found: {thread_id}.{file_format}")
 
     # TODO: WIP
-    def setup_code_generation(
+    def execute_code_generator(
             self, thread_id: str, visualization_type: VisualizationType
     ) -> VibeCraftClient:
         """워크플로우 3단계: 코드 생성 설정 (WIP)"""
