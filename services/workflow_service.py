@@ -2,7 +2,7 @@ __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
 # Standard imports
 import json
-from typing import List, AsyncGenerator, Optional
+from typing import AsyncGenerator, Optional
 
 # Third-party imports
 from sse_starlette.sse import ServerSentEvent
@@ -11,7 +11,10 @@ from exceptions import NotFoundException
 # Custom imports
 from mcp_agent.client import VibeCraftClient
 from schemas import SSEEventBuilder
-from mcp_agent.schemas import VisualizationRecommendationResponse
+from mcp_agent.schemas import (
+    VisualizationType,
+    VisualizationRecommendationResponse
+)
 from services import BaseStreamService
 from utils import PathUtils
 
@@ -106,11 +109,13 @@ class WorkflowService(BaseStreamService):
         raise NotFoundException(detail=f"Resource Not Found: {thread_id}.{file_format}")
 
     # TODO: WIP
-    def setup_code_generation(self, query: str, thread_id: str) -> VibeCraftClient:
+    def setup_code_generation(
+            self, thread_id: str, visualization_type: VisualizationType
+    ) -> VibeCraftClient:
         """워크플로우 3단계: 코드 생성 설정 (WIP)"""
         client = self._create_client()
-        client.merge_chat_history(thread_id)
-        return client
+        client.load_chat_history(thread_id)
+        return client.run_code_generation(thread_id, visualization_type)
 
 
 # 싱글톤 인스턴스

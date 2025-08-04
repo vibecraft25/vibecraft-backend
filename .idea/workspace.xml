@@ -4,19 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250804] Edit visualization logic">
+    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250804] Add apis&#10;- /chat/summary: 요약 내용 요청 및 요약 결과 없을 시 생성&#10;- /content/meta: 생성/업로드된 데이터 meta.json 반환">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/vibecraft.drawio" beforeDir="false" afterPath="$PROJECT_DIR$/docs/vibecraft.drawio" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mcp_agent/client/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/mcp_agent/client/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mcp_agent/client/vibe_craft_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/mcp_agent/client/vibe_craft_client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mcp_agent/engine/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/mcp_agent/engine/base.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mcp_agent/schemas/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/mcp_agent/schemas/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mcp_agent/schemas/prompt_parser_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/mcp_agent/schemas/prompt_parser_schemas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/chat.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/chat.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/content.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/content.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/workflow.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/workflow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/chat_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/chat_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/services/workflow_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/workflow_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/file_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/file_utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/prompts.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/prompts.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -242,14 +237,6 @@
       <workItem from="1752468414247" duration="33946000" />
       <workItem from="1753245249914" duration="3006000" />
       <workItem from="1753407623545" duration="38341000" />
-    </task>
-    <task id="LOCAL-00026" summary="[250630] step_data_upload_or_collection 수정 완료&#10;- table 분리 WIP&#10;- web search WIP">
-      <option name="closed" value="true" />
-      <created>1751274723746</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1751274723746</updated>
     </task>
     <task id="LOCAL-00027" summary="[250630] step_data_upload_or_collection 수정 완료&#10;- table 분리 WIP&#10;- web search WIP">
       <option name="closed" value="true" />
@@ -635,7 +622,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754270132138</updated>
     </task>
-    <option name="localTasksCounter" value="75" />
+    <task id="LOCAL-00075" summary="[250804] Add apis&#10;- /chat/summary: 요약 내용 요청 및 요약 결과 없을 시 생성&#10;- /content/meta: 생성/업로드된 데이터 meta.json 반환">
+      <option name="closed" value="true" />
+      <created>1754292789567</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1754292789567</updated>
+    </task>
+    <option name="localTasksCounter" value="76" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -653,7 +648,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="[250714] edit _wrap_mcp_tools" />
     <MESSAGE value="[250715] update load tool method" />
     <MESSAGE value="[250717] update engines" />
     <MESSAGE value="[250717] update gemini_engine.py" />
@@ -678,7 +672,8 @@
     <MESSAGE value="[250802] Update api" />
     <MESSAGE value="[250802] Add visualization recommendation" />
     <MESSAGE value="[250804] Edit visualization logic" />
-    <option name="LAST_COMMIT_MESSAGE" value="[250804] Edit visualization logic" />
+    <MESSAGE value="[250804] Add apis&#10;- /chat/summary: 요약 내용 요청 및 요약 결과 없을 시 생성&#10;- /content/meta: 생성/업로드된 데이터 meta.json 반환" />
+    <option name="LAST_COMMIT_MESSAGE" value="[250804] Add apis&#10;- /chat/summary: 요약 내용 요청 및 요약 결과 없을 시 생성&#10;- /content/meta: 생성/업로드된 데이터 meta.json 반환" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

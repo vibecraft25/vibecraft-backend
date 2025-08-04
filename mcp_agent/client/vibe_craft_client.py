@@ -8,11 +8,13 @@ from langchain_mcp_adapters.client import MultiServerMCPClient
 from sse_starlette import ServerSentEvent
 
 # Custom imports
+from mcp_agent.client import VibecraftAgentRunner
 from mcp_agent.engine import (
     ClaudeEngine,
     OpenAIEngine,
     GeminiEngine
 )
+from mcp_agent.schemas.prompt_parser_schemas import VisualizationType
 from schemas import SSEEventBuilder
 from mcp_agent.schemas import (
     MCPServerConfig,
@@ -299,10 +301,28 @@ class VibeCraftClient:
         )
 
     """Code Generator Methods"""
-    # TODO: WIP
-    async def step_code_generation(self):
-        # TODO: langchain chat history summary 이후 cli run 로직 추가 필요
+    def run_code_generation(
+            self, thread_id: str, visualization_type: VisualizationType
+    ):
         print("\n🚦 Step 3: 웹앱 코드 생성")
+
+        runner = VibecraftAgentRunner()
+        file_name = f"{thread_id}.sqlite"
+        if (runner.is_available() and
+                PathUtils.is_exist(thread_id, file_name)):
+            print("vibecraft-agent 사용 가능")
+            file_path = PathUtils.get_path(thread_id, file_name)[0]
+            result = runner.run_agent(
+                sqlite_path=file_path,
+                visualization_type=visualization_type.value,
+                user_prompt=self.get_summary(),
+                output_dir="./output",
+                debug=False
+            )
+
+        # TODO: WIP
+            return True
+        return False
 
     """Deploy Methods"""
     # TODO: WIP
@@ -314,19 +334,23 @@ class VibeCraftClient:
         print(f"\n💻 배포중...")
 
     async def run_pipeline(self, topic_prompt: str):
+        # Step: 1
         await self.topic_selection(topic_prompt)
         self.engine.trigger_summarize()
         stats = self.engine.get_conversation_stats()
         if stats['has_summary']:
             print(f"Summary Preview: {stats['summary_preview']}")
+        # Step: 2-1
         while self.data is None:
             await self.topic_selection_menu_handler()
+        # Step: 2-2
         while await self.data_handler():
             pass
-        # Optional
-        v_types = await self.recommend_visualization_type()
+        # Step: 2-3
+        v_type = (await self.recommend_visualization_type()).get_top_recommendation()
+        # Step: 3
+        self.run_code_generation(self.get_thread_id(), v_type.visualization_type)
         breakpoint()
-        await self.step_code_generation()
         # await self.step_deploy()
 
     async def test(self):

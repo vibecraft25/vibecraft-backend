@@ -14,7 +14,10 @@ import pandas as pd
 import chardet
 
 # Custom imports
-from mcp_agent.schemas import VisualizationRecommendation
+from mcp_agent.schemas import (
+    VisualizationType,
+    VisualizationRecommendation
+)
 
 
 class FileUtils:
@@ -183,7 +186,9 @@ class FileUtils:
         return file_path
 
     @staticmethod
-    def parse_visualization_recommendation(llm_response: str) -> List[VisualizationRecommendation]:
+    def parse_visualization_recommendation(
+            llm_response: str
+    ) -> List[VisualizationRecommendation]:
         """
         LLM 응답에서 시각화 추천 정보를 파싱합니다.
 
@@ -217,8 +222,9 @@ class FileUtils:
             if isinstance(parsed_data, dict):
                 parsed_data = [parsed_data]
 
-            # Pydantic 모델로 검증
-            return [VisualizationRecommendation(**item) for item in parsed_data]
+            # 데이터 변환 및 검증
+            recommendations = [VisualizationRecommendation(**item) for item in parsed_data]
+            return recommendations
 
         except json.JSONDecodeError as e:
             raise json.JSONDecodeError(f"JSON 파싱 실패: {str(e)}", e.doc, e.pos)

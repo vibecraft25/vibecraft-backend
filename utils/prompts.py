@@ -192,7 +192,7 @@ def recommend_visualization_template_prompt(df: pd.DataFrame, user_context: Opti
         "```json\n"
         "[\n"
         "  {\n"
-        '    "template_id": "템플릿_ID",\n'
+        '    "visualization_type": "시각화_템플릿_종류",\n'
         '    "confidence": 95,\n'
         '    "reason": "추천 근거 (데이터 특성과 요구사항 기반)",\n'
         '    "data_requirements": ["필요한 데이터 컬럼들"],\n'
