@@ -301,7 +301,7 @@ class VibeCraftClient:
         )
 
     """Code Generator Methods"""
-    def run_code_generation(
+    def run_code_generator(
             self, thread_id: str, visualization_type: VisualizationType
     ):
         print("\n🚦 Step 3: 웹앱 코드 생성")

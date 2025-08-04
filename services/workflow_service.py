@@ -115,7 +115,7 @@ class WorkflowService(BaseStreamService):
         """워크플로우 3단계: 코드 생성 설정 (WIP)"""
         client = self._create_client()
         client.load_chat_history(thread_id)
-        return client.run_code_generation(thread_id, visualization_type)
+        return client.run_code_generator(thread_id, visualization_type)
 
 
 # 싱글톤 인스턴스
