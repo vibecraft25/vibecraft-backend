@@ -160,6 +160,7 @@ $ python main.py
 │
 ├── schemas/
 │   ├── chat_history_shcemas.py   # MCP chat history schemas
+│   ├── data_schemas.py           # Data schemas
 │   └── sse_response_schemas.py   # SSE response schemas
 │
 ├── services/

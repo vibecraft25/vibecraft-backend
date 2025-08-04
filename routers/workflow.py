@@ -10,7 +10,7 @@ from sse_starlette.sse import EventSourceResponse
 
 # Custom imports
 from schemas import SSEStreamDocumentation
-from mcp_agent.schemas import VisualizationRecommendation
+from mcp_agent.schemas import VisualizationRecommendationResponse
 from services.workflow_service import workflow_service
 
 prefix = "workflow"
@@ -113,7 +113,7 @@ async def process_data_selection(
     "/visualization-type",
     summary="[Optional] 워크플로우 2-3단계: 시각화 방식 추천",
     description="",
-    response_model=List[VisualizationRecommendation]
+    response_model=VisualizationRecommendationResponse
 )
 async def visualization_type(
         thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),

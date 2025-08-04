@@ -73,7 +73,7 @@ def recommend_removal_column_prompt(df: pd.DataFrame) -> str:
     return prompt
 
 
-def parse_removal_column_prompt(df: pd.DataFrame, query: str, meta: Optional[str] = None) -> str:
+def parse_removal_column_prompt(df: pd.DataFrame, query: str, meta: Optional[dict] = None) -> str:
     """
     사용자 쿼리의 의도를 파악하여 해당하는 컬럼명을 추출하는 프롬프트
     """
@@ -84,8 +84,7 @@ def parse_removal_column_prompt(df: pd.DataFrame, query: str, meta: Optional[str
     column_mapping_info = ""
     if meta:
         try:
-            meta_data = json.loads(meta)
-            column_mapping = meta_data.get("column_mapping", {})
+            column_mapping = meta.get("column_mapping", {})
             if column_mapping:
                 mapping_lines = []
                 for original_name, current_name in column_mapping.items():

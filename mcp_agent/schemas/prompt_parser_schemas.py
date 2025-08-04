@@ -30,14 +30,18 @@ class VisualizationRecommendation(BaseModel):
         return v
 
 
-class VisualizationRecommendationList(BaseModel):
+class VisualizationRecommendationResponse(BaseModel):
     """시각화 템플릿 추천 목록"""
+    user_context: Optional[str] = Field(None, description="주제 설정 대화 맥락 요약", examples=["XX시 피자 일매출 시각화를 위한 FE 제작을 수행하며.."])
     recommendations: List[VisualizationRecommendation] = Field(..., description="추천 목록")
 
     @field_validator('recommendations')
     def validate_recommendations_count(cls, v):
+        """3개를 초과하는 경우 신뢰도 기준으로 상위 3개만 선택"""
         if len(v) > 3:
-            raise ValueError("최대 3개까지만 추천 가능합니다")
+            # 신뢰도 기준으로 내림차순 정렬하여 상위 3개만 선택
+            sorted_recommendations = sorted(v, key=lambda x: x.confidence, reverse=True)
+            return sorted_recommendations[:3]
         return v
 
     def get_top_recommendation(self) -> Optional[VisualizationRecommendation]:

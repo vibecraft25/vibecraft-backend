@@ -16,7 +16,7 @@ from mcp_agent.engine import (
 from schemas import SSEEventBuilder
 from mcp_agent.schemas import (
     MCPServerConfig,
-    VisualizationRecommendation
+    VisualizationRecommendationResponse
 )
 from utils import FileUtils, PathUtils
 from utils.menus import *
@@ -99,6 +99,15 @@ class VibeCraftClient:
             async for chunk in self.engine.stream_generate(prompt=prompt):
                 yield chunk
 
+    def get_summary(self) -> str:
+        stats = self.engine.get_conversation_stats()
+        if stats['has_summary']:
+            return stats["summary"]
+        else:
+            self.engine.trigger_summarize()
+            stats = self.engine.get_conversation_stats()
+            return stats["summary"]
+
     """Topic Selection Methods"""
     async def topic_selection(self, topic_prompt: str):
         await self.load_tools(self.topic_mcp_server)
@@ -163,8 +172,7 @@ class VibeCraftClient:
         print("\n🚦 Step 2: 데이터 업로드")
 
         if file_path:
-            encoding = FileUtils.detect_file_encoding(file_path)
-            self.data = pd.read_csv(file_path, encoding=encoding)
+            self.data = FileUtils.load_local_files([file_path])
         else:
             self.data = FileUtils.load_files()
 
@@ -258,7 +266,7 @@ class VibeCraftClient:
 
     async def stream_data_handler(
         self, query: str,
-        df: Optional[pd.DataFrame] = None, meta: Optional[str] = None,
+        df: Optional[pd.DataFrame] = None, meta: Optional[dict] = None,
     ):
         """데이터 처리 메뉴 핸들러"""
         if df is None:
@@ -272,10 +280,23 @@ class VibeCraftClient:
         await self.data_save(df, to_drop)
         yield SSEEventBuilder.create_menu_event(additional_select_edit_col_menu())
 
-    async def recommend_visualization_type(self) -> List[VisualizationRecommendation]:
-        prompt = recommend_visualization_template_prompt(self.data, None)
+    async def recommend_visualization_type(self) -> VisualizationRecommendationResponse:
+        stats = self.engine.get_conversation_stats()
+        if stats['has_summary']:
+            user_context = stats["summary"]
+        else:
+            self.engine.trigger_summarize()
+            stats = self.engine.get_conversation_stats()
+            user_context = stats["summary"]
+
+        prompt = recommend_visualization_template_prompt(self.data, user_context)
         result = await self.execute_step(prompt)
-        return FileUtils.parse_visualization_recommendation(result)
+
+        recommendations = FileUtils.parse_visualization_recommendation(result)
+        return VisualizationRecommendationResponse(
+            user_context=user_context,
+            recommendations=recommendations
+        )
 
     """Code Generator Methods"""
     # TODO: WIP
@@ -294,6 +315,10 @@ class VibeCraftClient:
 
     async def run_pipeline(self, topic_prompt: str):
         await self.topic_selection(topic_prompt)
+        self.engine.trigger_summarize()
+        stats = self.engine.get_conversation_stats()
+        if stats['has_summary']:
+            print(f"Summary Preview: {stats['summary_preview']}")
         while self.data is None:
             await self.topic_selection_menu_handler()
         while await self.data_handler():

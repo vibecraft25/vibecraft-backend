@@ -71,6 +71,19 @@ class ChatService(BaseStreamService):
                 status_code=404
             )
 
+    async def get_chat_summary(self, thread_id: str) -> JSONResponse:
+        """특정 thread_id의 채팅 기록을 JSONResponse로 반환"""
+        client = await self._create_client(thread_id)
+        chat_summary = client.get_summary()
+
+        if chat_summary:
+            return JSONResponse(content=chat_summary, status_code=200)
+        else:
+            return JSONResponse(
+                content={"error": f"채팅 기록을 찾을 수 없습니다. Thread ID: {thread_id}"},
+                status_code=404
+            )
+
 
 # 싱글톤 인스턴스
 chat_service = ChatService()
