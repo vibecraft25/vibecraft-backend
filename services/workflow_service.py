@@ -7,7 +7,6 @@ from typing import AsyncGenerator, Optional
 # Third-party imports
 from sse_starlette.sse import ServerSentEvent
 
-from exceptions import NotFoundException
 # Custom imports
 from mcp_agent.client import VibeCraftClient
 from schemas import SSEEventBuilder
@@ -17,6 +16,7 @@ from mcp_agent.schemas import (
 )
 from services import BaseStreamService
 from utils import PathUtils
+from exceptions import NotFoundException
 
 
 class WorkflowService(BaseStreamService):
