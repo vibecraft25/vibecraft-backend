@@ -18,17 +18,9 @@ from mcp_agent.schemas import (
     MCPServerConfig,
     VisualizationRecommendation
 )
-from utils import PathUtils
+from utils import FileUtils, PathUtils
 from utils.menus import *
 from utils.prompts import *
-from utils.data_loader_utils import (
-    load_files,
-    markdown_table_to_df,
-    normalize_column_name,
-    parse_first_row_dict_from_text,
-    save_metadata,
-    save_sqlite, parse_visualization_recommendation
-)
 
 
 class VibeCraftClient:
@@ -153,7 +145,7 @@ class VibeCraftClient:
             selected_option = select_data_loader_menu()
 
         if selected_option == "1" or file_path:
-            self.data = self.set_data(file_path)
+            self.upload_data(file_path)
         else:
             self.data = await self.generate_data()
 
@@ -163,17 +155,18 @@ class VibeCraftClient:
         print("\n🚦 Step 2: 주제 기반 샘플 데이터를 생성")
         prompt = generate_sample_prompt()
         sample_data = await self.execute_step(prompt)
-        df = markdown_table_to_df(sample_data)
+        df = FileUtils.markdown_table_to_df(sample_data)
 
         return df
 
-    def upload_data(self, file_path: Optional[str] = None) -> pd.DataFrame:
+    def upload_data(self, file_path: Optional[str] = None):
         print("\n🚦 Step 2: 데이터 업로드")
 
-        if file_path and PathUtils.is_exist(self.engine.thread_id, file_path):
-            return pd.read_csv(file_path)
+        if file_path:
+            encoding = FileUtils.detect_file_encoding(file_path)
+            self.data = pd.read_csv(file_path, encoding=encoding)
         else:
-            return load_files()
+            self.data = FileUtils.load_files()
 
     """Data processing Methods"""
     async def data_processing(self, df: Optional[pd.DataFrame] = None):
@@ -183,7 +176,7 @@ class VibeCraftClient:
 
         # 1. 데이터 전처리
         df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
-        df.columns = [normalize_column_name(col) for col in df.columns]
+        df.columns = [FileUtils.normalize_column_name(col) for col in df.columns]
         print(f"\n📊 최종 데이터프레임 요약:\n{df.head(3).to_string(index=False)}")
 
         # 2. 컬럼 삭제 추천
@@ -201,7 +194,7 @@ class VibeCraftClient:
         result = await self.execute_step(prompt)
         print(f"Mapped Column dictionary: {result}")
 
-        new_col = parse_first_row_dict_from_text(result)
+        new_col = FileUtils.parse_first_row_dict_from_text(result)
         filtered_new_col = {k: v for k, v in new_col.items() if v is not None}
 
         mapped_df = df.rename(columns=new_col)[list(filtered_new_col.values())]
@@ -210,8 +203,8 @@ class VibeCraftClient:
         # 파일 저장
         path = PathUtils.generate_path(self.get_thread_id())
         mapped_df.to_csv(os.path.join(path, f"{self.get_thread_id()}.csv"), encoding="cp949", index=False)
-        file_path = save_sqlite(mapped_df, path, self.get_thread_id())
-        save_metadata(filtered_new_col, path, file_path)
+        file_path = FileUtils.save_sqlite(mapped_df, path, self.get_thread_id())
+        FileUtils.save_metadata(filtered_new_col, path, file_path)
 
     async def data_handler(self, df: Optional[pd.DataFrame] = None) -> bool:
         """데이터 처리 메뉴 핸들러"""
@@ -250,7 +243,7 @@ class VibeCraftClient:
 
         # 데이터 전처리
         df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
-        df.columns = [normalize_column_name(col) for col in df.columns]
+        df.columns = [FileUtils.normalize_column_name(col) for col in df.columns]
 
         yield SSEEventBuilder.create_data_event(
             f"📊 최종 데이터프레임 요약:\n{df.head(3).to_string(index=False)}"
@@ -282,7 +275,7 @@ class VibeCraftClient:
     async def recommend_visualization_type(self) -> List[VisualizationRecommendation]:
         prompt = recommend_visualization_template_prompt(self.data, None)
         result = await self.execute_step(prompt)
-        return parse_visualization_recommendation(result)
+        return FileUtils.parse_visualization_recommendation(result)
 
     """Code Generator Methods"""
     # TODO: WIP

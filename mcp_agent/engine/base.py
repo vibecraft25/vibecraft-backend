@@ -18,7 +18,7 @@ from langgraph.graph import START, END, MessagesState, StateGraph
 
 # Custom imports
 from mcp_agent.schemas import ChatHistory
-
+from config import settings
 
 class State(MessagesState):
     summary: str
@@ -192,12 +192,12 @@ class BaseEngine:
             parent_config=snapshot.parent_config,
         )
 
-    def save_chat_history(self, save_dir: str = "chat-data"):
-        os.makedirs(save_dir, exist_ok=True)
+    def save_chat_history(self):
+        os.makedirs(settings.chat_path, exist_ok=True)
         chat_entry = self.get_chat_history()
 
         if chat_entry:
-            filepath = Path(save_dir) / f"chat_{self.thread_id}.json"
+            filepath = Path(settings.chat_path) / f"chat_{self.thread_id}.json"
             with open(filepath, "w", encoding="utf-8") as f:
                 f.write(chat_entry.model_dump_json(indent=2))
 
@@ -206,20 +206,17 @@ class BaseEngine:
             print(f"[!] 저장할 대화 기록이 없습니다.")
 
     @staticmethod
-    def load_chat_history_file(
-            thread_id: str, save_dir: str = "chat-data"
-    ) -> ChatHistory | None:
+    def load_chat_history_file(thread_id: str) -> ChatHistory | None:
         """
         Load chat history from a JSON file.
 
         Parameters:
             thread_id (str): Unique identifier of the chat history to load.
-            save_dir (str): Directory path where chat history JSON files are stored.
 
         Returns:
             ChatHistory | None: Loaded chat history object or None if loading fails.
         """
-        filepath = Path(save_dir) / f"chat_{thread_id}.json"
+        filepath = Path(settings.chat_path) / f"chat_{thread_id}.json"
 
         if not filepath.exists():
             print(f"[!] Chat history file does not exist: {filepath}")
@@ -235,7 +232,7 @@ class BaseEngine:
             print(f"[!] Failed to load chat history: {e}")
             return None
 
-    def merge_chat_history(self, thread_id: str, save_dir: str = "chat-data"):
+    def merge_chat_history(self, thread_id: str):
         """
         Load a saved chat history and merge its messages with the current session.
 
@@ -245,9 +242,8 @@ class BaseEngine:
 
         Parameters:
             thread_id (str): Unique identifier of the chat history to load.
-            save_dir (str): Directory path where chat history JSON files are stored. Default is "chat-data".
         """
-        record = self.load_chat_history_file(thread_id, save_dir)
+        record = self.load_chat_history_file(thread_id)
         if record is None:
             return
 
@@ -259,7 +255,7 @@ class BaseEngine:
         self.app = self.workflow.compile(checkpointer=self.memory)
         self.app.update_state(self.config, {"messages": merged_messages})
 
-    def load_chat_history(self, thread_id: str, save_dir: str = "chat-data"):
+    def load_chat_history(self, thread_id: str):
         """
         Load a saved chat history and completely replace the current session state.
 
@@ -269,9 +265,8 @@ class BaseEngine:
 
         Parameters:
             thread_id (str): Unique identifier of the chat history to load.
-            save_dir (str): Directory path where chat history JSON files are stored. Default is "chat-data".
         """
-        record = self.load_chat_history_file(thread_id, save_dir)
+        record = self.load_chat_history_file(thread_id)
         if record is None:
             return
 

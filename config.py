@@ -17,6 +17,7 @@ class Settings(BaseSettings):
 
     mcp_path: str
 
+    chat_path: str
     file_path: str
 
     log_path: str
@@ -35,7 +36,8 @@ class Settings(BaseSettings):
             host=config["host"],
             port=config["port"],
             mcp_path=config["resource"]["mcp"],
-            file_path=config["file"]["path"],
+            chat_path=config["path"]["chat"],
+            file_path=config["path"]["file"],
             log_path=config["log"]["path"],
         )
 

@@ -169,7 +169,7 @@ $ python main.py
 │
 ├── utils/
 │   ├── code_generator.py     # File code generator
-│   ├── data_loader_utils.py  # Data load and File utils for Agent
+│   ├── file_utils.py         # Data load and File utils for Agent
 │   ├── image_utils.py        # Image utils
 │   ├── menus.py              # User menu options
 │   ├── path_utils.py         # File save path generator

@@ -8,8 +8,9 @@ port: 8080
 resource:
   mcp: "C:/Users/kimsehun/Desktop/Aircok/vibecraft/servers"
 
-file:
-  path: "./data_store"
+path:
+  chat: "./chat-data"
+  file: "./data-store"
 
 log:
   path: "./vibecraft-app-python-log"

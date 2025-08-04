@@ -1,6 +1,6 @@
 /.venv/
 /.env
-/data_store/
+/data-store/
 /web_output/
 __pycache__/
 *.pyc

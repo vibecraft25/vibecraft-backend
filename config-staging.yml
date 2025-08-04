@@ -9,7 +9,8 @@ resource:
   mcp: "/app/vibecraft/servers"
 
 file:
-  path: "/app/vibecraft/data_store"
+  chat: "/app/vibecraft/chat-data"
+  file: "/app/vibecraft/data-store"
 
 log:
   path: "/app/vibecraft/vibecraft-app-python-log"
