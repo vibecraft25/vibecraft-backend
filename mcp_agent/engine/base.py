@@ -71,17 +71,18 @@ class BaseEngine:
         return app
 
     """LanGraph Logic"""
+
     def call_model(self, state: State):
         # 요약이 있다면, 시스템 메시지로 추가한다.
         summary = state.get("summary", "")
+        messages = state["messages"]
 
+        # 임시 시스템 메시지 (히스토리에 저장되지 않음)
         if summary:
-            system_message = f"Summary of conversation earlier: {summary}"
-            messages = [SystemMessage(content=system_message)] + state["messages"]
-        else:
-            messages = state["messages"]
-        response = self.llm.invoke(messages)
+            system_message = SystemMessage(content=f"Summary of conversation earlier: {summary}")
+            messages = [system_message] + messages
 
+        response = self.llm.invoke(messages)
         return {"messages": [response]}
 
     def should_continue(
@@ -155,6 +156,7 @@ class BaseEngine:
         }
 
     """수동 요약 트리거 메서드들"""
+
     def trigger_summarize(self):
         """
         대화 요약을 수동으로 트리거합니다.
@@ -214,7 +216,7 @@ class BaseEngine:
             return False
 
         messages = current_state.values.get("messages", [])
-        return len(messages) >= message_count_threshold
+        return self._get_system_message_num(messages) >= message_count_threshold
 
     def get_conversation_stats(self) -> dict:
         """
@@ -231,7 +233,7 @@ class BaseEngine:
         summary = current_state.values.get("summary", "")
 
         return {
-            "message_count": len(messages),
+            "message_count": self._get_system_message_num(messages),
             "has_summary": bool(summary),
             "summary_preview": summary[:50] + "..." if len(summary) > 50 else summary,
             "summary": summary,
@@ -239,6 +241,7 @@ class BaseEngine:
         }
 
     """Tool method"""
+
     def update_tools(self, tools: List[BaseTool]):
         if "tools" in self.workflow.nodes:
             del self.workflow.nodes["tools"]
@@ -255,20 +258,83 @@ class BaseEngine:
         print("[*] Tools updated and LangGraph recompiled.")
         print(self.app.get_graph().draw_ascii())
 
+    """System Message filtering Utils"""
+
+    def _get_system_message_num(self, messages: List):
+        return len([msg for msg in messages if not isinstance(msg, SystemMessage)])
+
+    def _filter_system_messages_from_state(self, state_values: dict) -> dict:
+        """
+        상태에서 SystemMessage들을 필터링하여 제거합니다.
+
+        Args:
+            state_values (dict): 현재 상태 값들
+
+        Returns:
+            dict: SystemMessage가 제거된 상태 값들
+        """
+        if "messages" not in state_values:
+            return state_values
+
+        filtered_messages = [
+            msg for msg in state_values["messages"]
+            if not isinstance(msg, SystemMessage)
+        ]
+
+        filtered_state = state_values.copy()
+        filtered_state["messages"] = filtered_messages
+
+        return filtered_state
+
+    def _cleanup_system_messages(self):
+        """
+        현재 상태에서 모든 SystemMessage를 제거합니다.
+        """
+        current_state = self.app.get_state(self.config)
+        if not current_state:
+            return
+
+        messages = current_state.values.get("messages", [])
+        if not messages:
+            return
+
+        # SystemMessage들 찾기
+        system_messages_to_remove = [
+            msg for msg in messages if isinstance(msg, SystemMessage)
+        ]
+
+        if system_messages_to_remove:
+            # SystemMessage들 제거
+            remove_messages = [RemoveMessage(id=msg.id) for msg in system_messages_to_remove]
+            self.app.update_state(self.config, {"messages": remove_messages})
+            print(f"[*] {len(system_messages_to_remove)} SystemMessage(s) removed from chat history")
+
     """LLM Response methods"""
+
     async def generate(self, prompt: str) -> str:
         """ Basic generation method without LangChain and tools """
         response = await self.llm.ainvoke(prompt)
         return response.content
 
-    async def generate_langchain(self, prompt: str) -> str:
+    async def generate_langchain(
+            self, prompt: str, system: Optional[str] = None
+    ) -> str:
         """ Generation using LangChain without tool integration """
         try:
-            input_message = HumanMessage(content=prompt)
+            messages = []
+            if system:
+                messages.append(SystemMessage(content=system))
+            messages.append(HumanMessage(content=prompt))
+
             response = await self.app.ainvoke(
-                {"messages": [input_message]},
+                {"messages": messages},
                 self.config
             )
+
+            # SystemMessage가 있었다면 히스토리에서 정리
+            if system:
+                self._cleanup_system_messages()
+
             self.save_chat_history()
 
             ai_messages = self.parse_ai_messages(response['messages'])
@@ -285,11 +351,16 @@ class BaseEngine:
 
         self.save_chat_history()
 
-    async def stream_generate_langchain(self, prompt: str):
-        input_message = HumanMessage(content=prompt)
+    async def stream_generate_langchain(
+            self, prompt: str, system: Optional[str] = None
+    ):
+        messages = []
+        if system:
+            messages.append(SystemMessage(content=system))
+        messages.append(HumanMessage(content=prompt))
 
         async for chunk in self.app.astream(
-                {"messages": [input_message]},
+                {"messages": messages},
                 self.config,
                 stream_mode="messages"
         ):
@@ -297,18 +368,26 @@ class BaseEngine:
             content = chunk[0].content
             yield content_type, content
 
+        # SystemMessage가 있었다면 히스토리에서 정리
+        if system:
+            self._cleanup_system_messages()
+
         self.save_chat_history()
 
     """Chat history methods"""
+
     def get_chat_history(self) -> Optional[ChatHistory]:
         snapshot = self.app.get_state(self.config)
         if not snapshot:
             print("[!] 저장할 대화 기록이 없습니다.")
             return None
 
+        # 시스템 메시지를 제외한 상태로 저장
+        filtered_values = self._filter_system_messages_from_state(snapshot.values)
+
         return ChatHistory(
             thread_id=str(self.thread_id),
-            values=snapshot.values,
+            values=filtered_values,
             next=snapshot.next,
             config=self.config,
             metadata=snapshot.metadata,
@@ -373,7 +452,12 @@ class BaseEngine:
 
         loaded_messages = record.values.get("messages", [])
         current_messages = self.app.get_state(self.config).values.get("messages", [])
-        merged_messages = loaded_messages + current_messages
+
+        # SystemMessage는 제외하고 병합
+        filtered_loaded_messages = [msg for msg in loaded_messages if not isinstance(msg, SystemMessage)]
+        filtered_current_messages = [msg for msg in current_messages if not isinstance(msg, SystemMessage)]
+
+        merged_messages = filtered_loaded_messages + filtered_current_messages
 
         self.memory = MemorySaver()
         self.app = self.workflow.compile(checkpointer=self.memory)
@@ -399,15 +483,21 @@ class BaseEngine:
 
         self.memory = MemorySaver()
         self.app = self.workflow.compile(checkpointer=self.memory)
-        self.app.update_state(self.config, record.values)
+
+        # SystemMessage는 제외하고 로드
+        filtered_values = self._filter_system_messages_from_state(record.values)
+        self.app.update_state(self.config, filtered_values)
 
     def clear_memory(self):
         checkpoints = list(self.app.get_state_history(self.config))
         if len(checkpoints) > 1:
             previous_state = checkpoints[1].values
-            self.app.update_state(self.config, previous_state)
+            # SystemMessage는 제외하고 복원
+            filtered_previous_state = self._filter_system_messages_from_state(previous_state)
+            self.app.update_state(self.config, filtered_previous_state)
 
     """Utils"""
+
     @staticmethod
     def parse_ai_messages(messages: List) -> List[dict]:
         return [msg.__dict__ for msg in messages if isinstance(msg, AIMessage)]

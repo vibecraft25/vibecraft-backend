@@ -4,11 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250805] edit README.md">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/content.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/content.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/image_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/content_utils.py" afterDir="false" />
+    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250805] edit image_utils.py -&gt; content_utils.py">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mcp_agent/client/vibe_craft_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/mcp_agent/client/vibe_craft_client.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mcp_agent/engine/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/mcp_agent/engine/base.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/prompts.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/prompts.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -233,14 +233,6 @@
       <workItem from="1752468414247" duration="33946000" />
       <workItem from="1753245249914" duration="3006000" />
       <workItem from="1753407623545" duration="38341000" />
-    </task>
-    <task id="LOCAL-00040" summary="[250715] update load tool method">
-      <option name="closed" value="true" />
-      <created>1752567623668</created>
-      <option name="number" value="00040" />
-      <option name="presentableId" value="LOCAL-00040" />
-      <option name="project" value="LOCAL" />
-      <updated>1752567623668</updated>
     </task>
     <task id="LOCAL-00041" summary="[250715] update load tool method">
       <option name="closed" value="true" />
@@ -626,7 +618,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754369833924</updated>
     </task>
-    <option name="localTasksCounter" value="89" />
+    <task id="LOCAL-00089" summary="[250805] edit image_utils.py -&gt; content_utils.py">
+      <option name="closed" value="true" />
+      <created>1754370297289</created>
+      <option name="number" value="00089" />
+      <option name="presentableId" value="LOCAL-00089" />
+      <option name="project" value="LOCAL" />
+      <updated>1754370297289</updated>
+    </task>
+    <option name="localTasksCounter" value="90" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -637,14 +637,25 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="origin/main" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="[250722] update base engine" />
     <MESSAGE value="[250722] add save langchain WIP" />
     <MESSAGE value="[250723] add save/load conversation history" />
     <MESSAGE value="[250724] add gitignore" />
@@ -669,7 +680,8 @@
     <MESSAGE value="[250805] edit VibeCraftAgentRunner class naming" />
     <MESSAGE value="[250805] edit /code-generator api to /stream/code-generator" />
     <MESSAGE value="[250805] edit README.md" />
-    <option name="LAST_COMMIT_MESSAGE" value="[250805] edit README.md" />
+    <MESSAGE value="[250805] edit image_utils.py -&gt; content_utils.py" />
+    <option name="LAST_COMMIT_MESSAGE" value="[250805] edit image_utils.py -&gt; content_utils.py" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -683,7 +695,7 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/vibecraft$main.coverage" NAME="main Coverage Results" MODIFIED="1754369891375" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/vibecraft$main.coverage" NAME="main Coverage Results" MODIFIED="1754370435949" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/vibecraft$temp.coverage" NAME="temp Coverage Results" MODIFIED="1750994457994" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/vibecraft$topic_server.coverage" NAME="topic_server Coverage Results" MODIFIED="1750914323325" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/servers" />
     <SUITE FILE_PATH="coverage/vibecraft$vibe_craft.coverage" NAME="vibe_craft Coverage Results" MODIFIED="1750997980081" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
