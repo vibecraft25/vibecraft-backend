@@ -172,7 +172,7 @@ $ python vibecraft-code.py
 ├── utils/
 │   ├── code_generator.py     # File code generator
 │   ├── file_utils.py         # Data load and File utils for Agent
-│   ├── image_utils.py        # Image utils
+│   ├── content_utils.py      # Content utils
 │   ├── menus.py              # User menu options
 │   ├── path_utils.py         # File save path generator
 │   └── prompts.py            # LLM prompts

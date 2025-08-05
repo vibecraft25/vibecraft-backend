@@ -1,7 +1,6 @@
 __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
 # Standard imports
-import asyncio
 import json
 
 # Third-party imports
@@ -12,7 +11,7 @@ from fastapi.responses import JSONResponse
 
 # Custom imports
 from schemas.data_schemas import DatasetMetadata
-from utils import PathUtils, CodeGenerator, ImageUtils
+from utils import PathUtils, CodeGenerator, ContentUtils
 from exceptions import NotFoundException
 
 prefix = "contents"
@@ -21,16 +20,20 @@ router = APIRouter(prefix=f"/{prefix}", responses={401: {"description": "raw dat
 
 @router.post("/upload", status_code=201)
 async def upload(
-    thread_id: str,
-    file: UploadFile = File(...),
+        thread_id: str,
+        file: UploadFile = File(...),
 ):
-
     contents = await file.read()
     path = PathUtils.generate_path(thread_id)
     file_name = CodeGenerator.generate_code_with_ext(file.filename)
-    asyncio.create_task(ImageUtils.save_image(path, contents, file_name))
 
-    return JSONResponse(content={"code": file_name}, status_code=201)
+    try:
+        await ContentUtils.save_file(path, contents, file_name)
+        return JSONResponse(content={"code": file_name}, status_code=201)
+    except ValueError as e:
+        return JSONResponse(content={"error": str(e)}, status_code=400)
+    except Exception as e:
+        return JSONResponse(content={"error": "파일 업로드 실패"}, status_code=500)
 
 
 @router.get("/meta", response_model=DatasetMetadata)
