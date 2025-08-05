@@ -308,7 +308,7 @@ class VibeCraftClient:
         """동기 방식 코드 생성"""
         print("\n🚦 Step 3: 웹앱 코드 생성")
 
-        runner = VibecraftAgentRunner()
+        runner = VibeCraftAgentRunner()
         file_name = f"{thread_id}.sqlite"
 
         if not runner.is_available() or not PathUtils.is_exist(thread_id, file_name):
@@ -339,7 +339,7 @@ class VibeCraftClient:
 
         yield SSEEventBuilder.create_info_event("🚦 Step 3: 웹앱 코드 생성 시작")
 
-        runner = VibecraftAgentRunner()
+        runner = VibeCraftAgentRunner()
         file_name = f"{thread_id}.sqlite"
 
         # 전제 조건 확인
