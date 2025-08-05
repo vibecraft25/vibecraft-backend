@@ -152,11 +152,17 @@ def df_to_sqlite_with_col_filter_prompt(
     """DataFrame SQLite 변환 프롬프트를 시스템/사용자 메시지로 분리"""
     system_message = (
         "당신은 데이터베이스 설계 전문가입니다. "
-        "주어진 DataFrame의 컬럼명을 엄격한 데이터베이스 표준에 맞게 변환하고 "
+        "주어진 DataFrame의 모든 컬럼명을 반드시 영문으로 변환하고 "
         "불필요한 컬럼을 제거해주세요.\n\n"
 
+        "**🚨 필수 요구사항 (절대 준수):**\n"
+        "1. 모든 컬럼명은 반드시 영문으로만 변환\n"
+        "2. 한글명 사용 절대 금지 - 어떤 경우에도 한글 포함 불가\n"
+        "3. 결과 dictionary의 value는 100% 영문명만 허용\n"
+        "4. 한글이 포함된 결과는 무효한 응답으로 간주\n\n"
+
         "**데이터베이스 컬럼명 변환 규칙 (우선순위 순):**\n"
-        "1. 가능한 한 공식 영문 축약어 사용 (ISO/ANSI 표준 기준)\n"
+        "1. 반드시 영문 축약어 또는 영문 단어 사용 (ISO/ANSI 표준 기준)\n"
         "2. 소문자 + 언더스코어 형식 (snake_case)\n"
         "3. 최대 30자 이내 권장 (Oracle 호환성)\n"
         "4. 숫자로 시작 금지\n"
@@ -164,7 +170,7 @@ def df_to_sqlite_with_col_filter_prompt(
         "6. 표준 축약어가 없거나 불분명한 경우 의미가 명확한 영문 단어 사용\n"
         "7. 업계별 관례가 있는 경우 해당 관례 우선 고려\n\n"
 
-        "**표준 축약어 가이드 (우선 사용, 하지만 유연하게 적용):**\n"
+        "**표준 축약어 가이드 (필수 영문 변환):**\n"
         "- 식별자: id, seq, no, code, key, uuid, ref\n"
         "- 날짜/시간: dt (date), tm (time), ts (timestamp), yr (year), mon (month), dy (day), created_at, updated_at\n"
         "- 이름: nm (name), title, desc (description), label, full_name, display_name\n"
@@ -182,7 +188,9 @@ def df_to_sqlite_with_col_filter_prompt(
         "- 고객: cust (customer), client, vendor, supplier, buyer\n"
         "- 주문: ord (order), req (request), ship (shipment), delivery, invoice\n"
         "- 웹/앱: url, uri, token, session, cookie, api_key\n"
-        "- 미디어: img (image), file, doc (document), video, audio, thumbnail\n\n"
+        "- 미디어: img (image), file, doc (document), video, audio, thumbnail\n"
+        "- 어업: catch (어획), fish (어종), vessel (어선), fishing (어업), tonnage (톤수)\n"
+        "- 지리: area (지역), region (구역), latitude (위도), longitude (경도), coord (좌표)\n\n"
 
         "**DB 예약어 금지 목록:**\n"
         "SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER, INDEX, TABLE, VIEW, "
@@ -199,50 +207,49 @@ def df_to_sqlite_with_col_filter_prompt(
         "5. 메타데이터 (파일명, 생성일시 등 분석 무관 정보)\n"
         "6. 개인정보 (개인식별 가능한 민감 정보)\n\n"
 
-        "**변환 우선순위 및 유연성 가이드:**\n"
-        "1. 표준 축약어가 있고 의미가 명확한 경우 → 축약어 사용\n"
-        "2. 표준 축약어가 모호하거나 여러 의미인 경우 → 명확한 영문 단어 사용\n"
-        "3. 업계별 특수 용어인 경우 → 해당 업계 관례 우선\n"
-        "4. 신조어나 특수한 의미인 경우 → 의미를 반영한 직관적 이름 사용\n"
-        "5. 컬럼명이 너무 길어지는 경우 → 핵심 의미만 담은 적절한 축약\n\n"
+        "**영문 변환 예시 (반드시 이렇게 변환):**\n"
+        "- '어획 연도' → 'catch_yr' 또는 'fishing_year'\n"
+        "- '어획량' → 'catch_tons' 또는 'catch_qty'\n"
+        "- 'FAO 지역 코드' → 'fao_area_cd'\n"
+        "- 'FAO 지역명' → 'fao_area_nm'\n"
+        "- '어획 국가' → 'catch_country'\n"
+        "- '위도' → 'latitude' 또는 'lat'\n"
+        "- '경도' → 'longitude' 또는 'lng'\n"
+        "- '주요 어종' → 'major_species'\n"
+        "- '고객이름' → 'cust_nm'\n"
+        "- '주문날짜' → 'ord_dt'\n"
+        "- '제품가격' → 'prod_price'\n\n"
 
-        "**변환 예시 (유연한 적용):**\n"
-        "- '고객이름' → 'cust_nm' (표준 축약어 사용)\n"
-        "- '주문날짜' → 'ord_dt' (표준 축약어 사용)\n"
-        "- '제품가격' → 'prod_price' (price는 명확하므로 축약 안함)\n"
-        "- '연락처번호' → 'phone_no' (tel보다 phone이 더 직관적)\n"
-        "- '배송주소' → 'delivery_addr' (배송은 delivery가 명확)\n"
-        "- '상품평점' → 'prod_rating' (rating은 표준 용어)\n"
-        "- '회원등급' → 'member_tier' (tier가 등급 표현에 적합)\n"
-        "- '결제방법' → 'payment_method' (method는 축약 불필요)\n"
-        "- 'API키' → 'api_key' (API는 그대로 유지)\n"
-        "- '썸네일이미지' → 'thumbnail_img' (둘 다 일반적 용어)\n\n"
+        "**❌ 절대 금지되는 잘못된 출력 예시:**\n"
+        "{'어획 연도': '어획 연도', '어획량': '어획량'} ← 이런 식의 한글명 절대 금지!\n\n"
+
+        "**✅ 올바른 출력 예시:**\n"
+        "{'어획 연도': 'catch_yr', '어획량': 'catch_tons', 'FAO 지역명': 'fao_area_nm'}\n\n"
 
         "**출력 형식 (엄격히 준수):**\n"
-        "첫 번째 줄에만 Python dictionary 형태로 반환하세요.\n"
-        "삭제 대상 컬럼은 매핑에서 제외하세요.\n"
-        "줄바꿈, 설명, 추가 텍스트 절대 금지.\n\n"
+        "- 첫 번째 줄에만 Python dictionary 형태로 반환\n"
+        "- dictionary의 key는 한글(원본), value는 반드시 영문만 사용\n"
+        "- 삭제 대상 컬럼은 매핑에서 제외\n"
+        "- 줄바꿈, 설명, 추가 텍스트 절대 금지\n"
+        "- value에 한글이 포함되면 무효한 응답\n\n"
 
-        "**출력 예시:**\n"
-        "{'고객명': 'cust_nm', '주문일': 'ord_dt', '상품가격': 'prod_price'}\n\n"
-
-        "**주의사항 (균형잡힌 접근):**\n"
-        "- 한국어 의미를 정확히 파악하여 가장 적절한 영문명 선택\n"
-        "- 표준 축약어 우선, 하지만 명확성이 더 중요함\n"
-        "- 축약어로 인한 의미 모호성 방지\n"
-        "- 동일한 의미의 컬럼은 동일한 명명 방식 사용 (일관성 유지)\n"
-        "- 개발팀이 이해하기 쉬운 직관적 이름 선호\n"
-        "- 너무 짧아서 의미 불분명한 축약은 피하기"
+        "**주의사항:**\n"
+        "- 한국어 의미를 정확히 파악하여 가장 적절한 영문명으로 변환\n"
+        "- 표준 축약어 우선 사용, 하지만 명확성 확보\n"
+        "- 동일한 의미의 컬럼은 일관된 명명 방식 사용\n"
+        "- 개발팀이 이해하기 쉬운 직관적 영문명 선호"
     )
 
     available_columns = list(df.columns)
     to_drop_str = ", ".join(to_drop)
 
     human_message = (
-        f"다음 정보를 바탕으로 컬럼명을 변환하고 불필요한 컬럼을 제거해주세요.\n\n"
+        f"다음 정보를 바탕으로 모든 컬럼명을 반드시 영문으로 변환하고 불필요한 컬럼을 제거해주세요.\n\n"
         f"**삭제 대상 키워드:** {to_drop_str}\n"
         f"**현재 컬럼 목록:** {available_columns}\n\n"
-        f"가장 첫 줄에 이전 이름과 변경된 이름의 매핑을 dictionary 형식으로 한 줄로 반환해주세요."
+        f"⚠️ 중요: 결과 dictionary의 value는 100% 영문명만 사용하세요.\n"
+        f"한글명이 포함된 결과는 무효합니다.\n\n"
+        f"첫 번째 줄에 이전 이름(한글)과 변경된 이름(영문)의 매핑을 dictionary 형식으로 한 줄로 반환해주세요."
     )
 
     return system_message, human_message
