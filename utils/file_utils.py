@@ -6,7 +6,7 @@ import json
 import re
 import sqlite3
 import ast
-from typing import List, Optional
+from typing import List, Dict, Any, Optional
 from datetime import datetime
 
 # Third-party imports
@@ -138,21 +138,54 @@ class FileUtils:
     @staticmethod
     def normalize_column_name(col: str) -> str:
         """컬럼명을 정규화합니다."""
-        return col.strip().replace("\u200b", "").replace("\xa0", "").replace("\t", "").replace("\n", "").replace("\r",
-                                                                                                                 "")
+        return (col.strip().replace("\u200b", "")
+                .replace("\xa0", "").replace("\t", "")
+                .replace("\n", "").replace("\r", ""))
 
     @staticmethod
-    def parse_first_row_dict_from_text(response_text: str) -> dict:
-        """LLM 응답의 첫 줄에서 컬럼명 매핑 dict만 파싱합니다."""
-        first_line = response_text.strip().splitlines()[0]
+    def _parse_first_row_dict_from_text(response_text: str) -> dict:
+        """LLM 응답에서 첫 번째 딕셔너리를 파싱합니다."""
+
+        # 1. 코드 블록 내부 우선 검색
+        code_block_match = re.search(r'```(?:python|json)?\s*\n?(.*?)\n?```', response_text, re.DOTALL)
+        if code_block_match:
+            response_text = code_block_match.group(1)
+
+        # 2. 딕셔너리 패턴 찾기 (중첩 딕셔너리 지원)
+        dict_pattern = r'\{(?:[^{}]|(?:\{[^{}]*\}))*\}'
+        dict_matches = re.findall(dict_pattern, response_text)
+
+        # 3. 각 매치에 대해 파싱 시도 (ast -> json 순서)
+        for match in dict_matches:
+            for parser in (ast.literal_eval, json.loads):
+                try:
+                    result = parser(match.strip())
+                    if isinstance(result, dict):
+                        return result
+                except (ValueError, SyntaxError, json.JSONDecodeError):
+                    continue
+
+        # 4. 파싱 실패 시 명확한 에러
+        raise ValueError(f"딕셔너리 파싱 실패. 응답 미리보기: '{response_text[:100]}...'")
+
+    @staticmethod
+    def parse_dict_flexible(response_text: str) -> Dict[str, Any]:
+        """관대한 딕셔너리 파서 - 형식이 깨진 경우에도 동작"""
+
+        # 먼저 표준 파서 시도
         try:
-            mapping = ast.literal_eval(first_line)
-            if isinstance(mapping, dict):
-                return mapping
-            else:
-                raise ValueError("파싱된 결과가 dict가 아닙니다.")
-        except Exception as e:
-            raise ValueError(f"컬럼 매핑 파싱 실패: {e}")
+            return FileUtils._parse_first_row_dict_from_text(response_text)
+        except ValueError:
+            pass
+
+        # 키-값 쌍 직접 추출 (예: "key": "value", 'key': 'value')
+        kv_pattern = r'["\']([^"\']+)["\']\s*:\s*["\']([^"\']+)["\']'
+        matches = re.findall(kv_pattern, response_text)
+
+        if matches:
+            return dict(matches)
+
+        raise ValueError(f"딕셔너리 추출 불가능: '{response_text[:100]}...'")
 
     @staticmethod
     def save_metadata(col_info: dict, save_path: str, sqlite_path: str):

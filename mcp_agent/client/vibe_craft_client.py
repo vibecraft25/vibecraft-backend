@@ -166,7 +166,7 @@ class VibeCraftClient:
         await self.data_save(self.data, [])
 
     async def generate_data(self) -> pd.DataFrame:
-        print("\n🚦 Step 2: 주제 기반 샘플 데이터를 생성")
+        print("\n🚦 Step 2-1: 주제 기반 샘플 데이터를 생성")
         system, human = generate_sample_prompt()
         sample_data = await self.execute_step(human, system)
         df = FileUtils.markdown_table_to_df(sample_data)
@@ -207,7 +207,7 @@ class VibeCraftClient:
         result = await self.execute_step(human, system)
         print(f"Mapped Column dictionary: {result}")
 
-        new_col = FileUtils.parse_first_row_dict_from_text(result)
+        new_col = FileUtils.parse_dict_flexible(result)
         filtered_new_col = {k: v for k, v in new_col.items() if v is not None}
 
         mapped_df = df.rename(columns=new_col)[list(filtered_new_col.values())]
