@@ -10,8 +10,8 @@ from typing import Dict, Any, Union
 from mcp_agent.schemas import VisualizationType
 
 
-class VibecraftAgentRunner:
-    """간소화된 Vibecraft Agent CLI 실행 클래스"""
+class VibeCraftAgentRunner:
+    """간소화된 VibeCraft Agent CLI 실행 클래스"""
 
     def __init__(self, agent_command: str = "./vibecraft-agent/vibecraft-agent"):
         self.agent_command = agent_command
@@ -192,7 +192,7 @@ class VibecraftAgentRunner:
 # 사용 예시
 if __name__ == "__main__":
     # 인스턴스 생성
-    runner = VibecraftAgentRunner()
+    runner = VibeCraftAgentRunner()
 
     # 사용 가능 여부 확인
     if runner.is_available():

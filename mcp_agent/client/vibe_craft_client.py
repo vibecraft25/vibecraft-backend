@@ -9,7 +9,7 @@ from sse_starlette import ServerSentEvent
 from typing import Dict, Any
 
 # Custom imports
-from mcp_agent.client import VibecraftAgentRunner
+from mcp_agent.client import VibeCraftAgentRunner
 from mcp_agent.engine import (
     ClaudeEngine,
     OpenAIEngine,
