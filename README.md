@@ -122,8 +122,8 @@ Each engine supports:
 ### Example
 
 ```bash
-$ python main.py
-✅ Choose a model: claude / gemini / gpt (default: claude)
+$ python vibecraft-code.py
+✅ Choose a model: claude / gemini / gpt
 🎤 Enter a topic prompt:
 ```
 
