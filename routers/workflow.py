@@ -126,7 +126,7 @@ async def visualization_type(
 
 # TODO: WIP
 @router.get(
-    "/code-generator",
+    "/stream/code-generator",
     summary="워크플로우 3단계: 코드 생성",
     description="워크플로우의 마지막 단계로 코드를 생성합니다. (WIP)",
     responses=SSEStreamDocumentation.get_workflow_stream_responses()

@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250805] add VibeCraft agent">
+    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250805] edit VibeCraftAgentRunner class naming">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -231,30 +230,6 @@
       <workItem from="1752468414247" duration="33946000" />
       <workItem from="1753245249914" duration="3006000" />
       <workItem from="1753407623545" duration="38341000" />
-    </task>
-    <task id="LOCAL-00034" summary="[250714] add MCPServerConfig">
-      <option name="closed" value="true" />
-      <created>1752469187965</created>
-      <option name="number" value="00034" />
-      <option name="presentableId" value="LOCAL-00034" />
-      <option name="project" value="LOCAL" />
-      <updated>1752469187965</updated>
-    </task>
-    <task id="LOCAL-00035" summary="[250714] edit GeminiEngine">
-      <option name="closed" value="true" />
-      <created>1752472271571</created>
-      <option name="number" value="00035" />
-      <option name="presentableId" value="LOCAL-00035" />
-      <option name="project" value="LOCAL" />
-      <updated>1752472271571</updated>
-    </task>
-    <task id="LOCAL-00036" summary="[250714] edit MCPServerConfig">
-      <option name="closed" value="true" />
-      <created>1752473667840</created>
-      <option name="number" value="00036" />
-      <option name="presentableId" value="LOCAL-00036" />
-      <option name="project" value="LOCAL" />
-      <updated>1752473667840</updated>
     </task>
     <task id="LOCAL-00037" summary="[250714] edit _wrap_mcp_tools">
       <option name="closed" value="true" />
@@ -624,7 +599,31 @@
       <option name="project" value="LOCAL" />
       <updated>1754359216166</updated>
     </task>
-    <option name="localTasksCounter" value="83" />
+    <task id="LOCAL-00083" summary="[250805] add VibeCraft agent">
+      <option name="closed" value="true" />
+      <created>1754359444444</created>
+      <option name="number" value="00083" />
+      <option name="presentableId" value="LOCAL-00083" />
+      <option name="project" value="LOCAL" />
+      <updated>1754359444444</updated>
+    </task>
+    <task id="LOCAL-00084" summary="[250805] edit VibeCraftAgentRunner class naming">
+      <option name="closed" value="true" />
+      <created>1754359553512</created>
+      <option name="number" value="00084" />
+      <option name="presentableId" value="LOCAL-00084" />
+      <option name="project" value="LOCAL" />
+      <updated>1754359553512</updated>
+    </task>
+    <task id="LOCAL-00085" summary="[250805] edit VibeCraftAgentRunner class naming">
+      <option name="closed" value="true" />
+      <created>1754359586652</created>
+      <option name="number" value="00085" />
+      <option name="presentableId" value="LOCAL-00085" />
+      <option name="project" value="LOCAL" />
+      <updated>1754359586652</updated>
+    </task>
+    <option name="localTasksCounter" value="86" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -642,7 +641,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="[250718] add test code" />
     <MESSAGE value="[250718] edit base.py" />
     <MESSAGE value="[250718] update README.md references" />
     <MESSAGE value="[250722] update base engine" />
@@ -667,7 +665,8 @@
     <MESSAGE value="[250804] Edit code generator api" />
     <MESSAGE value="[250805] Edit visualization type schemas" />
     <MESSAGE value="[250805] add VibeCraft agent" />
-    <option name="LAST_COMMIT_MESSAGE" value="[250805] add VibeCraft agent" />
+    <MESSAGE value="[250805] edit VibeCraftAgentRunner class naming" />
+    <option name="LAST_COMMIT_MESSAGE" value="[250805] edit VibeCraftAgentRunner class naming" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
