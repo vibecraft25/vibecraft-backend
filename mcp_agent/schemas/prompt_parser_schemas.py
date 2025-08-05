@@ -101,19 +101,19 @@ class VisualizationType(Enum):
         raise ValueError(f"Unknown visualization type: {value}")
 
     @classmethod
-    def is_valid_template_id(cls, template_id: str) -> bool:
+    def is_valid_visualization_type(cls, visualization_type: str) -> bool:
         """유효한 템플릿 ID인지 확인"""
         try:
-            cls.from_string(template_id)
+            cls.from_string(visualization_type)
             return True
         except ValueError:
             return False
 
     @classmethod
-    def is_implemented_template_id(cls, template_id: str) -> bool:
+    def is_implemented_visualization_type(cls, visualization_type: str) -> bool:
         """구현된 템플릿 ID인지 확인"""
         try:
-            vt = cls.from_string(template_id)
+            vt = cls.from_string(visualization_type)
             return vt.is_implemented
         except ValueError:
             return False
@@ -151,11 +151,6 @@ class VisualizationRecommendation(BaseModel):
         if not 0 <= v <= 100:
             raise ValueError("Confidence must be between 0 and 100")
         return v
-
-    @property
-    def template_id(self) -> str:
-        """하위 호환성을 위한 template_id 속성"""
-        return self.visualization_type.value
 
     @property
     def is_implemented(self) -> bool:

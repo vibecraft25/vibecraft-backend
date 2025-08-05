@@ -314,7 +314,7 @@ class VibeCraftClient:
             file_path = PathUtils.get_path(thread_id, file_name)[0]
             result = runner.run_agent(
                 sqlite_path=file_path,
-                visualization_type=visualization_type.value,
+                visualization_type=visualization_type,
                 user_prompt=self.get_summary(),
                 output_dir="./output",
                 debug=False
