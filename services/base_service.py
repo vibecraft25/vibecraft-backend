@@ -66,7 +66,9 @@ class BaseStreamService:
             return chunk
 
         # 문자열인 경우 이벤트 타입에 따라 적절한 SSE 이벤트 생성
-        if event == SSEEventType.TOOL.value:
+        if event == SSEEventType.INFO.value:
+            return SSEEventBuilder.create_info_event(chunk)
+        elif event == SSEEventType.TOOL.value:
             return SSEEventBuilder.create_tool_event(chunk)
         elif event == SSEEventType.MENU.value:
             return SSEEventBuilder.create_menu_event(chunk)
