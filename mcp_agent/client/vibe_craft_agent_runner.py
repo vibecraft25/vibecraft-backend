@@ -2,25 +2,21 @@ __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
 # Standard imports
 import subprocess
-from typing import Dict, Any, Union
+import asyncio
 import logging
+from typing import Dict, Any, Union
 
 # Custom imports
 from mcp_agent.schemas import VisualizationType
 
 
 class VibecraftAgentRunner:
-    """Vibecraft Agent CLI 실행 클래스"""
+    """간소화된 Vibecraft Agent CLI 실행 클래스"""
 
-    def __init__(self, agent_command: str = "vibecraft-agent"):
-        """
-        Args:
-            agent_command (str): vibecraft-agent 명령어 경로 (기본: "vibecraft-agent")
-        """
+    def __init__(self, agent_command: str = "./vibecraft-agent/vibecraft-agent"):
         self.agent_command = agent_command
         self.logger = logging.getLogger(__name__)
 
-    # TODO: WIP
     def run_agent(
             self,
             sqlite_path: str,
@@ -29,47 +25,16 @@ class VibecraftAgentRunner:
             output_dir: str = "./output",
             debug: bool = False
     ) -> Dict[str, Any]:
-        """
-        vibecraft-agent CLI 명령어를 실행합니다.
+        """동기 방식으로 vibecraft-agent를 실행합니다."""
 
-        Args:
-            sqlite_path (str): SQLite 데이터베이스 파일 경로
-            visualization_type (Union[str, VisualizationType]): 시각화 타입
-            user_prompt (str): 사용자의 시각화 요청
-            output_dir (str): 출력 디렉토리 (기본: ./output)
-            debug (bool): 디버그 모드 (기본: False)
+        viz_type_str = self._get_type_string(visualization_type)
 
-        Returns:
-            Dict[str, Any]: 실행 결과
-        """
+        if not self._is_implemented_type(visualization_type):
+            return {
+                "success": False,
+                "message": f"'{viz_type_str}' 타입은 아직 구현되지 않았습니다."
+            }
 
-        # VisualizationType을 문자열로 변환
-        viz_type_str = self._normalize_visualization_type(visualization_type)
-
-        # 구현 여부 확인
-        if isinstance(visualization_type, VisualizationType):
-            if not visualization_type.is_implemented:
-                return {
-                    "success": False,
-                    "message": f"'{viz_type_str}' 타입은 아직 구현되지 않았습니다. 구현된 타입: {self.get_implemented_visualization_types()}",
-                    "status": visualization_type.status.value
-                }
-        elif isinstance(visualization_type, str):
-            if not VisualizationType.is_implemented_template_id(visualization_type):
-                try:
-                    vt = VisualizationType.from_string(visualization_type)
-                    return {
-                        "success": False,
-                        "message": f"'{visualization_type}' 타입은 아직 구현되지 않았습니다. 구현된 타입: {self.get_implemented_visualization_types()}",
-                        "status": vt.status.value
-                    }
-                except ValueError:
-                    return {
-                        "success": False,
-                        "message": f"지원하지 않는 시각화 타입입니다: {visualization_type}. 사용 가능한 타입: {self.get_available_visualization_types()}"
-                    }
-
-        # 명령어 구성
         command = [
             self.agent_command,
             "--sqlite-path", sqlite_path,
@@ -82,46 +47,20 @@ class VibecraftAgentRunner:
             command.append("--debug")
 
         try:
-            self.logger.info(f"vibecraft-agent 실행: {' '.join(command)}")
-
-            # 명령어 실행
-            result = subprocess.run(
-                command,
-                capture_output=True,
-                text=True,
-                check=True
-            )
-
-            self.logger.info("vibecraft-agent 실행 완료")
-
+            result = subprocess.run(command, capture_output=True, text=True, check=True)
             return {
                 "success": True,
-                "message": "vibecraft-agent 실행 완료",
+                "message": "실행 완료",
                 "output_dir": output_dir,
-                "visualization_type": viz_type_str,
-                "stdout": result.stdout,
-                "stderr": result.stderr
+                "visualization_type": viz_type_str
             }
-
         except subprocess.CalledProcessError as e:
-            error_msg = f"vibecraft-agent 실행 실패 (exit code: {e.returncode})"
-            self.logger.error(error_msg)
             return {
                 "success": False,
-                "message": error_msg,
-                "stdout": e.stdout,
+                "message": f"실행 실패 (exit code: {e.returncode})",
                 "stderr": e.stderr
             }
 
-        except Exception as e:
-            error_msg = f"오류 발생: {str(e)}"
-            self.logger.error(error_msg)
-            return {
-                "success": False,
-                "message": error_msg
-            }
-
-    # TODO: WIP
     async def run_agent_async(
             self,
             sqlite_path: str,
@@ -129,45 +68,22 @@ class VibecraftAgentRunner:
             user_prompt: str,
             output_dir: str = "./output",
             debug: bool = False
-    ) -> Dict[str, Any]:
-        """
-        vibecraft-agent CLI 명령어를 비동기로 실행합니다.
+    ):
+        """비동기 방식으로 실행하며 실시간 출력을 yield합니다."""
 
-        Args:
-            동기 메서드와 동일
+        viz_type_str = self._get_type_string(visualization_type)
 
-        Returns:
-            Dict[str, Any]: 실행 결과
-        """
-        import asyncio
+        yield {"type": "info", "message": f"시각화 타입 '{viz_type_str}' 검증 중..."}
 
-        # VisualizationType을 문자열로 변환
-        viz_type_str = self._normalize_visualization_type(visualization_type)
+        if not self._is_implemented_type(visualization_type):
+            yield {
+                "type": "error",
+                "message": f"'{viz_type_str}' 타입은 아직 구현되지 않았습니다."
+            }
+            return
 
-        # 구현 여부 확인 (동기 메서드와 동일한 로직)
-        if isinstance(visualization_type, VisualizationType):
-            if not visualization_type.is_implemented:
-                return {
-                    "success": False,
-                    "message": f"'{viz_type_str}' 타입은 아직 구현되지 않았습니다. 구현된 타입: {self.get_implemented_visualization_types()}",
-                    "status": visualization_type.status.value
-                }
-        elif isinstance(visualization_type, str):
-            if not VisualizationType.is_implemented_template_id(visualization_type):
-                try:
-                    vt = VisualizationType.from_string(visualization_type)
-                    return {
-                        "success": False,
-                        "message": f"'{visualization_type}' 타입은 아직 구현되지 않았습니다. 구현된 타입: {self.get_implemented_visualization_types()}",
-                        "status": vt.status.value
-                    }
-                except ValueError:
-                    return {
-                        "success": False,
-                        "message": f"지원하지 않는 시각화 타입입니다: {visualization_type}. 사용 가능한 타입: {self.get_available_visualization_types()}"
-                    }
+        yield {"type": "success", "message": "검증 완료"}
 
-        # 명령어 구성
         command = [
             self.agent_command,
             "--sqlite-path", sqlite_path,
@@ -179,108 +95,100 @@ class VibecraftAgentRunner:
         if debug:
             command.append("--debug")
 
-        try:
-            self.logger.info(f"vibecraft-agent 비동기 실행: {' '.join(command)}")
+        yield {"type": "info", "message": "프로세스 시작 중..."}
 
-            # 비동기 명령어 실행
+        try:
             process = await asyncio.create_subprocess_exec(
                 *command,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE
             )
 
-            stdout, stderr = await process.communicate()
+            # 실시간 출력 읽기
+            async def read_stream(stream, stream_type):
+                while True:
+                    line = await stream.readline()
+                    if not line:
+                        break
+                    text = line.decode().strip()
+                    if text:
+                        yield {"type": stream_type, "message": text}
 
-            if process.returncode == 0:
-                self.logger.info("vibecraft-agent 비동기 실행 완료")
-                return {
-                    "success": True,
-                    "message": "vibecraft-agent 실행 완료",
+            # stdout과 stderr 병합 처리
+            async for output in self._merge_streams(
+                    read_stream(process.stdout, "stdout"),
+                    read_stream(process.stderr, "stderr")
+            ):
+                yield output
+
+            return_code = await process.wait()
+
+            if return_code == 0:
+                yield {
+                    "type": "success",
+                    "message": "실행 완료",
                     "output_dir": output_dir,
-                    "visualization_type": viz_type_str,
-                    "stdout": stdout.decode(),
-                    "stderr": stderr.decode()
+                    "step": "execution_complete"
                 }
             else:
-                error_msg = f"vibecraft-agent 실행 실패 (exit code: {process.returncode})"
-                self.logger.error(error_msg)
-                return {
-                    "success": False,
-                    "message": error_msg,
-                    "stdout": stdout.decode(),
-                    "stderr": stderr.decode()
+                yield {
+                    "type": "error",
+                    "message": f"실행 실패 (exit code: {return_code})"
                 }
 
         except Exception as e:
-            error_msg = f"오류 발생: {str(e)}"
-            self.logger.error(error_msg)
-            return {
-                "success": False,
-                "message": error_msg
-            }
+            yield {"type": "error", "message": str(e)}
 
-    def _normalize_visualization_type(self, visualization_type: Union[str, VisualizationType]) -> str:
-        """VisualizationType을 문자열로 정규화"""
+    async def _merge_streams(self, *streams):
+        """여러 스트림을 병합하여 순차 처리"""
+        queue = asyncio.Queue()
+
+        async def consume(stream):
+            try:
+                async for item in stream:
+                    await queue.put(item)
+            finally:
+                await queue.put(None)
+
+        tasks = [asyncio.create_task(consume(stream)) for stream in streams]
+        finished = 0
+
+        while finished < len(streams):
+            item = await queue.get()
+            if item is None:
+                finished += 1
+            else:
+                yield item
+
+        await asyncio.gather(*tasks, return_exceptions=True)
+
+    def _get_type_string(self, visualization_type: Union[str, VisualizationType]) -> str:
+        """VisualizationType을 문자열로 변환"""
         if isinstance(visualization_type, VisualizationType):
             return visualization_type.value
-        elif isinstance(visualization_type, str):
-            # 유효성 검사
-            if not VisualizationType.is_valid_template_id(visualization_type):
-                raise ValueError(f"Invalid visualization type: {visualization_type}")
-            return visualization_type
-        else:
-            raise TypeError(f"visualization_type must be str or VisualizationType, got {type(visualization_type)}")
+        return visualization_type
 
-    def get_available_visualization_types(self) -> list[str]:
-        """사용 가능한 시각화 타입 목록 (Enum 기반)"""
-        return VisualizationType.get_all_values()
-
-    def get_implemented_visualization_types(self) -> list[str]:
-        """구현된 시각화 타입 목록만"""
-        return VisualizationType.get_implemented_values()
-
-    def get_planned_visualization_types(self) -> list[str]:
-        """개발 예정인 시각화 타입 목록"""
-        planned_types = VisualizationType.get_planned_types()
-        return [vt.value for vt in planned_types]
-
-    def validate_visualization_type(self, visualization_type: Union[str, VisualizationType]) -> Dict[str, Any]:
-        """시각화 타입 검증"""
+    def _is_implemented_type(self, visualization_type: Union[str, VisualizationType]) -> bool:
+        """구현된 타입인지 확인"""
+        if isinstance(visualization_type, VisualizationType):
+            return visualization_type.is_implemented
         try:
-            if isinstance(visualization_type, str):
-                vt = VisualizationType.from_string(visualization_type)
-            else:
-                vt = visualization_type
-
-            return {
-                "valid": True,
-                "implemented": vt.is_implemented,
-                "type": vt.value,
-                "description": vt.description,
-                "status": vt.status.value
-            }
-
+            vt = VisualizationType.from_string(visualization_type)
+            return vt.is_implemented
         except ValueError:
-            return {
-                "valid": False,
-                "message": f"지원하지 않는 시각화 타입입니다: {visualization_type}",
-                "available_types": self.get_available_visualization_types()
-            }
+            return False
 
     def is_available(self) -> bool:
-        """vibecraft-agent 명령어 사용 가능 여부 확인"""
+        """명령어 사용 가능 여부 확인"""
         try:
-            result = subprocess.run(
-                [self.agent_command, "--help"],
-                capture_output=True,
-                text=True,
-                timeout=10
-            )
+            result = subprocess.run([self.agent_command, "--help"],
+                                    capture_output=True, timeout=10)
             return result.returncode == 0
-        except Exception:
+        except:
             return False
 
 
+# TODO: WIP
 # 사용 예시
 if __name__ == "__main__":
     # 인스턴스 생성
@@ -289,9 +197,6 @@ if __name__ == "__main__":
     # 사용 가능 여부 확인
     if runner.is_available():
         print("vibecraft-agent 사용 가능")
-
-        print(f"구현된 타입: {runner.get_implemented_visualization_types()}")
-        print(f"개발 예정 타입: {runner.get_planned_visualization_types()}")
 
         # Enum을 사용한 실행
         result = runner.run_agent(

@@ -4,10 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250804] Edit code generator api">
+    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250805] Edit visualization type schemas">
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mcp_agent/client/vibe_craft_agent_runner.py" beforeDir="false" afterPath="$PROJECT_DIR$/mcp_agent/client/vibe_craft_agent_runner.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mcp_agent/client/vibe_craft_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/mcp_agent/client/vibe_craft_client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mcp_agent/schemas/prompt_parser_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/mcp_agent/schemas/prompt_parser_schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/workflow.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/workflow.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schemas/sse_response_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/sse_response_schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/workflow_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/workflow_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -232,14 +236,6 @@
       <workItem from="1752468414247" duration="33946000" />
       <workItem from="1753245249914" duration="3006000" />
       <workItem from="1753407623545" duration="38341000" />
-    </task>
-    <task id="LOCAL-00032" summary="[250701] add generate meta data of sqlite">
-      <option name="closed" value="true" />
-      <created>1751337103003</created>
-      <option name="number" value="00032" />
-      <option name="presentableId" value="LOCAL-00032" />
-      <option name="project" value="LOCAL" />
-      <updated>1751337103003</updated>
     </task>
     <task id="LOCAL-00033" summary="[250701] edit connect_to_server method to connect multiple mcp server">
       <option name="closed" value="true" />
@@ -625,7 +621,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754295907867</updated>
     </task>
-    <option name="localTasksCounter" value="81" />
+    <task id="LOCAL-00081" summary="[250805] Edit visualization type schemas">
+      <option name="closed" value="true" />
+      <created>1754354613326</created>
+      <option name="number" value="00081" />
+      <option name="presentableId" value="LOCAL-00081" />
+      <option name="project" value="LOCAL" />
+      <updated>1754354613326</updated>
+    </task>
+    <option name="localTasksCounter" value="82" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -643,7 +647,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="[250717] add langchain" />
     <MESSAGE value="[250718] update engines and langchain logic" />
     <MESSAGE value="[250718] add test code" />
     <MESSAGE value="[250718] edit base.py" />
@@ -668,7 +671,8 @@
     <MESSAGE value="[250804] Add agent runner" />
     <MESSAGE value="[250804] Edit agent runner (WIP)" />
     <MESSAGE value="[250804] Edit code generator api" />
-    <option name="LAST_COMMIT_MESSAGE" value="[250804] Edit code generator api" />
+    <MESSAGE value="[250805] Edit visualization type schemas" />
+    <option name="LAST_COMMIT_MESSAGE" value="[250805] Edit visualization type schemas" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

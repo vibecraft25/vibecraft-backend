@@ -11,6 +11,8 @@ from sse_starlette.sse import ServerSentEvent
 
 class SSEEventType(Enum):
     """SSE 이벤트 타입 정의"""
+    # 서버 이벤트 관련
+    INFO = "info"
     # 도구 관련
     TOOL = "tool"
     # 메시지 관련
@@ -29,6 +31,14 @@ class SSEEventType(Enum):
 
 class SSEEventBuilder:
     """SSE 이벤트 생성 헬퍼 클래스"""
+
+    @staticmethod
+    def create_info_event(message: str) -> ServerSentEvent:
+        """도구 사용 이벤트"""
+        return ServerSentEvent(
+            event=SSEEventType.INFO.value,
+            data=message
+        )
 
     @staticmethod
     def create_tool_event(message: str) -> ServerSentEvent:
@@ -102,6 +112,12 @@ class SSEEventModel(BaseModel):
         }
 
 
+class InfoEventModel(SSEEventModel):
+    """알림 이벤트 모델"""
+    event: Literal["info"] = Field("info", description="서버 이벤트")
+    data: str = Field(..., description="서버 정의 이벤트", example="프로세스를 진행합니다.")
+
+
 class ToolEventModel(SSEEventModel):
     """도구 사용 이벤트 모델"""
     event: Literal["tool"] = Field("tool", description="도구 이벤트")
@@ -146,6 +162,7 @@ class UndefinedEventModel(SSEEventModel):
 
 # SSE 스트림 응답을 위한 통합 모델
 SSEEventResponse = Union[
+    InfoEventModel,
     ToolEventModel,
     AIMessageEventModel,
     MenuEventModel,

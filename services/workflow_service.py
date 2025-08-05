@@ -8,7 +8,6 @@ from typing import AsyncGenerator, Optional
 from sse_starlette.sse import ServerSentEvent
 
 # Custom imports
-from mcp_agent.client import VibeCraftClient
 from schemas import SSEEventBuilder
 from mcp_agent.schemas import (
     VisualizationType,
@@ -108,14 +107,22 @@ class WorkflowService(BaseStreamService):
             return await client.recommend_visualization_type()
         raise NotFoundException(detail=f"Resource Not Found: {thread_id}.{file_format}")
 
-    # TODO: WIP
-    def execute_code_generator(
+    async def execute_code_generator(
             self, thread_id: str, visualization_type: VisualizationType
-    ) -> VibeCraftClient:
-        """워크플로우 3단계: 코드 생성 설정 (WIP)"""
+    ) -> AsyncGenerator[ServerSentEvent, None]:
+        """워크플로우 3단계: 코드 생성 실행"""
         client = self._create_client()
         client.load_chat_history(thread_id)
-        return client.run_code_generator(thread_id, visualization_type)
+
+        async def generator():
+            async for msg in client.stream_run_code_generator(thread_id, visualization_type):
+                yield msg
+
+        async for event in self._create_workflow_stream_generator(
+                generator,
+                lambda: client.get_thread_id()
+        ):
+            yield event
 
 
 # 싱글톤 인스턴스

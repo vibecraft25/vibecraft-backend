@@ -136,11 +136,8 @@ async def generate_code(
         visualization_type: VisualizationType = Query(..., description="Visualization Type"),
 ):
     """
-    워크플로우 3단계: 웹앱 코드를 생성합니다. (현재 WIP)
-
-    **TODO:** 실제 코드 생성 로직 구현 필요
+    워크플로우 3단계: 웹앱 코드를 생성합니다.
     """
-    # WIP: 현재는 클라이언트 설정만 수행
-    client = workflow_service.execute_code_generator(thread_id, visualization_type)
-    # TODO: 실제 코드 생성 로직 구현 필요
-    return {"message": "Code generation setup completed", "thread_id": client.get_thread_id()}
+    return EventSourceResponse(
+        workflow_service.execute_code_generator(thread_id, visualization_type)
+    )
