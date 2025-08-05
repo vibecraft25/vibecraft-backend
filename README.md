@@ -141,7 +141,8 @@ $ python vibecraft-code.py
 │
 ├── mcp_agent/
 │   ├── client/            
-│   │   └── vibe_craft_client.py  # Main pipeline client using MCP stdio
+│   │   ├── vibe_craft_agent_runner.py    # agent runner   
+│   │   └── vibe_craft_client.py          # Main pipeline client using MCP stdio
 │   │
 │   ├── engine/
 │   │   ├── base.py               # Abstract base engine
