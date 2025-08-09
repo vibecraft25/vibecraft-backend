@@ -118,7 +118,7 @@ async def process_data_selection(
     description="",
     response_model=VisualizationRecommendationResponse
 )
-async def visualization_type(
+async def get_visualization_type(
         thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),
 ):
     return await workflow_service.execute_recommend_visualization_type(thread_id)
