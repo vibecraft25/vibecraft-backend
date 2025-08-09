@@ -313,7 +313,8 @@ class VibeCraftClient:
 
     """Code Generator Methods"""
     def run_code_generator(
-            self, thread_id: str, visualization_type: VisualizationType
+            self, thread_id: str, visualization_type: VisualizationType,
+            project_name: str = None, model: str = "flash"
     ) -> Dict[str, Any]:
         """동기 방식 코드 생성"""
         print("\n🚦 Step 3: 웹앱 코드 생성")
@@ -332,7 +333,9 @@ class VibeCraftClient:
                 sqlite_path=file_path,
                 visualization_type=visualization_type,
                 user_prompt=self.get_summary(),
-                output_dir=output_dir
+                output_dir=output_dir,
+                project_name=project_name or f"vibecraft-{thread_id}",
+                model=model
             )
 
             if result["success"]:
@@ -343,7 +346,8 @@ class VibeCraftClient:
             return {"success": False, "message": str(e)}
 
     async def stream_run_code_generator(
-            self, thread_id: str, visualization_type: VisualizationType
+            self, thread_id: str, visualization_type: VisualizationType,
+            project_name: str = None, model: str = "flash"
     ):
         """비동기 스트림 방식 코드 생성 (SSE용)"""
 
@@ -371,7 +375,9 @@ class VibeCraftClient:
                     sqlite_path=file_path,
                     visualization_type=visualization_type,
                     user_prompt=self.get_summary(),
-                    output_dir=output_dir
+                    output_dir=output_dir,
+                    project_name=project_name or f"vibecraft-{thread_id}",
+                    model=model
             ):
                 # 이벤트 타입별 SSE 변환
                 event_type = event.get("type", "info")

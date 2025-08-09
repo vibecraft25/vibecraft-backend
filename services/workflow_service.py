@@ -108,14 +108,17 @@ class WorkflowService(BaseStreamService):
         raise NotFoundException(detail=f"Resource Not Found: {thread_id}.{file_format}")
 
     async def execute_code_generator(
-            self, thread_id: str, visualization_type: VisualizationType
+            self, thread_id: str, visualization_type: VisualizationType,
+            project_name: str = None, model: str = "flash"
     ) -> AsyncGenerator[ServerSentEvent, None]:
         """워크플로우 3단계: 코드 생성 실행"""
         client = self._create_client()
         client.load_chat_history(thread_id)
 
         async def generator():
-            async for msg in client.stream_run_code_generator(thread_id, visualization_type):
+            async for msg in client.stream_run_code_generator(
+                thread_id, visualization_type, project_name, model
+            ):
                 yield msg
 
         async for event in self._create_workflow_stream_generator(

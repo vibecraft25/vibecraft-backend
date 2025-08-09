@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 
 # Custom imports
 from config import settings
+from core.cors import add_cors_middleware
 from routers import (
     chat,
     workflow,
@@ -21,6 +22,9 @@ app = FastAPI(
     swagger_ui_parameters={"syntaxHighlight": True},
     docs_url="/docs",
 )
+
+add_cors_middleware(app)
+
 app.include_router(chat, tags=["chat"])
 app.include_router(workflow, tags=["workflow"])
 app.include_router(content, tags=["content"])

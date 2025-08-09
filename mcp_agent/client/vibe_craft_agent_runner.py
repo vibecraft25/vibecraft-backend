@@ -73,6 +73,8 @@ class VibeCraftAgentRunner:
             visualization_type: Union[str, VisualizationType],
             user_prompt: str,
             output_dir: str = "./output",
+            project_name: str = None,
+            model: str = "flash",
             debug: bool = False,
             skip_api_key_check: bool = False
     ) -> Dict[str, Any]:
@@ -101,8 +103,12 @@ class VibeCraftAgentRunner:
             "--sqlite-path", sqlite_path,
             "--visualization-type", viz_type_str,
             "--user-prompt", user_prompt,
-            "--output-dir", output_dir
+            "--output-dir", output_dir,
+            "--model", model
         ]
+        
+        if project_name:
+            command.extend(["--project-name", project_name])
 
         if debug:
             command.append("--debug")
@@ -128,6 +134,8 @@ class VibeCraftAgentRunner:
             visualization_type: Union[str, VisualizationType],
             user_prompt: str,
             output_dir: str = "./output",
+            project_name: str = None,
+            model: str = "flash",
             debug: bool = False,
             skip_api_key_check: bool = False
     ):
@@ -169,8 +177,12 @@ class VibeCraftAgentRunner:
             "--sqlite-path", sqlite_path,
             "--visualization-type", viz_type_str,
             "--user-prompt", user_prompt,
-            "--output-dir", output_dir
+            "--output-dir", output_dir,
+            "--model", model
         ]
+        
+        if project_name:
+            command.extend(["--project-name", project_name])
 
         if debug:
             command.append("--debug")
@@ -268,6 +280,7 @@ class VibeCraftAgentRunner:
                 return False
 
             # --help 옵션으로 명령어 실행 테스트
+            # 참고: 일부 Node.js CLI는 --help에서도 exit code 1을 반환할 수 있음
             result = subprocess.run(
                 [self.agent_command, "--help"],
                 capture_output=True,
@@ -275,7 +288,11 @@ class VibeCraftAgentRunner:
                 text=True
             )
 
-            if result.returncode == 0:
+            # help 텍스트가 출력되었는지 확인 (exit code와 무관하게)
+            if "vibecraft-agent" in result.stdout.lower() or "usage:" in result.stdout.lower():
+                self.logger.info(f"vibecraft-agent 사용 가능 (경로: {command_path})")
+                return True
+            elif result.returncode == 0:
                 self.logger.info(f"vibecraft-agent 사용 가능 (경로: {command_path})")
                 return True
             else:
@@ -336,22 +353,26 @@ if __name__ == "__main__":
 
         # Enum을 사용한 실행
         result = runner.run_agent(
-            sqlite_path="/path/to/data.sqlite",
+            sqlite_path="./data-store/383ba7f8-9101-4d20-a3d7-6117a8b54e6c/383ba7f8-9101-4d20-a3d7-6117a8b54e6c.sqlite",
             visualization_type=VisualizationType.TIME_SERIES,
             user_prompt="월별 매출 추이를 보여주는 대시보드",
-            output_dir="./output",
+            output_dir="./output/test",
+            project_name="test-dashboard",
+            model="flash",
             debug=True
         )
 
         if result["success"]:
-            print("성공!")
+            print("✅ 성공!")
             print(f"출력 디렉토리: {result['output_dir']}")
             print(f"시각화 타입: {result['visualization_type']}")
         else:
-            print("실패!")
-            print(result["message"])
+            print("❌ 실패!")
+            print(f"오류 메시지: {result['message']}")
             if "error_details" in result:
                 print(f"상세 오류: {result['error_details']}")
+            if "stderr" in result:
+                print(f"에러 출력: {result['stderr']}")
 
         # API 키 체크를 건너뛰는 실행 예시
         result_skip_check = runner.run_agent(
