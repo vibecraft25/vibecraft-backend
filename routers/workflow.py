@@ -124,7 +124,6 @@ async def get_visualization_type(
     return await workflow_service.execute_recommend_visualization_type(thread_id)
 
 
-# TODO: WIP
 @router.get(
     "/stream/code-generator",
     summary="워크플로우 3단계: 코드 생성",
