@@ -4,6 +4,7 @@ __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 import subprocess
 import asyncio
 import logging
+import shutil
 from typing import Dict, Any, Union
 
 # Custom imports
@@ -11,9 +12,17 @@ from mcp_agent.schemas import VisualizationType
 
 
 class VibeCraftAgentRunner:
-    """간소화된 VibeCraft Agent CLI 실행 클래스"""
+    """npm으로 전역 설치된 VibeCraft Agent CLI 실행 클래스"""
 
-    def __init__(self, agent_command: str = "./vibecraft-agent/vibecraft-agent"):
+    def __init__(self, agent_command: str = "vibecraft-agent"):
+        """
+        초기화
+
+        Args:
+            agent_command: 실행할 명령어 (기본값: "vibecraft-agent")
+                          npm 전역 설치 시 "vibecraft-agent"
+                          로컬 개발 시 "./vibecraft-agent/vibecraft-agent" 등으로 지정 가능
+        """
         self.agent_command = agent_command
         self.logger = logging.getLogger(__name__)
 
@@ -179,20 +188,65 @@ class VibeCraftAgentRunner:
             return False
 
     def is_available(self) -> bool:
-        """명령어 사용 가능 여부 확인"""
+        """명령어 사용 가능 여부 확인 (npm 전역 설치 고려)"""
         try:
-            result = subprocess.run([self.agent_command, "--help"],
-                                    capture_output=True, timeout=10)
-            return result.returncode == 0
-        except:
+            # shutil.which()를 사용하여 PATH에서 명령어 검색
+            command_path = shutil.which(self.agent_command)
+            if command_path is None:
+                self.logger.warning(f"'{self.agent_command}' 명령어를 PATH에서 찾을 수 없습니다.")
+                return False
+
+            # --help 옵션으로 명령어 실행 테스트
+            result = subprocess.run(
+                [self.agent_command, "--help"],
+                capture_output=True,
+                timeout=10,
+                text=True
+            )
+
+            if result.returncode == 0:
+                self.logger.info(f"vibecraft-agent 사용 가능 (경로: {command_path})")
+                return True
+            else:
+                self.logger.error(f"명령어 실행 실패: {result.stderr}")
+                return False
+
+        except subprocess.TimeoutExpired:
+            self.logger.error("명령어 실행 시간 초과")
+            return False
+        except Exception as e:
+            self.logger.error(f"명령어 확인 중 오류 발생: {e}")
             return False
 
+    def get_installation_info(self) -> Dict[str, Any]:
+        """설치 정보 및 상태를 반환합니다."""
+        command_path = shutil.which(self.agent_command)
 
-# TODO: WIP
+        info = {
+            "command": self.agent_command,
+            "available": self.is_available(),
+            "path": command_path,
+            "installation_method": "unknown"
+        }
+
+        if command_path:
+            # npm 전역 설치인지 확인
+            if "npm" in command_path or "node_modules" in command_path:
+                info["installation_method"] = "npm_global"
+            elif command_path.startswith("./") or command_path.startswith("/"):
+                info["installation_method"] = "local_binary"
+
+        return info
+
+
 # 사용 예시
 if __name__ == "__main__":
-    # 인스턴스 생성
+    # 기본 인스턴스 생성 (npm 전역 설치 가정)
     runner = VibeCraftAgentRunner()
+
+    # 설치 정보 확인
+    install_info = runner.get_installation_info()
+    print(f"설치 정보: {install_info}")
 
     # 사용 가능 여부 확인
     if runner.is_available():
@@ -201,7 +255,7 @@ if __name__ == "__main__":
         # Enum을 사용한 실행
         result = runner.run_agent(
             sqlite_path="/path/to/data.sqlite",
-            visualization_type=VisualizationType.TIME_SERIES,  # Enum 사용
+            visualization_type=VisualizationType.TIME_SERIES,
             user_prompt="월별 매출 추이를 보여주는 대시보드",
             output_dir="./output",
             debug=True
@@ -218,7 +272,7 @@ if __name__ == "__main__":
         # 문자열을 사용한 실행 (하위 호환성)
         result2 = runner.run_agent(
             sqlite_path="/path/to/data.sqlite",
-            visualization_type="kpi-dashboard",  # 문자열 사용
+            visualization_type="kpi-dashboard",
             user_prompt="KPI 대시보드",
             output_dir="./output"
         )
@@ -226,7 +280,7 @@ if __name__ == "__main__":
         # 개발 예정 타입 테스트
         result3 = runner.run_agent(
             sqlite_path="/path/to/data.sqlite",
-            visualization_type=VisualizationType.GEO_SPATIAL,  # 개발 예정 타입
+            visualization_type=VisualizationType.GEO_SPATIAL,
             user_prompt="지역별 분석",
             output_dir="./output"
         )
@@ -234,3 +288,10 @@ if __name__ == "__main__":
 
     else:
         print("vibecraft-agent 명령어를 찾을 수 없습니다.")
+        print("다음 명령어로 설치해주세요: npm install -g vibecraft-agent")
+
+    # 로컬 개발 환경에서 사용할 경우의 예시
+    print("\n--- 로컬 개발 환경 예시 ---")
+    local_runner = VibeCraftAgentRunner("./vibecraft-agent/vibecraft-agent")
+    local_info = local_runner.get_installation_info()
+    print(f"로컬 설치 정보: {local_info}")
