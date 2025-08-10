@@ -81,6 +81,8 @@ uv add chardet
 # Download and install Node.js from the official website:
 #👉 https://nodejs.org
 npm -v
+npm install -g @google/gemini-cli
+npm install -g vibecraft-agent
 ```
 #### 6. Add .env for your API keys
 ```bash
