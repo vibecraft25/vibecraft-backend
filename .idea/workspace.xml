@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250805] edit prompt">
+    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250810] edit README.md">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/workflow.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/workflow.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -229,14 +229,6 @@
       <workItem from="1752468414247" duration="33946000" />
       <workItem from="1753245249914" duration="3006000" />
       <workItem from="1753407623545" duration="38341000" />
-    </task>
-    <task id="LOCAL-00045" summary="[250717] add langchain">
-      <option name="closed" value="true" />
-      <created>1752746883479</created>
-      <option name="number" value="00045" />
-      <option name="presentableId" value="LOCAL-00045" />
-      <option name="project" value="LOCAL" />
-      <updated>1752746883479</updated>
     </task>
     <task id="LOCAL-00046" summary="[250717] add langchain">
       <option name="closed" value="true" />
@@ -622,7 +614,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754381312683</updated>
     </task>
-    <option name="localTasksCounter" value="94" />
+    <task id="LOCAL-00094" summary="[250810] edit README.md">
+      <option name="closed" value="true" />
+      <created>1754801411719</created>
+      <option name="number" value="00094" />
+      <option name="presentableId" value="LOCAL-00094" />
+      <option name="project" value="LOCAL" />
+      <updated>1754801411719</updated>
+    </task>
+    <option name="localTasksCounter" value="95" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -652,7 +652,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="[250724] edit ServerSentEvent event process" />
     <MESSAGE value="[250724] add merge chat history" />
     <MESSAGE value="[250730] update routers, mcp client" />
     <MESSAGE value="[250730] Update&#10;- add content router&#10;- add file/path utils&#10;- add workflow router&#10;- update vibecraft client" />
@@ -677,7 +676,8 @@
     <MESSAGE value="[250805] add system prompt logic" />
     <MESSAGE value="[250805] edit llm response parsing logic" />
     <MESSAGE value="[250805] edit prompt" />
-    <option name="LAST_COMMIT_MESSAGE" value="[250805] edit prompt" />
+    <MESSAGE value="[250810] edit README.md" />
+    <option name="LAST_COMMIT_MESSAGE" value="[250810] edit README.md" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

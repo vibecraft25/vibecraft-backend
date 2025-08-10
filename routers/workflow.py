@@ -134,7 +134,7 @@ async def generate_code(
         thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),
         visualization_type: VisualizationType = Query(..., description="Visualization Type"),
         project_name: Optional[str] = Query(None, description="Project name for the generated app"),
-        model: str = Query("flash", description="Gemini model to use: flash (default) or pro"),
+        model: Optional[str] = Query("flash", description="Gemini model to use: flash (default) or pro"),
 ):
     """
     워크플로우 3단계: 웹앱 코드를 생성합니다.
