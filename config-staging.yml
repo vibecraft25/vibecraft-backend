@@ -5,9 +5,6 @@ base_url: "http://0.0.0.0:8080"
 host: "0.0.0.0"
 port: 8080
 
-resource:
-  mcp: "/app/vibecraft/servers"
-
 file:
   chat: "/app/vibecraft/chat-data"
   file: "/app/vibecraft/data-store"
