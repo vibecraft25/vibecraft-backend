@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250812] edit data_save">
+    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="[250812] edit config">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -23,6 +23,18 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RESET_MODE" value="HARD" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;sehoon787&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/vibecraft25/vibecraft-backend.git&quot;,
+    &quot;accountId&quot;: &quot;606947c1-a27d-4dbc-9fc0-49dca6e4c6e0&quot;
+  }
+}</component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 8
@@ -228,14 +240,7 @@
       <workItem from="1752468414247" duration="33946000" />
       <workItem from="1753245249914" duration="3006000" />
       <workItem from="1753407623545" duration="38341000" />
-    </task>
-    <task id="LOCAL-00048" summary="[250718] add test code">
-      <option name="closed" value="true" />
-      <created>1752821079135</created>
-      <option name="number" value="00048" />
-      <option name="presentableId" value="LOCAL-00048" />
-      <option name="project" value="LOCAL" />
-      <updated>1752821079135</updated>
+      <workItem from="1754995617916" duration="1081000" />
     </task>
     <task id="LOCAL-00049" summary="[250718] add test code">
       <option name="closed" value="true" />
@@ -621,7 +626,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754994777872</updated>
     </task>
-    <option name="localTasksCounter" value="97" />
+    <task id="LOCAL-00097" summary="[250812] edit config">
+      <option name="closed" value="true" />
+      <created>1754995726871</created>
+      <option name="number" value="00097" />
+      <option name="presentableId" value="LOCAL-00097" />
+      <option name="project" value="LOCAL" />
+      <updated>1754995726871</updated>
+    </task>
+    <option name="localTasksCounter" value="98" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -651,7 +664,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="[250730] Update&#10;- add content router&#10;- add file/path utils&#10;- add workflow router&#10;- update vibecraft client" />
     <MESSAGE value="[250730] Update vibecraft client methods" />
     <MESSAGE value="[250730] Add service logic, Edit routers" />
     <MESSAGE value="[250730] remove examples" />
@@ -676,7 +688,8 @@
     <MESSAGE value="[250810] edit README.md" />
     <MESSAGE value="[250810] edit workflow.py generate_code api" />
     <MESSAGE value="[250812] edit data_save" />
-    <option name="LAST_COMMIT_MESSAGE" value="[250812] edit data_save" />
+    <MESSAGE value="[250812] edit config" />
+    <option name="LAST_COMMIT_MESSAGE" value="[250812] edit config" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -106,7 +106,7 @@ class VibeCraftAgentRunner:
             "--output-dir", output_dir,
             "--model", model
         ]
-        
+
         if project_name:
             command.extend(["--project-name", project_name])
 
@@ -114,7 +114,15 @@ class VibeCraftAgentRunner:
             command.append("--debug")
 
         try:
-            result = subprocess.run(command, capture_output=True, text=True, check=True)
+            result = subprocess.run(
+                command,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",  # 명시적 인코딩 지정
+                errors="replace",  # 디코딩 에러 발생 시 문자 대체
+                check=True,
+                shell=True
+            )
             return {
                 "success": True,
                 "message": "실행 완료",
@@ -180,7 +188,7 @@ class VibeCraftAgentRunner:
             "--output-dir", output_dir,
             "--model", model
         ]
-        
+
         if project_name:
             command.extend(["--project-name", project_name])
 
@@ -202,7 +210,7 @@ class VibeCraftAgentRunner:
                     line = await stream.readline()
                     if not line:
                         break
-                    text = line.decode().strip()
+                    text = line.decode("utf-8", errors="replace").strip()  # 디코딩 시 에러 무시/대체
                     if text:
                         yield {"type": stream_type, "message": text}
 
@@ -284,8 +292,11 @@ class VibeCraftAgentRunner:
             result = subprocess.run(
                 [self.agent_command, "--help"],
                 capture_output=True,
-                timeout=10,
-                text=True
+                text=True,
+                encoding="utf-8",  # 명시적 인코딩 지정
+                errors="replace",  # 디코딩 에러 발생 시 문자 대체
+                check=True,
+                shell=True
             )
 
             # help 텍스트가 출력되었는지 확인 (exit code와 무관하게)
@@ -391,7 +402,6 @@ if __name__ == "__main__":
             output_dir="./output"
         )
         print(f"개발 예정 타입 결과: {result3['message']}")
-
     else:
         print("vibecraft-agent 명령어를 찾을 수 없습니다.")
         print("다음 명령어로 설치해주세요: npm install -g vibecraft-agent")
@@ -404,7 +414,6 @@ if __name__ == "__main__":
 
     # 비동기 실행 예시
     print("\n--- 비동기 실행 예시 ---")
-
 
     async def async_example():
         async for output in runner.run_agent_async(
