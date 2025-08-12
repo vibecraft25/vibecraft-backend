@@ -120,7 +120,6 @@ class VibeCraftAgentRunner:
                 text=True,
                 encoding="utf-8",  # 명시적 인코딩 지정
                 errors="replace",  # 디코딩 에러 발생 시 문자 대체
-                check=True,
                 shell=True
             )
             return {
@@ -295,7 +294,6 @@ class VibeCraftAgentRunner:
                 text=True,
                 encoding="utf-8",  # 명시적 인코딩 지정
                 errors="replace",  # 디코딩 에러 발생 시 문자 대체
-                check=True,
                 shell=True
             )
 
