@@ -218,6 +218,7 @@ class VibeCraftClient:
         mapped_df.to_csv(os.path.join(path, f"{self.get_thread_id()}.csv"), encoding="cp949", index=False)
         file_path = FileUtils.save_sqlite(mapped_df, path, self.get_thread_id())
         FileUtils.save_metadata(filtered_new_col, path, file_path)
+        self.data = mapped_df
 
     async def data_handler(self, df: Optional[pd.DataFrame] = None) -> bool:
         """데이터 처리 메뉴 핸들러"""
