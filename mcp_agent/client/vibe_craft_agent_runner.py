@@ -2,11 +2,11 @@ __author__ = "Se Hoon Kim(sehoon787@korea.ac.kr)"
 
 # Standard imports
 import subprocess
-import asyncio
 import logging
 import shutil
 import os
-from typing import Dict, Any, Union
+from typing import Dict, Any, Union, AsyncGenerator
+from concurrent.futures import ThreadPoolExecutor
 
 # Environment loading
 from dotenv import load_dotenv
@@ -30,6 +30,7 @@ class VibeCraftAgentRunner:
         """
         self.agent_command = agent_command
         self.logger = logging.getLogger(__name__)
+        self.executor = ThreadPoolExecutor(max_workers=2)
 
         if auto_load_env:
             load_dotenv()
@@ -118,8 +119,8 @@ class VibeCraftAgentRunner:
                 command,
                 capture_output=True,
                 text=True,
-                encoding="utf-8",  # 명시적 인코딩 지정
-                errors="replace",  # 디코딩 에러 발생 시 문자 대체
+                encoding="utf-8",
+                errors="replace",
                 shell=True
             )
             return {
@@ -145,7 +146,7 @@ class VibeCraftAgentRunner:
             model: str = "flash",
             debug: bool = False,
             skip_api_key_check: bool = False
-    ):
+    ) -> AsyncGenerator[Dict[str, Any], None]:
         """비동기 방식으로 실행하며 실시간 출력을 yield합니다."""
 
         # GEMINI_API_KEY 확인
@@ -179,7 +180,8 @@ class VibeCraftAgentRunner:
 
         yield {"type": "success", "message": "검증 완료"}
 
-        command = [
+        # 명령어 구성
+        command_parts = [
             self.agent_command,
             "--sqlite-path", sqlite_path,
             "--visualization-type", viz_type_str,
@@ -189,38 +191,34 @@ class VibeCraftAgentRunner:
         ]
 
         if project_name:
-            command.extend(["--project-name", project_name])
+            command_parts.extend(["--project-name", project_name])
 
         if debug:
-            command.append("--debug")
+            command_parts.append("--debug")
+
+        # 명령어를 문자열로 결합 (shell=True 사용을 위해)
+        command = " ".join(f'"{part}"' if " " in part else part for part in command_parts)
 
         yield {"type": "info", "message": "프로세스 시작 중..."}
+        yield {"type": "debug", "message": f"실행 명령어: {command}"}
 
         try:
-            process = await asyncio.create_subprocess_exec(
-                *command,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
+            # subprocess.Popen을 사용한 프로세스 시작
+            process = await asyncio.get_event_loop().run_in_executor(
+                self.executor,
+                self._create_process,
+                command
             )
 
             # 실시간 출력 읽기
-            async def read_stream(stream, stream_type):
-                while True:
-                    line = await stream.readline()
-                    if not line:
-                        break
-                    text = line.decode("utf-8", errors="replace").strip()  # 디코딩 시 에러 무시/대체
-                    if text:
-                        yield {"type": stream_type, "message": text}
-
-            # stdout과 stderr 병합 처리
-            async for output in self._merge_streams(
-                    read_stream(process.stdout, "stdout"),
-                    read_stream(process.stderr, "stderr")
-            ):
+            async for output in self._read_process_output(process):
                 yield output
 
-            return_code = await process.wait()
+            # 프로세스 완료 대기
+            return_code = await asyncio.get_event_loop().run_in_executor(
+                self.executor,
+                process.wait
+            )
 
             if return_code == 0:
                 yield {
@@ -236,30 +234,73 @@ class VibeCraftAgentRunner:
                 }
 
         except Exception as e:
-            yield {"type": "error", "message": str(e)}
+            yield {"type": "error", "message": f"프로세스 실행 중 오류 발생: {str(e)}"}
 
-    async def _merge_streams(self, *streams):
-        """여러 스트림을 병합하여 순차 처리"""
-        queue = asyncio.Queue()
+    def _create_process(self, command: str) -> subprocess.Popen:
+        """subprocess.Popen을 사용해서 프로세스를 생성합니다."""
+        return subprocess.Popen(
+            command,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,  # stderr를 stdout으로 리다이렉트
+            text=True,
+            bufsize=1,  # 라인 버퍼링
+            universal_newlines=True,
+            encoding="utf-8",
+            errors="replace"
+        )
 
-        async def consume(stream):
+    async def _read_process_output(self, process: subprocess.Popen) -> AsyncGenerator[Dict[str, Any], None]:
+        """프로세스의 실시간 출력을 비동기적으로 읽습니다."""
+        loop = asyncio.get_event_loop()
+
+        while True:
             try:
-                async for item in stream:
-                    await queue.put(item)
-            finally:
-                await queue.put(None)
+                # 블로킹 readline을 비동기로 실행
+                line = await loop.run_in_executor(
+                    self.executor,
+                    process.stdout.readline
+                )
 
-        tasks = [asyncio.create_task(consume(stream)) for stream in streams]
-        finished = 0
+                if not line:  # EOF에 도달하면 종료
+                    break
 
-        while finished < len(streams):
-            item = await queue.get()
-            if item is None:
-                finished += 1
-            else:
-                yield item
+                line = line.strip()
+                if line:
+                    # 출력 타입을 분류 (선택적)
+                    output_type = self._classify_output_type(line)
+                    yield {
+                        "type": output_type,
+                        "message": line
+                    }
 
-        await asyncio.gather(*tasks, return_exceptions=True)
+            except Exception as e:
+                yield {
+                    "type": "error",
+                    "message": f"출력 읽기 중 오류: {str(e)}"
+                }
+                break
+
+        # 프로세스가 여전히 실행 중인지 확인
+        if process.poll() is None:
+            yield {"type": "info", "message": "프로세스 종료 대기 중..."}
+
+    def _classify_output_type(self, line: str) -> str:
+        """출력 라인의 타입을 분류합니다."""
+        line_lower = line.lower()
+
+        if "error" in line_lower or "fail" in line_lower:
+            return "error"
+        elif "warning" in line_lower or "warn" in line_lower:
+            return "warning"
+        elif "success" in line_lower or "complete" in line_lower or "done" in line_lower:
+            return "success"
+        elif "info" in line_lower or "processing" in line_lower:
+            return "info"
+        elif line.startswith("[") and "]" in line:  # 로그 형태
+            return "log"
+        else:
+            return "stdout"
 
     def _get_type_string(self, visualization_type: Union[str, VisualizationType]) -> str:
         """VisualizationType을 문자열로 변환"""
@@ -280,24 +321,20 @@ class VibeCraftAgentRunner:
     def is_available(self) -> bool:
         """명령어 사용 가능 여부 확인 (npm 전역 설치 고려)"""
         try:
-            # shutil.which()를 사용하여 PATH에서 명령어 검색
             command_path = shutil.which(self.agent_command)
             if command_path is None:
                 self.logger.warning(f"'{self.agent_command}' 명령어를 PATH에서 찾을 수 없습니다.")
                 return False
 
-            # --help 옵션으로 명령어 실행 테스트
-            # 참고: 일부 Node.js CLI는 --help에서도 exit code 1을 반환할 수 있음
             result = subprocess.run(
                 [self.agent_command, "--help"],
                 capture_output=True,
                 text=True,
-                encoding="utf-8",  # 명시적 인코딩 지정
-                errors="replace",  # 디코딩 에러 발생 시 문자 대체
+                encoding="utf-8",
+                errors="replace",
                 shell=True
             )
 
-            # help 텍스트가 출력되었는지 확인 (exit code와 무관하게)
             if "vibecraft-agent" in result.stdout.lower() or "usage:" in result.stdout.lower():
                 self.logger.info(f"vibecraft-agent 사용 가능 (경로: {command_path})")
                 return True
@@ -328,7 +365,6 @@ class VibeCraftAgentRunner:
         }
 
         if command_path:
-            # npm 전역 설치인지 확인
             if "npm" in command_path or "node_modules" in command_path:
                 info["installation_method"] = "npm_global"
             elif command_path.startswith("./") or command_path.startswith("/"):
@@ -336,90 +372,32 @@ class VibeCraftAgentRunner:
 
         return info
 
+    def __del__(self):
+        """소멸자: ThreadPoolExecutor 정리"""
+        if hasattr(self, 'executor'):
+            self.executor.shutdown(wait=False)
+
 
 # 사용 예시
 if __name__ == "__main__":
-    # 기본 인스턴스 생성 (npm 전역 설치 가정, .env 자동 로딩)
-    runner = VibeCraftAgentRunner()
+    import asyncio
 
-    # 설치 정보 확인 (API 키 상태 포함)
-    install_info = runner.get_installation_info()
-    print(f"설치 정보: {install_info}")
-
-    # GEMINI_API_KEY 단독 확인
-    api_key_status = runner.check_gemini_api_key()
-    print(f"API 키 상태: {api_key_status}")
-
-    # 사용 가능 여부 확인
-    if runner.is_available():
-        print("vibecraft-agent 사용 가능")
-
-        # API 키가 없는 경우 경고 출력
-        if not api_key_status["exists"]:
-            print(f"⚠️  경고: {api_key_status['message']}")
-            print(f"💡 해결 방법: {api_key_status['recommendation']}")
-            print("API 키 없이 실행하려면 skip_api_key_check=True로 설정하세요.")
-
-        # Enum을 사용한 실행
-        result = runner.run_agent(
-            sqlite_path="./data-store/383ba7f8-9101-4d20-a3d7-6117a8b54e6c/383ba7f8-9101-4d20-a3d7-6117a8b54e6c.sqlite",
-            visualization_type=VisualizationType.TIME_SERIES,
-            user_prompt="월별 매출 추이를 보여주는 대시보드",
-            output_dir="./output/test",
-            project_name="test-dashboard",
-            model="flash",
-            debug=True
-        )
-
-        if result["success"]:
-            print("✅ 성공!")
-            print(f"출력 디렉토리: {result['output_dir']}")
-            print(f"시각화 타입: {result['visualization_type']}")
-        else:
-            print("❌ 실패!")
-            print(f"오류 메시지: {result['message']}")
-            if "error_details" in result:
-                print(f"상세 오류: {result['error_details']}")
-            if "stderr" in result:
-                print(f"에러 출력: {result['stderr']}")
-
-        # API 키 체크를 건너뛰는 실행 예시
-        result_skip_check = runner.run_agent(
-            sqlite_path="/path/to/data.sqlite",
-            visualization_type="kpi-dashboard",
-            user_prompt="KPI 대시보드",
-            output_dir="./output",
-            skip_api_key_check=True  # API 키 체크 건너뛰기
-        )
-
-        # 개발 예정 타입 테스트
-        result3 = runner.run_agent(
-            sqlite_path="/path/to/data.sqlite",
-            visualization_type=VisualizationType.GEO_SPATIAL,
-            user_prompt="지역별 분석",
-            output_dir="./output"
-        )
-        print(f"개발 예정 타입 결과: {result3['message']}")
-    else:
-        print("vibecraft-agent 명령어를 찾을 수 없습니다.")
-        print("다음 명령어로 설치해주세요: npm install -g vibecraft-agent")
-
-    # 로컬 개발 환경에서 사용할 경우의 예시
-    print("\n--- 로컬 개발 환경 예시 ---")
-    local_runner = VibeCraftAgentRunner("./vibecraft-agent/vibecraft-agent")
-    local_info = local_runner.get_installation_info()
-    print(f"로컬 설치 정보: {local_info}")
-
-    # 비동기 실행 예시
-    print("\n--- 비동기 실행 예시 ---")
 
     async def async_example():
+        runner = VibeCraftAgentRunner()
+
+        print("=== 비동기 실행 예시 ===")
         async for output in runner.run_agent_async(
-                sqlite_path="/path/to/data.sqlite",
+                sqlite_path="./data-store/test.sqlite",
                 visualization_type=VisualizationType.TIME_SERIES,
-                user_prompt="비동기 테스트",
-                output_dir="./output"
+                user_prompt="월별 매출 추이를 보여주는 대시보드",
+                output_dir="./output/test",
+                project_name="test-dashboard",
+                model="flash",
+                debug=True
         ):
             print(f"[{output['type']}] {output['message']}")
 
-    # asyncio.run(async_example())  # 주석 해제하여 실행
+
+    # 실행
+    asyncio.run(async_example())
