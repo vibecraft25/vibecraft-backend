@@ -6,7 +6,7 @@ import subprocess
 import logging
 import shutil
 import os
-from typing import Dict, Any, Union, AsyncGenerator
+from typing import Dict, Any, Union, AsyncGenerator, List
 from concurrent.futures import ThreadPoolExecutor
 
 # Environment loading
@@ -116,13 +116,20 @@ class VibeCraftAgentRunner:
             command.append("--debug")
 
         try:
+            # shell=False로 직접 실행 (권장 방식)
+            self.logger.info(f"실행 명령어: {' '.join(command)}")
+            
+            # 현재 환경 변수 가져오기 (GEMINI_API_KEY 등 포함)
+            env = os.environ.copy()
+            
             result = subprocess.run(
                 command,
                 capture_output=True,
                 text=True,
                 encoding="utf-8",
                 errors="replace",
-                shell=True
+                shell=False,  # shell=False로 변경
+                env=env  # 환경 변수 전달
             )
             return {
                 "success": True,
@@ -197,18 +204,18 @@ class VibeCraftAgentRunner:
         if debug:
             command_parts.append("--debug")
 
-        # 명령어를 문자열로 결합 (shell=True 사용을 위해)
-        command = " ".join(f'"{part}"' if " " in part else part for part in command_parts)
+        # shell=False로 직접 실행하기 위해 리스트 형태 유지
+        self.logger.info(f"실행 명령어: {' '.join(command_parts)}")
 
         yield {"type": "info", "message": "프로세스 시작 중..."}
-        yield {"type": "debug", "message": f"실행 명령어: {command}"}
+        yield {"type": "debug", "message": f"실행 명령어: {' '.join(command_parts)}"}
 
         try:
-            # subprocess.Popen을 사용한 프로세스 시작
+            # subprocess.Popen을 사용한 프로세스 시작 (shell=False)
             process = await asyncio.get_event_loop().run_in_executor(
                 self.executor,
-                self._create_process,
-                command
+                self._create_process_list,
+                command_parts
             )
 
             # 실시간 출력 읽기
@@ -238,7 +245,7 @@ class VibeCraftAgentRunner:
             yield {"type": "error", "message": f"프로세스 실행 중 오류 발생: {str(e)}"}
 
     def _create_process(self, command: str) -> subprocess.Popen:
-        """subprocess.Popen을 사용해서 프로세스를 생성합니다."""
+        """subprocess.Popen을 사용해서 프로세스를 생성합니다. (레거시 - shell=True용)"""
         return subprocess.Popen(
             command,
             shell=True,
@@ -249,6 +256,24 @@ class VibeCraftAgentRunner:
             universal_newlines=True,
             encoding="utf-8",
             errors="replace"
+        )
+    
+    def _create_process_list(self, command_parts: List[str]) -> subprocess.Popen:
+        """subprocess.Popen을 사용해서 프로세스를 생성합니다. (권장 - shell=False용)"""
+        # 현재 환경 변수 가져오기 (GEMINI_API_KEY 등 포함)
+        env = os.environ.copy()
+        
+        return subprocess.Popen(
+            command_parts,
+            shell=False,  # shell=False로 안전하게 실행
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,  # stderr를 stdout으로 리다이렉트
+            text=True,
+            bufsize=1,  # 라인 버퍼링
+            universal_newlines=True,
+            encoding="utf-8",
+            errors="replace",
+            env=env  # 환경 변수 전달
         )
 
     async def _read_process_output(self, process: subprocess.Popen) -> AsyncGenerator[Dict[str, Any], None]:
@@ -333,7 +358,7 @@ class VibeCraftAgentRunner:
                 text=True,
                 encoding="utf-8",
                 errors="replace",
-                shell=True
+                shell=False  # shell=False로 변경
             )
 
             if "vibecraft-agent" in result.stdout.lower() or "usage:" in result.stdout.lower():

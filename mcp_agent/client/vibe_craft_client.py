@@ -210,7 +210,19 @@ class VibeCraftClient:
         new_col = FileUtils.parse_dict_flexible(result)
         filtered_new_col = {k: v for k, v in new_col.items() if v is not None}
 
-        mapped_df = df.rename(columns=new_col)[list(filtered_new_col.values())]
+        # 먼저 rename 적용
+        renamed_df = df.rename(columns=filtered_new_col)
+        
+        # rename된 컬럼 중 실제 존재하는 컬럼만 선택
+        existing_cols = [col for col in filtered_new_col.values() if col in renamed_df.columns]
+        
+        if not existing_cols:
+            # 매핑 실패 시 원본 컬럼명 사용
+            print(f"⚠️ 컬럼 매핑 실패. 원본 컬럼 사용: {list(df.columns[:10])}")
+            mapped_df = df
+        else:
+            mapped_df = renamed_df[existing_cols]
+            
         print(f"\n🧱 Mapped Result:\n{mapped_df.head(3).to_string(index=False)}")
 
         # 파일 저장
