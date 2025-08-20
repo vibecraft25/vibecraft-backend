@@ -10,5 +10,5 @@ misc.xml
 workspace.xml
 /vibecraft-app-python-log/
 /data_store/
-output/
+mcp_agent/client/output/
 node_modules/
