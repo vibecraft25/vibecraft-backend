@@ -16,7 +16,7 @@ from mcp_agent.engine import (
     GeminiEngine
 )
 from mcp_agent.schemas.prompt_parser_schemas import VisualizationType
-from schemas import SSEEventBuilder
+from schemas import SSEEventBuilder, SSEEventType
 from mcp_agent.schemas import (
     MCPServerConfig,
     VisualizationRecommendationResponse
@@ -381,14 +381,12 @@ class VibeCraftClient:
                     model=model
             ):
                 # 이벤트 타입별 SSE 변환
-                event_type = event.get("type", "info")
-                message = event.get("message", "")
+                event_type = event.event
+                message = event.data
 
-                if event_type == "error":
+                if event_type == SSEEventType.ERROR.value:
                     yield SSEEventBuilder.create_error_event(message)
-                elif event_type == "stdout":
-                    yield SSEEventBuilder.create_ai_message_chunk(message)
-                elif event.get("step") == "execution_complete":
+                elif event_type == SSEEventType.COMPLETE.value:
                     yield SSEEventBuilder.create_info_event("🎉 웹앱 코드 생성 완료!")
                     yield SSEEventBuilder.create_complete_event(thread_id)
                     return
