@@ -596,7 +596,7 @@ if __name__ == "__main__":
                 user_prompt="월별 매출 추이를 보여주는 대시보드",
                 output_dir="./output/test",
                 project_name="test-dashboard",
-                model="flash",
+                model="pro",
                 debug=True,
                 require_final_complete=True
         ):
@@ -614,7 +614,7 @@ if __name__ == "__main__":
                 user_prompt="월별 매출 추이를 보여주는 대시보드",
                 output_dir="./output/test",
                 project_name="test-dashboard",
-                model="flash",
+                model="pro",
                 debug=True,
                 require_final_complete=False
         ):
