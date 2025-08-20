@@ -420,6 +420,7 @@ class VibeCraftClient:
             pass
         # Step: 2-3
         v_type = (await self.recommend_visualization_type()).get_top_recommendation()
+        print(f"💻 가장 높은 점수의 시각화 타입인 {v_type}으로 코드 생성을 진행합니다...")
         # Step: 3
         result = self.run_code_generator(self.get_thread_id(), v_type.visualization_type)
         breakpoint()
