@@ -197,6 +197,12 @@ class VibeCraftAgentRunner:
             )
             return
 
+        if not self._ensure_output_directory(output_dir):
+            yield SSEEventBuilder.create_error_event(
+                f"'{output_dir}' directory does not exist."
+            )
+            return
+
         yield SSEEventBuilder.create_info_event("검증 완료")
 
         # 출력 디렉토리 확인 및 생성
@@ -309,6 +315,13 @@ class VibeCraftAgentRunner:
             yield {
                 "type": "error",
                 "message": f"'{viz_type_str}' 타입은 아직 구현되지 않았습니다."
+            }
+            return
+
+        if not self._ensure_output_directory(output_dir):
+            yield {
+                "type": "error",
+                "message": f"'{output_dir}' directory does not exist."
             }
             return
 
