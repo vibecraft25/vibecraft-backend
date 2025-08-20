@@ -12,3 +12,4 @@ workspace.xml
 /data_store/
 mcp_agent/client/output/
 node_modules/
+/output/
