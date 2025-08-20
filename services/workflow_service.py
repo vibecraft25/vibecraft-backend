@@ -49,7 +49,7 @@ class WorkflowService(BaseStreamService):
             for ext in ContentUtils.ALLOWED_EXTENSIONS:
                 path = PathUtils.get_path(thread_id, f"{code}{ext}")
                 if path:
-                    file_path = path
+                    file_path = path[0]
                     break
         await client.set_data(file_path)
 
