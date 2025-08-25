@@ -113,7 +113,7 @@ async def get_chat_history(
     summary="특정 채팅의 내화내용 요약 내용",
     description="특정 thread_id의 채팅 기록의 summary가 있다면 이를 반환합니다.",
 )
-async def get_chat_history(
+async def get_chat_summary(
     thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8")
 ):
     return await chat_service.get_chat_summary(thread_id)
