@@ -16,7 +16,7 @@ from mcp_agent.engine import (
     GeminiEngine
 )
 from mcp_agent.schemas.prompt_parser_schemas import VisualizationType
-from schemas import SSEEventBuilder
+from schemas import SSEEventBuilder, SSEEventType
 from mcp_agent.schemas import (
     MCPServerConfig,
     VisualizationRecommendationResponse
@@ -315,7 +315,7 @@ class VibeCraftClient:
     """Code Generator Methods"""
     def run_code_generator(
             self, thread_id: str, visualization_type: VisualizationType,
-            project_name: str = None, model: str = "flash"
+            project_name: str = None, model: str = "pro"
     ) -> Dict[str, Any]:
         """동기 방식 코드 생성"""
         print("\n🚦 Step 3: 웹앱 코드 생성")
@@ -348,7 +348,7 @@ class VibeCraftClient:
 
     async def stream_run_code_generator(
             self, thread_id: str, visualization_type: VisualizationType,
-            project_name: str = None, model: str = "flash"
+            project_name: str = None, model: str = "pro"
     ):
         """비동기 스트림 방식 코드 생성 (SSE용)"""
 
@@ -381,14 +381,12 @@ class VibeCraftClient:
                     model=model
             ):
                 # 이벤트 타입별 SSE 변환
-                event_type = event.get("type", "info")
-                message = event.get("message", "")
+                event_type = event.event
+                message = event.data
 
-                if event_type == "error":
+                if event_type == SSEEventType.ERROR.value:
                     yield SSEEventBuilder.create_error_event(message)
-                elif event_type == "stdout":
-                    yield SSEEventBuilder.create_ai_message_chunk(message)
-                elif event.get("step") == "execution_complete":
+                elif event_type == SSEEventType.COMPLETE.value:
                     yield SSEEventBuilder.create_info_event("🎉 웹앱 코드 생성 완료!")
                     yield SSEEventBuilder.create_complete_event(thread_id)
                     return
@@ -422,6 +420,7 @@ class VibeCraftClient:
             pass
         # Step: 2-3
         v_type = (await self.recommend_visualization_type()).get_top_recommendation()
+        print(f"💻 가장 높은 점수의 시각화 타입인 {v_type}으로 코드 생성을 진행합니다...")
         # Step: 3
         result = self.run_code_generator(self.get_thread_id(), v_type.visualization_type)
         breakpoint()

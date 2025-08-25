@@ -14,7 +14,7 @@ from mcp_agent.schemas import (
     VisualizationRecommendationResponse
 )
 from services import BaseStreamService
-from utils import PathUtils
+from utils import PathUtils, ContentUtils
 from exceptions import NotFoundException
 
 
@@ -46,7 +46,11 @@ class WorkflowService(BaseStreamService):
 
         file_path = None
         if code is not None:
-            file_path = PathUtils.get_path(thread_id, code)
+            for ext in ContentUtils.ALLOWED_EXTENSIONS:
+                path = PathUtils.get_path(thread_id, f"{code}{ext}")
+                if path:
+                    file_path = path[0]
+                    break
         await client.set_data(file_path)
 
         async def generator():
