@@ -1,1 +1,1 @@
-from .base_service import BaseStreamService
+from .base_stream_service import BaseStreamService

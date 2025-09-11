@@ -28,9 +28,10 @@ router = APIRouter(
 )
 async def new_chat(
     query: str = Query(..., description="Prompt Query"),
-    use_langchain: Optional[bool] = Query(True, description="Trigger for Langchain")
+    use_langchain: Optional[bool] = Query(True, description="Trigger for Langchain"),
+    system: Optional[str] = Query(None, description="User custom system prompt"),
 ):
-    return await chat_service.execute_chat(query, use_langchain)
+    return await chat_service.execute_chat(query, use_langchain, system=system)
 
 
 @router.get(
@@ -42,9 +43,10 @@ async def new_chat(
 async def load_chat(
     query: str = Query(..., description="Prompt Query"),
     thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),
-    use_langchain: Optional[bool] = Query(True, description="Trigger for Langchain")
+    use_langchain: Optional[bool] = Query(True, description="Trigger for Langchain"),
+    system: Optional[str] = Query(None, description="User custom system prompt"),
 ):
-    return await chat_service.execute_chat(query, use_langchain, thread_id)
+    return await chat_service.execute_chat(query, use_langchain, thread_id, system)
 
 
 @router.get(
@@ -54,8 +56,9 @@ async def load_chat(
     responses=SSEStreamDocumentation.get_chat_stream_responses()
 )
 async def stream_new_chat(
-        query: str = Query(..., description="Prompt Query"),
-        use_langchain: Optional[bool] = Query(True, description="Trigger for Langchain")
+    query: str = Query(..., description="Prompt Query"),
+    use_langchain: Optional[bool] = Query(True, description="Trigger for Langchain"),
+    system: Optional[str] = Query(None, description="User custom system prompt"),
 ):
     """
     새로운 채팅을 SSE 스트림으로 시작합니다.
@@ -67,7 +70,7 @@ async def stream_new_chat(
     - `error`: 에러 발생
     """
     return EventSourceResponse(
-        chat_service.execute_stream_chat(query, use_langchain)
+        chat_service.execute_stream_chat(query, use_langchain, system=system)
     )
 
 
@@ -80,7 +83,8 @@ async def stream_new_chat(
 async def stream_load_chat(
         query: str = Query(..., description="Prompt Query"),
         thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),
-        use_langchain: Optional[bool] = Query(True, description="Trigger for Langchain")
+        use_langchain: Optional[bool] = Query(True, description="Trigger for Langchain"),
+        system: Optional[str] = Query(None, description="User custom system prompt"),
 ):
     """
     기존 채팅 세션을 SSE 스트림으로 로드합니다.
@@ -92,7 +96,7 @@ async def stream_load_chat(
     - `error`: 에러 발생
     """
     return EventSourceResponse(
-        chat_service.execute_stream_chat(query, use_langchain, thread_id)
+        chat_service.execute_stream_chat(query, use_langchain, thread_id, system)
     )
 
 

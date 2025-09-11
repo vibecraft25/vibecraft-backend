@@ -44,11 +44,12 @@ class BaseStreamService:
             self,
             client,
             query: str,
-            use_langchain: bool = True
+            use_langchain: bool = True,
+            system: Optional[str] = None
     ) -> AsyncGenerator[ServerSentEvent, None]:
         """채팅 스트림 생성기 (에러 처리 포함)"""
         try:
-            async for event, chunk in client.execute_stream_step(query, use_langchain=use_langchain):
+            async for event, chunk in client.execute_stream_step(query, system=system, use_langchain=use_langchain):
                 # ServerSentEvent가 직접 들어오는 경우 바로 yield
                 if isinstance(chunk, ServerSentEvent):
                     yield chunk

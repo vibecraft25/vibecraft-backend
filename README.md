@@ -64,7 +64,7 @@ uv add "mcp[cli]" # MacOS/Linux
 uv add langchain langchain-google-genai google-generativeai langchain-anthropic
 uv add langchain_community
 uv add langchain-mcp-adapters langgraph
-uv add langchain_mcp_adapters
+uv add langchain_chroma langchain_huggingfac
 uv add grandalf   # Optional
 
 # Essential packages for server
@@ -72,9 +72,11 @@ uv add fastapi uvicorn sqlalchemy pydantic
 uv add pyjwt==2.1.0
 
 # Additional packages
-uv add pillow
-uv add pandas
-uv add chardet
+uv add pillow chardet
+# 임베딩 및 벡터 데이터베이스
+uv add sentence-transformers
+# 기타 유틸리티
+uv add pypdf pandas numpy pathlib matplotlib
 ```
 #### 5. Check nodejs for unsing mcp server (Future work)
 ```bash
@@ -165,6 +167,13 @@ $ python main.py
 │   └── sse_response_schemas.py   # SSE response schemas
 │
 ├── services/
+│   ├── data_processing/
+│   │   ├── rag/
+│   │   │   ├── chroma_db.py               # Chroma db
+│   │   │   └── document_processor.py      # 문서 인덱싱
+│   │   │
+│   │   └── rag_engine.py       # RAG engine 
+│   │
 │   ├── base_service.py       # base service logic
 │   ├── chat_service.py       # chat service logic
 │   └── workflow_service.py   # workflow service logic
