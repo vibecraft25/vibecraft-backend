@@ -29,14 +29,16 @@ class ChatService(BaseStreamService):
 
     async def execute_chat(
             self,
-            query: str,
-            use_langchain: bool = True,
+            query: str, system: Optional[str] = None,
             thread_id: Optional[str] = None,
-            system: Optional[str] = None,
+            use_langchain: Optional[bool] = True,
     ) -> JSONResponse:
         """일반 채팅 실행"""
         client = await self._create_client(thread_id)
-        response = await client.execute_step(query, system=system, use_langchain=use_langchain)
+        response = await client.execute_step(
+            query, system,
+            use_langchain=use_langchain
+        )
 
         return JSONResponse(
             content=ChatResponse(
@@ -48,16 +50,19 @@ class ChatService(BaseStreamService):
 
     async def execute_stream_chat(
             self,
-            query: str,
-            use_langchain: bool = True,
+            query: str, system: Optional[str] = None,
             thread_id: Optional[str] = None,
-            system: Optional[str] = None
+            use_langchain: Optional[bool] = True,
     ) -> AsyncGenerator[ServerSentEvent, None]:
         """스트리밍 채팅 실행"""
         client = await self._create_client(thread_id)
 
         # 부모 클래스의 공통 스트림 생성기 사용
-        async for event in self._create_chat_stream_generator(client, query, use_langchain, system=system):
+        async for event in self._create_chat_stream_generator(
+                client,
+                query, system,
+                use_langchain=use_langchain
+        ):
             yield event
 
     @staticmethod

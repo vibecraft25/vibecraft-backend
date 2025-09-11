@@ -43,13 +43,15 @@ class BaseStreamService:
     async def _create_chat_stream_generator(
             self,
             client,
-            query: str,
-            use_langchain: bool = True,
-            system: Optional[str] = None
+            query: str, system: Optional[str] = None,
+            use_langchain: Optional[bool] = True,
     ) -> AsyncGenerator[ServerSentEvent, None]:
         """채팅 스트림 생성기 (에러 처리 포함)"""
         try:
-            async for event, chunk in client.execute_stream_step(query, system=system, use_langchain=use_langchain):
+            async for event, chunk in client.execute_stream_step(
+                    query, system,
+                    use_langchain=use_langchain
+            ):
                 # ServerSentEvent가 직접 들어오는 경우 바로 yield
                 if isinstance(chunk, ServerSentEvent):
                     yield chunk
