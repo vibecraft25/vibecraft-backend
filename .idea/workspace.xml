@@ -4,8 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="feat(agent-runner): enhance cross-platform support and add SSE streaming&#10;&#10;- Added Windows/Unix platform detection with shell execution flags&#10;- Introduced SSE-based async streaming (`run_agent_async`) using ServerSentEvent&#10;- Added legacy-compatible dictionary-based streaming (`run_agent_stream`)&#10;- Implemented `_ensure_output_directory` to safely prepare output directories&#10;- Improved command string building with cross-platform escaping (`_build_command_string`)&#10;- Enhanced process management with Windows-specific `CREATE_NO_WINDOW` and Unix `os.setsid`&#10;- Expanded installation info with platform details, encoding, and shell usage&#10;- Provided example usage for both SSE and dict streaming modes">
+    <list default="true" id="bf95aa35-0d5b-4757-8ac1-e33d34531e0a" name="Changes" comment="edit(BaseStreamService): change file name">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vibecraft.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vibecraft.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schemas/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schemas/chat_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/chat_schemas/chat_schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schemas/data_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/data_schemas/data_schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schemas/sse_response_schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/sse_schemas/sse_response_schemas.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,41 +53,41 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Python.client_sample_v1.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.data_upload_server.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.temp.executor&quot;: &quot;Run&quot;,
-    &quot;Python.topic_server.executor&quot;: &quot;Run&quot;,
-    &quot;Python.vibe-craft-code.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.vibe_craft.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.vibe_craft_agent_runner.executor&quot;: &quot;Run&quot;,
-    &quot;Python.vibecraft-code (1).executor&quot;: &quot;Debug&quot;,
-    &quot;Python.vibecraft-code.executor&quot;: &quot;Debug&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Administrator/Desktop/Aircok/vibecraft/data-store/85cfdb6a-a59b-405f-8773-da44e58bf6ba&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\PyCharm 2025.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.client_sample_v1.executor": "Debug",
+    "Python.data_upload_server.executor": "Run",
+    "Python.main.executor": "Debug",
+    "Python.temp.executor": "Run",
+    "Python.topic_server.executor": "Run",
+    "Python.vibe-craft-code.executor": "Debug",
+    "Python.vibe_craft.executor": "Debug",
+    "Python.vibe_craft_agent_runner.executor": "Run",
+    "Python.vibecraft-code (1).executor": "Debug",
+    "Python.vibecraft-code.executor": "Debug",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "C:/Users/Administrator/Desktop/proj/vibecraft/schemas",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\PyCharm 2025.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Administrator\Desktop\proj\vibecraft\services" />
       <recent name="C:\Users\Administrator\Desktop\Aircok\vibecraft\data-store\85cfdb6a-a59b-405f-8773-da44e58bf6ba" />
       <recent name="C:\Users\Administrator\Desktop\Aircok\vibecraft" />
       <recent name="C:\Users\Administrator\Desktop\Aircok\vibecraft\utils" />
       <recent name="C:\Users\Administrator\Desktop\Aircok\vibecraft\routers" />
-      <recent name="C:\Users\Administrator\Desktop\Aircok\vibecraft\schemas" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\Administrator\Desktop\Aircok\vibecraft\mcp_agent\client" />
@@ -270,22 +276,17 @@
       <workItem from="1754995617916" duration="1081000" />
       <workItem from="1755649978079" duration="4932000" />
       <workItem from="1755665571906" duration="616000" />
-    </task>
-    <task id="LOCAL-00051" summary="[250718] edit base.py">
-      <option name="closed" value="true" />
-      <created>1752830857276</created>
-      <option name="number" value="00051" />
-      <option name="presentableId" value="LOCAL-00051" />
-      <option name="project" value="LOCAL" />
-      <updated>1752830857276</updated>
-    </task>
-    <task id="LOCAL-00052" summary="[250718] edit base.py">
-      <option name="closed" value="true" />
-      <created>1752830889304</created>
-      <option name="number" value="00052" />
-      <option name="presentableId" value="LOCAL-00052" />
-      <option name="project" value="LOCAL" />
-      <updated>1752830889304</updated>
+      <workItem from="1756088684632" duration="73000" />
+      <workItem from="1756089000389" duration="23000" />
+      <workItem from="1756089466212" duration="149000" />
+      <workItem from="1756196348203" duration="23000" />
+      <workItem from="1756960251156" duration="419000" />
+      <workItem from="1756960700644" duration="42000" />
+      <workItem from="1756961173916" duration="141000" />
+      <workItem from="1756966424703" duration="37000" />
+      <workItem from="1757478496741" duration="6380000" />
+      <workItem from="1757900553482" duration="1230000" />
+      <workItem from="1759377158589" duration="4114000" />
     </task>
     <task id="LOCAL-00053" summary="[250718] update README.md references">
       <option name="closed" value="true" />
@@ -663,7 +664,23 @@
       <option name="project" value="LOCAL" />
       <updated>1755665450816</updated>
     </task>
-    <option name="localTasksCounter" value="100" />
+    <task id="LOCAL-00100" summary="edit(chat): change api method duplicated name">
+      <option name="closed" value="true" />
+      <created>1756088792282</created>
+      <option name="number" value="00100" />
+      <option name="presentableId" value="LOCAL-00100" />
+      <option name="project" value="LOCAL" />
+      <updated>1756088792282</updated>
+    </task>
+    <task id="LOCAL-00101" summary="edit(BaseStreamService): change file name">
+      <option name="closed" value="true" />
+      <created>1756089611550</created>
+      <option name="number" value="00101" />
+      <option name="presentableId" value="LOCAL-00101" />
+      <option name="project" value="LOCAL" />
+      <updated>1756089611550</updated>
+    </task>
+    <option name="localTasksCounter" value="102" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -693,8 +710,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="[250730] remove examples" />
-    <MESSAGE value="[250730] Update workflow" />
     <MESSAGE value="[250802] add get history" />
     <MESSAGE value="[250802] Update api" />
     <MESSAGE value="[250802] Add visualization recommendation" />
@@ -718,7 +733,9 @@
     <MESSAGE value="[250812] edit config" />
     <MESSAGE value="[250819] add asyncio" />
     <MESSAGE value="feat(agent-runner): enhance cross-platform support and add SSE streaming&#10;&#10;- Added Windows/Unix platform detection with shell execution flags&#10;- Introduced SSE-based async streaming (`run_agent_async`) using ServerSentEvent&#10;- Added legacy-compatible dictionary-based streaming (`run_agent_stream`)&#10;- Implemented `_ensure_output_directory` to safely prepare output directories&#10;- Improved command string building with cross-platform escaping (`_build_command_string`)&#10;- Enhanced process management with Windows-specific `CREATE_NO_WINDOW` and Unix `os.setsid`&#10;- Expanded installation info with platform details, encoding, and shell usage&#10;- Provided example usage for both SSE and dict streaming modes" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(agent-runner): enhance cross-platform support and add SSE streaming&#10;&#10;- Added Windows/Unix platform detection with shell execution flags&#10;- Introduced SSE-based async streaming (`run_agent_async`) using ServerSentEvent&#10;- Added legacy-compatible dictionary-based streaming (`run_agent_stream`)&#10;- Implemented `_ensure_output_directory` to safely prepare output directories&#10;- Improved command string building with cross-platform escaping (`_build_command_string`)&#10;- Enhanced process management with Windows-specific `CREATE_NO_WINDOW` and Unix `os.setsid`&#10;- Expanded installation info with platform details, encoding, and shell usage&#10;- Provided example usage for both SSE and dict streaming modes" />
+    <MESSAGE value="edit(chat): change api method duplicated name" />
+    <MESSAGE value="edit(BaseStreamService): change file name" />
+    <option name="LAST_COMMIT_MESSAGE" value="edit(BaseStreamService): change file name" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
