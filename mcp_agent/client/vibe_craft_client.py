@@ -131,18 +131,15 @@ class VibeCraftClient:
             yield ServerSentEvent(event=event, data=chunk)
 
     """Data loading and generation Methods"""
-    def upload_data(self, file_path: str):
-        print("\n🚦 Step 2-1: 데이터 업로드")
+    async def set_data(self, file_path: Optional[str] = None) -> pd.DataFrame:
+        """Step 2: 데이터 업로드 또는 생성"""
+        print("\n🚦 Step 2: 데이터 업로드")
+        await self.load_tools(self.set_data_mcp_server)
 
         if file_path:
             self.data = FileUtils.load_local_files([file_path])
         else:
             self.data = FileUtils.load_files()
-
-    async def set_data(self, file_path: str) -> pd.DataFrame:
-        """Step 2: 데이터 업로드 또는 생성"""
-        await self.load_tools(self.set_data_mcp_server)
-        self.upload_data(file_path)
 
         # 데이터 자동 전처리 및 저장
         await self.auto_process_and_save_data()
@@ -151,8 +148,9 @@ class VibeCraftClient:
 
     async def stream_set_data(self, file_path: str = None):
         """Step 2: 데이터 업로드 또는 생성"""
+        print("\n🚦 Step 2: 데이터 업로드")
         await self.load_tools(self.set_data_mcp_server)
-        self.upload_data(file_path)
+        self.data = FileUtils.load_local_files([file_path])
 
         # 데이터 자동 전처리 및 저장
         async for event in self.stream_auto_process_and_save_data():

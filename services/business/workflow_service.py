@@ -31,7 +31,7 @@ class WorkflowService(BaseStreamService):
     async def execute_run_workflow(
             self,
             thread_id: str,
-            code: Optional[str] = None
+            code: str
     ) -> AsyncGenerator[ServerSentEvent, None]:
         """워크플로우 실행"""
         client = self._create_client()

@@ -49,7 +49,7 @@ async def stream_set_topic(
 )
 async def stream_run_workflow(
         thread_id: str = Query(..., description="Thread ID", example="f09d8c6e-fcb5-4275-bf3d-90a87ede2cb8"),
-        code: Optional[str] = Query(None, description="Use `/contents/upload` api to upload file and get code",
+        code: str = Query(None, description="Use `/contents/upload` api to upload file and get code",
                                     example="f09d8c6e"),
 ):
     return EventSourceResponse(
