@@ -56,18 +56,23 @@ class BaseEngine:
             self.retriever,
             name="rag_analysis",
             description="""
-            Expert tool for comprehensive wildfire risk index and causal relationship analysis.
+            Expert tool for comprehensive data causal relationship analysis using academic research.
 
-            Specifically searches for:
-            - Forest Fire Diagnostic Model development (Section 2.4)
-            - SHapley Additive exPlanations (SHAP) methodology (Section 2.5)  
-            - Variable Impact Analysis Based on SHAP Value (Section 3.3)
-            - Forest Fire Forecast for Republic of Korea (Section 3.4)
-            - Causal relationships between meteorological variables and fire risk
-            - Model validation and performance metrics
+            This tool searches academic papers and research materials to provide:
+            - Causal inference methodologies and statistical approaches
+            - Variable relationship analysis and causal mechanisms
+            - Correlation vs causation interpretation methods
+            - Statistical validation techniques and model performance metrics
+            - Domain-specific causal pathways and interaction effects
+            - Research-backed explanations for data patterns
 
-            Use this tool to find academic explanations for how environmental data 
-            translates into wildfire risk predictions through established models.
+            Use this tool to find scientific evidence and academic explanations for:
+            - How independent variables causally influence dependent variables
+            - What mechanisms connect observed patterns to outcomes
+            - Which statistical methods validate causal relationships
+            - How to interpret correlation in the context of causation
+
+            Ideal for supporting data-driven causal analysis with peer-reviewed research.
             """
         )
 
@@ -186,7 +191,8 @@ class BaseEngine:
             # 첫 대화 이후의 system message는 base system message의 제어를 받게 수정
             if 2 < len(conversation_messages):
                 base_system_message = SystemMessage(content=BASE_SYSTEM_PROMPT)
-                system_message = f"{base_system_message.content}\n\n{system_message.content}"
+                combined_content = f"{base_system_message.content}\n\n{system_message.content}"
+                system_message = SystemMessage(content=combined_content)
         else:
             # Use default base system prompt if none provided
             system_message = SystemMessage(content=BASE_SYSTEM_PROMPT)
@@ -387,15 +393,15 @@ class BaseEngine:
         return round(sigmoid_score, 1)
 
     def perform_rag_analysis(self, state: State):
-        """RAG analysis based on collected data"""
+        """RAG analysis for data causal relationship analysis"""
         messages = state["messages"]
         data_summary = self._extract_data_summary(messages)
 
         rag_queries = [
-            f"Diagnostic model development data analysis {data_summary}",
-            f"SHAP analysis prediction variables {data_summary}",
-            f"Variable Impact Analysis risk factors {data_summary}",
-            f"Predictive model validation methodology {data_summary}"
+            f"Causal inference methodology statistical analysis {data_summary}",
+            f"Variable correlation causation relationship {data_summary}",
+            f"Data-driven causal mechanism discovery {data_summary}",
+            f"Statistical validation causal relationships {data_summary}"
         ]
 
         combined_context = ""
@@ -438,27 +444,28 @@ class BaseEngine:
         }
 
     def _extract_data_summary(self, messages: List) -> str:
-        """Extract data summary from messages"""
+        """Extract data summary from messages for causal relationship analysis"""
         data_elements = []
 
         for message in messages:
             if hasattr(message, 'content') and message.content:
                 content = message.content.lower()
 
-                if any(keyword in content for keyword in ['temperature', '온도', 'temp']):
-                    data_elements.append('temperature')
-                if any(keyword in content for keyword in ['humidity', '습도', 'moisture']):
-                    data_elements.append('humidity')
-                if any(keyword in content for keyword in ['wind', '바람', '풍속']):
-                    data_elements.append('wind')
-                if any(keyword in content for keyword in ['precipitation', '강수', 'rainfall']):
-                    data_elements.append('precipitation')
-                if any(keyword in content for keyword in ['vegetation', '식생', 'ndvi']):
-                    data_elements.append('vegetation')
-                if any(keyword in content for keyword in ['risk', '위험지수', 'index']):
-                    data_elements.append('risk_index')
+                # Causal relationship keywords
+                if any(keyword in content for keyword in ['correlation', '상관관계', 'relationship']):
+                    data_elements.append('correlation_analysis')
+                if any(keyword in content for keyword in ['causation', '인과관계', 'causal']):
+                    data_elements.append('causal_inference')
+                if any(keyword in content for keyword in ['variable', '변수', 'factor']):
+                    data_elements.append('variable_analysis')
+                if any(keyword in content for keyword in ['impact', '영향', 'effect']):
+                    data_elements.append('impact_analysis')
+                if any(keyword in content for keyword in ['trend', '추세', 'pattern']):
+                    data_elements.append('trend_analysis')
+                if any(keyword in content for keyword in ['prediction', '예측', 'forecast']):
+                    data_elements.append('predictive_analysis')
 
-        return " ".join(set(data_elements)) if data_elements else "general data analysis"
+        return " ".join(set(data_elements)) if data_elements else "general causal relationship analysis"
 
     def summarize_conversation(self, state: State):
         """Data analysis specialized summary"""
@@ -638,15 +645,33 @@ class BaseEngine:
             self.save_chat_history()
 
             last_message = response['messages'][-1]
+
+            # Debug logging
+            print(f"\n🔍 DEBUG - last_message type: {type(last_message)}")
+            print(f"🔍 DEBUG - last_message: {last_message}")
+
             # For LangChain objects
             if hasattr(last_message, 'content'):
-                return last_message.content
+                content = last_message.content
+                print(f"✅ DEBUG - Extracted content (type: {type(content)}): {content[:200] if isinstance(content, str) else content}")
+                return content
             # For dictionary objects
             elif isinstance(last_message, dict):
-                return last_message.get("content", "")
+                content = last_message.get("content", "")
+                print(f"✅ DEBUG - Dict content: {content[:200] if isinstance(content, str) else content}")
+                return content
+            # For string objects (shouldn't happen but just in case)
+            elif isinstance(last_message, str):
+                print(f"⚠️ DEBUG - last_message is already a string: {last_message[:200]}")
+                return last_message
+
+            print(f"❌ DEBUG - Unexpected last_message type, returning empty string")
             return ""
         except Exception as e:
-            return str(e)
+            print(f"❌ DEBUG - Exception in generate_langchain: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return f"Error: {str(e)}"
 
     async def stream_generate(self, prompt: str):
         async for chunk in self.llm.astream(prompt):
@@ -662,8 +687,25 @@ class BaseEngine:
         async for chunk in self.app.astream(
                 {"messages": messages}, self.config, stream_mode="messages",
         ):
-            content_type = chunk[0].type
-            content = chunk[0].content
+            # Debug logging
+            print(f"\n🔍 STREAM DEBUG - chunk type: {type(chunk)}")
+            print(f"🔍 STREAM DEBUG - chunk[0] type: {type(chunk[0])}")
+            print(f"🔍 STREAM DEBUG - chunk[0]: {chunk[0]}")
+
+            # Handle different chunk types
+            if isinstance(chunk[0], str):
+                print(f"⚠️ STREAM DEBUG - chunk[0] is a string: {chunk[0][:200]}")
+                content_type = "ai"
+                content = chunk[0]
+            elif hasattr(chunk[0], 'type') and hasattr(chunk[0], 'content'):
+                content_type = chunk[0].type
+                content = chunk[0].content
+                print(f"✅ STREAM DEBUG - Extracted type: {content_type}, content: {content[:200] if isinstance(content, str) else content}")
+            else:
+                print(f"❌ STREAM DEBUG - Unexpected chunk[0] type")
+                content_type = "unknown"
+                content = str(chunk[0])
+
             yield content_type, content
 
         self.save_chat_history()

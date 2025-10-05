@@ -5,9 +5,14 @@ base_url: "http://0.0.0.0:8080"
 host: "0.0.0.0"
 port: 8080
 
+resource:
+  data: "/app/storage"
+  mcp: "/app/mcp_agent/servers"
+
 file:
   chat: "/app/vibecraft/chat-data"
   file: "/app/vibecraft/data-store"
+  chroma: "/app/ffdm-be/chroma-db"
 
 log:
   path: "/app/vibecraft/vibecraft-app-python-log"

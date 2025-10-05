@@ -11,7 +11,7 @@ from sse_starlette.sse import EventSourceResponse
 # Custom imports
 from schemas import ChatResponse, SSEStreamDocumentation
 from mcp_agent.schemas import ChatHistory
-from services.chat_service import chat_service
+from services.business.chat_service import chat_service
 
 prefix = "chat"
 router = APIRouter(

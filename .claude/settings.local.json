@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Read(//c/Users/Administrator/Desktop/Aircok/ffdm-be/utils/**)",
+      "Read(//c/Users/Administrator/Desktop/Aircok/ffdm-be/mcp_agent/engine/**)",
+      "Bash(git log:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

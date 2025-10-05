@@ -181,6 +181,6 @@ rag_engine = RAGEngine(persist_directory=settings.chroma_path)
 rag_engine.add_documents_from_directory(f"{settings.data_path}/documents")
 
 if __name__ == '__main__':
-    rag_engine.add_documents_from_directory("C:/Users/Administrator/Desktop/Aircok/ffdm-be/storage/documents")
+    rag_engine.add_documents_from_directory(f"{settings.data_path}/documents/test.pdf")
     result = rag_engine.search("Meteorological")
     print(result)

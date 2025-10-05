@@ -5,9 +5,16 @@ base_url: "http://127.0.0.1:8080"
 host: "127.0.0.1"
 port: 8080
 
+resource:
+#  data: "C:/Users/kimsehun/Desktop/Aircok/vibecraft/storage"
+#  mcp: "C:/Users/kimsehun/Desktop/Aircok/vibecraft/mcp_agent/servers"
+  data: "C:/Users/Administrator/Desktop/Aircok/vibecraft/storage"
+  mcp: "C:/Users/Administrator/Desktop/Aircok/vibecraft/mcp_agent/servers"
+
 path:
   chat: "./chat-data"
   file: "./data-store"
+  chroma: "./chroma-db"
 
 log:
   path: "./vibecraft-app-python-log"

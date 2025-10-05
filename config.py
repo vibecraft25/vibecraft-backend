@@ -11,12 +11,15 @@ import yaml
 class Settings(BaseSettings):
     version: str
 
-    base_url: str
     host: str
     port: int
 
+    data_path: str
+    mcp_path: str
+
     chat_path: str
     file_path: str
+    chroma_path: str
 
     log_path: str
 
@@ -30,11 +33,13 @@ class Settings(BaseSettings):
 
         return cls(
             version=config["version"]["server"],
-            base_url=config["base_url"],
             host=config["host"],
             port=config["port"],
+            data_path=config["resource"]["data"],
+            mcp_path=config["resource"]["mcp"],
             chat_path=config["path"]["chat"],
             file_path=config["path"]["file"],
+            chroma_path=config["path"]["chroma"],
             log_path=config["log"]["path"],
         )
 
