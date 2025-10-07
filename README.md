@@ -575,7 +575,7 @@ VibeCraft는 데이터 인과관계 분석에 특화된 다음 기능을 제공�
 
 ## 📝 License
 
-MIT License
+이 프로젝트는 Apache License 2.0 하에 배포됩니다. 자세한 내용은 [LICENSE](./LICENSE) 파일을 참고하세요.
 
 ---
 
