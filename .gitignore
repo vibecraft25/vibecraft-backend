@@ -16,3 +16,4 @@ node_modules/
 /output/
 /mcp_agent/client/output/
 /chroma-db/
+/config-development.yml
