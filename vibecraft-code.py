@@ -13,15 +13,15 @@ load_dotenv()
 
 
 async def main():
-    print("✅ 사용할 AI 모델을 선택하세요: claude / gemini / gpt (기본: claude)")
+    print("✅ 사용할 AI 모델을 선택하세요: claude / gemini / gpt (기본: gemini)")
     engine = "gemini"
     client = VibeCraftClient(engine)
 
     try:
-        topic = "피자 일매출을 시각화하는 페이지를 제작할거야"
+        topic = "서울시를 기준으로 음식 분류별 맛집 리스트를 시각화하는 페이지를 만들어줘"
         await client.run_pipeline(
             topic,
-            r"C:\Users\Administrator\Desktop\proj\vibecraft\samples\sample.csv")
+            r"C:\Users\YourDirectory\path\to\vibecraft-code\samples\dining.csv")
     finally:
         await client.cleanup()
 

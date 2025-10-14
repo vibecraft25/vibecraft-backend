@@ -131,8 +131,8 @@ port: 8080
 
 resource:
   # 본인의 프로젝트 경로에 맞게 수정하세요
-  data: "C:/Users/YourUsername/Desktop/vibecraft/storage"
-  mcp: "C:/Users/YourUsername/Desktop/vibecraft/mcp_agent/servers"
+  data: "C:/Users/YourUsername/Desktop/vibecraft-backend/storage"
+  mcp: "C:/Users/YourUsername/Desktop/vibecraft-backend/mcp_agent/servers"
 
 path:
   chat: "./chat-data"      # 채팅 기록 저장 경로
@@ -160,7 +160,7 @@ VibeCraft는 학술 논문 기반의 인과관계 분석을 위해 RAG(Retrieval
 
 1. **학술 논문 준비**
    - PDF, TXT, Markdown 등의 형식으로 된 학술 논문을 준비합니다.
-   - `./data-store/documents` 디렉토리에 논문 파일들을 저장합니다.
+   - `./storage/documents` 디렉토리에 논문 파일들을 저장합니다.
 
 2. **RAG 엔진 초기화 코드** (`services/data_processing/rag_engine.py` 참조)
 
@@ -378,7 +378,7 @@ import json
 response = requests.get(
     "http://127.0.0.1:8080/chat/new-chat",
     params={
-        "query": "판매량과 마케팅 예산의 인과관계를 분석해주세요",
+        "query": "서울시를 기준으로 음식 분류별 맛집 리스트를 시각화하는 페이지를 만들어줘",
         "use_langchain": True
     }
 )
