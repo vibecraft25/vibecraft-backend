@@ -99,28 +99,7 @@ npm install -g @google/gemini-cli
 npm install -g vibecraft-agent
 ```
 
-#### 6. API 키를 위한 .env 파일 추가
-```bash
-touch .env
-```
-
-### .env 파일 형식
-⚠️ .env 파일을 공유하거나 커밋하지 마세요. 민감한 자격 증명이 포함되어 있습니다. ⚠️
-```text
-OPENAI_API_KEY=sk-...
-ANTHROPIC_API_KEY=sk-ant-...
-GEMINI_API_KEY=...
-GOOGLE_API_KEY=...
-```
-
----
-
-## ⚙️ Configuration Setup
-
-### config-development.yml 설정
-
-프로젝트 실행을 위해 `config-development.yml` 파일을 다음과 같이 설정하세요:
-
+#### 6. 프로젝트 설정 구성 (`config-development.yml`을 환경에 맞게 수정)
 ```yaml
 version:
   server: "1.0.0"
@@ -130,31 +109,79 @@ host: "127.0.0.1"
 port: 8080
 
 resource:
-  # 본인의 프로젝트 경로에 맞게 수정하세요
-  data: "C:/Users/YourUsername/Desktop/vibecraft-backend/storage"
-  mcp: "C:/Users/YourUsername/Desktop/vibecraft-backend/mcp_agent/servers"
+  # 본인의 로컬 프로젝트 디렉토리에 맞게 경로 수정
+  data: "C:/Users/YourUsername/path/to/vibecraft-backend/storage"
+  mcp: "C:/Users/YourUsername/path/to/vibecraft-backend/mcp_agent/servers"
 
+# 모든 상대 경로는 프로젝트 루트에서 해석됩니다
 path:
-  chat: "./chat-data"      # 채팅 기록 저장 경로
-  file: "./data-store"     # 데이터 파일 저장 경로
-  chroma: "./chroma-db"    # ChromaDB 벡터 저장소 경로
+  chat: "./chat-data"   # 채팅 기록 저장 경로
+  file: "./data-store"  # 데이터 파일 저장 경로
+  chroma: "./chroma-db" # RAG 벡터 데이터베이스 저장소
 
 log:
   path: "./vibecraft-app-python-log"
 ```
-
-**주요 설정:**
-- `resource.data`: 사용자 데이터 및 분석 결과가 저장되는 경로
+- `resource.data`: 사용자가 업로드한 파일 및 분석 결과가 저장되는 경로
 - `resource.mcp`: MCP 서버 설정 파일들이 위치한 경로
 - `path.chat`: 대화 기록이 저장되는 디렉토리
 - `path.file`: 업로드된 파일 및 처리된 데이터가 저장되는 디렉토리
-- `path.chroma`: RAG 엔진의 벡터 데이터베이스가 저장되는 디렉토리
+- `path.chroma`: ChromaDB 벡터 데이터베이스용 디렉토리 (RAG 엔진에서 사용)
+
+#### 7. 환경 변수 설정 (`.env` 파일을 프로젝트 루트에 생성)
+**⚠️ .env 파일을 공유하거나 커밋하지 마세요. 민감한 자격 증명이 포함되어 있습니다. ⚠️**
+```bash
+# Windows
+echo. > .env
+# MacOS/Linux
+touch .env
+```
+```bash
+# .env
+OPENAI_API_KEY=your_openai_api_key_here
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
+GOOGLE_API_KEY=your_google_api_key_here
+```
+
+### 🔑 GEMINI API KEY 발급 방법
+
+#### 1.Google AI Studio(https://aistudio.google.com) 접속 후 Get API key 클릭
+![](image.png)
+
+#### 2. Projects 들어가서 '새 프로젝트 만들기' - 입력한 이름으로 프로젝트 생성
+![](image-1.png) | ![](image-2.png) | ![](image-3.png)
+-----------------|------------------|----------------|
+
+#### 3. API keys 들어가서 'API 키 만들기' - 키 이름 지정 - 가져올 프로젝트 선택 (Import project)
+![](image-4.png) | ![](image-6.png) | ![](image-7.png) |
+-----------------|------------------|------------------|
+
+#### 4. 프로젝트 선택 후 '키 만들기' 결과로 API 키 생성 완료
+![](image-8.png) | ![](image-9.png) | ![](image-10.png)
+-----------------|------------------|------------------|
 
 ---
 
-## 🧠 RAG Engine Setup
+## 🧠 Engine Architecture
 
-VibeCraft는 학술 논문 기반의 인과관계 분석을 위해 RAG(Retrieval-Augmented Generation) 엔진을 사용합니다.
+각 엔진은 `BaseEngine`을 통해 공통 인터페이스를 구현합니다:
+
+- `ClaudeEngine` – Anthropic Claude 사용 - [claude-3-5-sonnet-20241022]
+- `OpenAIEngine` – OpenAI GPT 사용 - [gpt-4.1]
+- `GeminiEngine` – Google Gemini 사용 - [gemini-2.5-flash]
+
+각 엔진은 다음을 지원합니다:
+- 다중 턴 대화
+- MCP를 통한 동적 도구 호출
+- 텍스트 및 함수 응답 처리
+- RAG 기반 학술 논문 검색 및 분석
+
+---
+
+## 🔧 RAG Engine Setup
+
+**VibeCraft는 학술 논문 기반의 인과관계 분석을 위해 RAG(Retrieval-Augmented Generation) 엔진을 사용합니다.**
 
 ### RAG 엔진 초기화 방법
 
@@ -204,22 +231,6 @@ search_results = rag_engine.search(
    - PDF (.pdf)
    - Text (.txt)
    - Markdown (.md)
-
----
-
-## 🧠 Engine Architecture
-
-각 엔진은 `BaseEngine`을 통해 공통 인터페이스를 구현합니다:
-
-- `ClaudeEngine` – Anthropic Claude 사용 - [claude-3-5-sonnet-20241022]
-- `OpenAIEngine` – OpenAI GPT 사용 - [gpt-4.1]
-- `GeminiEngine` – Google Gemini 사용 - [gemini-2.5-flash]
-
-각 엔진은 다음을 지원합니다:
-- 다중 턴 대화
-- MCP를 통한 동적 도구 호출
-- 텍스트 및 함수 응답 처리
-- RAG 기반 학술 논문 검색 및 분석
 
 ---
 
@@ -310,8 +321,8 @@ GET /workflow/stream/topic?query={prompt}
 GET /workflow/stream/run?thread_id={thread_id}&code={file_code}
 ```
 **Parameters:**
-- `thread_id` (required): 주제 설정 시 받은 thread_id
-- `code` (optional): `/contents/upload`로 업로드한 파일 코드
+- `thread_id` (required): 주제 설정 결과로 응답받은 thread_id
+- `code` (required): 파일 업로드 결과로 응답받은 code
 
 ---
 
@@ -327,7 +338,7 @@ file: [CSV/Excel/SQLite 파일]
 **Response:**
 ```json
 {
-  "code": "f09d8c6e.csv"
+  "code": "f09d8c6e.csv"  // '2. 데이터 분석 및 코드 생성 실행'에 붙여넣을 때 반드시 확장자를 제거하고 복사
 }
 ```
 
