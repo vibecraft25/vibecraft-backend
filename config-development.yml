@@ -6,10 +6,10 @@ host: "127.0.0.1"
 port: 8080
 
 resource:
-#  data: "C:/Users/kimsehun/Desktop/Aircok/vibecraft/storage"
-#  mcp: "C:/Users/kimsehun/Desktop/Aircok/vibecraft/mcp_agent/servers"
-  data: "C:/Users/Administrator/Desktop/Aircok/vibecraft/storage"
-  mcp: "C:/Users/Administrator/Desktop/Aircok/vibecraft/mcp_agent/servers"
+  # 상대 경로 사용 (프로젝트 루트 기준)
+  # Windows/Mac/Linux 모든 환경에서 작동합니다
+  data: "./storage"
+  mcp: "./mcp_agent/servers"
 
 path:
   chat: "./chat-data"
