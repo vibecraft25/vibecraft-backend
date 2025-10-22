@@ -145,15 +145,15 @@ GOOGLE_API_KEY=your_google_api_key_here
 ![](image.png)
 
 #### 2. Projects 들어가서 '새 프로젝트 만들기' - 입력한 이름으로 프로젝트 생성
-![](image-1.png) | ![](image-2.png) | ![](image-3.png)
+![](docs/image-1.png) | ![](docs/image-2.png) | ![](docs/image-3.png)
 -----------------|------------------|----------------|
 
 #### 3. API keys 들어가서 'API 키 만들기' - 키 이름 지정 - 가져올 프로젝트 선택 (Import project)
-![](image-4.png) | ![](image-6.png) | ![](image-7.png) |
+![](docs/image-4.png) | ![](docs/image-6.png) | ![](docs/image-7.png) |
 -----------------|------------------|------------------|
 
 #### 4. 프로젝트 선택 후 '키 만들기' 결과로 API 키 생성 완료
-![](image-8.png) | ![](image-9.png) | ![](image-10.png)
+![](docs/image-8.png) | ![](docs/image-9.png) | ![](docs/image-10.png)
 -----------------|------------------|------------------|
 
 ---
