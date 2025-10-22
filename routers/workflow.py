@@ -25,7 +25,7 @@ router = APIRouter(
     responses=SSEStreamDocumentation.get_workflow_stream_responses()
 )
 async def stream_set_topic(
-        query: str = Query(..., description="Prompt Query"),
+        query: str = Query(..., description="Prompt Query", example="서울시를 기준으로 음식 분류별 맛집 리스트를 시각화하는 페이지를 만들어줘"),
 ):
     """
     워크플로우 1단계: 주제를 설정합니다.
