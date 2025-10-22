@@ -142,7 +142,7 @@ GOOGLE_API_KEY=your_google_api_key_here
 ### 🔑 GEMINI API KEY 발급 방법
 
 #### 1.Google AI Studio(https://aistudio.google.com) 접속 후 Get API key 클릭
-![](image.png)
+![](docs/image.png)
 
 #### 2. Projects 들어가서 '새 프로젝트 만들기' - 입력한 이름으로 프로젝트 생성
 ![](docs/image-1.png) | ![](docs/image-2.png) | ![](docs/image-3.png)
