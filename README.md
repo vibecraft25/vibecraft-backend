@@ -96,9 +96,13 @@ npm install -g vibecraft-agent
 version:
   server: "1.0.0"
 
+base_url: "http://127.0.0.1:8080"
+host: "127.0.0.1"
+port: 8080
+
 resource:
-  data: "./storage"              # 데이터 저장소
-  mcp: "./mcp_agent/servers"     # MCP 서버 (현재 WIP)
+  data: "[YOUR_PATH]/vibecraft-backend/storage"
+  mcp: "[YOUR_PATH]/vibecraft-backend/mcp_agent/servers"
 
 path:
   chat: "./chat-data"            # 채팅 기록
