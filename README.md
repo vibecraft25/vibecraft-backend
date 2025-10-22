@@ -56,12 +56,31 @@ powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-#### 3. 가상 환경 및 의존성 설치
+#### 3. 가상 환경 생성 및 활성화
 ```bash
-uv sync
+uv venv --python=python3.12
+
+# Windows
+.venv\Scripts\activate
+# MacOS/Linux
+source .venv/bin/activate
+
+uv init
 ```
 
-#### 4. Node.js 설치 (MCP 서버용)
+#### 4. 의존성 설치
+```bash
+# pyproject.toml과 uv.lock을 기반으로 모든 의존성 자동 설치
+uv sync
+```
+**설치되는 주요 패키지**:
+- `langchain`, `langchain-anthropic`, `langchain-google-genai` - AI 모델 통합
+- `mcp[cli]` - Model Context Protocol 클라이언트
+- `chromadb`, `sentence-transformers` - RAG 벡터 데이터베이스
+- `pandas`, `numpy` - 데이터 처리
+- `fastapi`, `pydantic` - API 및 데이터 검증
+
+#### 5. Node.js 확인 (MCP 서버용)
 ```bash
 # Download and install Node.js from the official website:
 # 👉 https://nodejs.org
@@ -70,11 +89,35 @@ npm install -g @google/gemini-cli
 npm install -g vibecraft-agent
 ```
 
-#### 5. 프로젝트 설정 구성
-
+#### 6. 프로젝트 설정 구성
 필요시 `config-development.yml`을 환경에 맞게 수정하세요.
+```text
+```yaml
+version:
+  server: "1.0.0"
 
-#### 6. 환경 변수 설정
+resource:
+  data: "./storage"              # 데이터 저장소
+  mcp: "./mcp_agent/servers"     # MCP 서버 (현재 WIP)
+
+path:
+  chat: "./chat-data"            # 채팅 기록
+  file: "./data-store"           # 처리된 파일
+  chroma: "./chroma-db"          # RAG 벡터 데이터베이스
+
+log:
+  path: "./vibecraft-app-python-log"
+```
+
+**중요 설정 사항:**
+- `resource.data`: 사용자가 업로드한 파일 및 분석 결과가 저장되는 경로
+- `resource.mcp`: MCP 서버 설정 파일들이 위치한 경로
+- `path.chat`: 대화 기록이 저장되는 디렉토리
+- `path.file`: 업로드된 파일 및 처리된 데이터가 저장되는 디렉토리
+- `path.chroma`: ChromaDB 벡터 데이터베이스용 디렉토리 (RAG 엔진에서 사용)
+- 모든 상대 경로는 프로젝트 루트에서 해석됩니다
+
+#### 7 . 환경 변수 설정
 **⚠️ .env 파일을 공유하거나 커밋하지 마세요. 민감한 자격 증명이 포함되어 있습니다. ⚠️**
 ```bash
 # .env.example을 복사
@@ -83,6 +126,7 @@ copy .env.example .env
 # MacOS/Linux
 cp .env.example .env
 ```
+생성된 `.env` 파일을 열어 실제 API 키를 입력하세요:
 ```bash
 # .env
 OPENAI_API_KEY=your_openai_api_key_here
