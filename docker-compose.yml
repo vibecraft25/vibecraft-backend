@@ -1,0 +1,28 @@
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vibecraft-backend
+    ports:
+      - "8080:8080"
+    environment:
+      # LLM API Key (OpenAI, Anthropic, Gemini)
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-your_openai_api_key_here}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-your_anthropic_api_key_here}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-your_google_api_key_here}
+
+      # Server Configuration
+      HOST: ${HOST:-0.0.0.0}
+      PORT: ${PORT:-8080}
+
+      # Log Level
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    restart: unless-stopped
+    networks:
+      - vibecraft-network
+
+networks:
+  vibecraft-network:
+    external: true
